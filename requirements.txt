@@ -1,0 +1,13 @@
+streamlit
+langchain
+langchain-community
+langchain-core
+langchain-openai
+langchain-chroma
+chromadb
+openai
+pypdf
+pymupdf
+python-dotenv
+tiktoken
+fitz
