@@ -144,17 +144,27 @@ with st.sidebar:
 # 6. CORE LOGIC (THE BRAIN)
 llm = ChatOpenAI(model="gpt-4o", temperature=0)
 
+# REPLACE THE 'get_legal_context' FUNCTION IN main.py WITH THIS:
+
 def get_legal_context(query, k=4):
     docs = []
-    # A. Statutes (The Rules)
+    
+    # 1. ALWAYS SEARCH STATUTES (BNS/BNSS/BSA)
+    # We broaden the search slightly to ensure we catch definitions
     docs.extend(vector_db.similarity_search(query, k=k, filter={"source_book": "bns.pdf"}))
     docs.extend(vector_db.similarity_search(query, k=k, filter={"source_book": "bnss.pdf"}))
     docs.extend(vector_db.similarity_search(query, k=k, filter={"source_book": "bsa.pdf"}))
     
-    # B. Case Law (The Override) - CHECKS FOR ARNESH KUMAR ETC
-    docs.extend(vector_db.similarity_search(query, k=2, filter={"source_type": "case_law"}))
+    # 2. CONDITIONAL SEARCH: CASE LAW (The Fix)
+    # Only fetch Supreme Court rulings if the query touches on Police Powers.
+    # This prevents "Arnesh Kumar" from appearing in queries about "Cheating" or "Contracts".
+    trigger_words = ["arrest", "police", "custody", "bail", "detention", "torture", "handcuff", "remand", "investigation"]
     
-    # C. Patches
+    if any(word in query.lower() for word in trigger_words):
+        # The user is asking about Police Powers -> Fetch the Guidelines
+        docs.extend(vector_db.similarity_search(query, k=2, filter={"source_type": "case_law"}))
+    
+    # 3. ALWAYS CHECK PATCHES (For Mob Lynching etc)
     docs.extend(vector_db.similarity_search(query, k=2, filter={"source_book": "manual_patch_v1"}))
     
     return docs
@@ -251,3 +261,4 @@ if user_input := st.chat_input("Ex: 'Can police arrest for 3-year punishment?'")
 
 
     st.session_state.messages.append({"role": "assistant", "content": response})
+
