@@ -177,8 +177,7 @@ Use the Context (Statutes + Case Law) to answer.
 CRITICAL RULES:
 1. First, state the STATUTE (BNS/BNSS).
 2. Second, check if any SUPREME COURT JUDGMENT (Case Law) overrides or clarifies it.
-   - Specifically check for 'Arnesh Kumar' if the topic is Arrest.
-   - Specifically check for 'D.K. Basu' if the topic is Custody.
+IF relevant to Arrest or Custody, mention Supreme Court guidelines (e.g., Arnesh Kumar). Otherwise, focus on the Statute.
 3. If there is a conflict, Case Law prevails.
 
 Context:
@@ -261,4 +260,5 @@ if user_input := st.chat_input("Ex: 'Can police arrest for 3-year punishment?'")
 
 
     st.session_state.messages.append({"role": "assistant", "content": response})
+
 
