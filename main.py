@@ -30,6 +30,51 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
+
+# --- INSERT THIS AFTER set_page_config ---
+
+# 1. THE BOUNCER (Password Check)
+def check_password():
+    """Returns `True` if the user had the correct password."""
+    
+    # Define your password here (or get from st.secrets for safety)
+    # For now, let's keep it simple.
+    def password_entered():
+        if st.session_state["password"] == st.secrets["APP_PASSWORD"]:
+            st.session_state["password_correct"] = True
+            del st.session_state["password"]  # Don't store password
+        else:
+            st.session_state["password_correct"] = False
+
+    if "password_correct" not in st.session_state:
+        # First run, show input
+        st.text_input(
+            "🔒 Enter Access Code to enter Vakalat AI:", 
+            type="password", 
+            on_change=password_entered, 
+            key="password"
+        )
+        return False
+    elif not st.session_state["password_correct"]:
+        # Password incorrect, show input again
+        st.text_input(
+            "🔒 Enter Access Code to enter Vakalat AI:", 
+            type="password", 
+            on_change=password_entered, 
+            key="password"
+        )
+        st.error("❌ Access Denied")
+        return False
+    else:
+        # Password correct
+        return True
+
+# STOP EVERYTHING if password is wrong
+if not check_password():
+    st.stop()
+
+# --- END OF BOUNCER ---
+# (The rest of your code: Database setup, Sidebar, Chat... follows here)
 # 3. ENGINE SETUP
 # REPLACE THIS FUNCTION IN main.py
 
@@ -260,6 +305,7 @@ if user_input := st.chat_input("Ex: 'Can police arrest for 3-year punishment?'")
 
 
     st.session_state.messages.append({"role": "assistant", "content": response})
+
 
 
 
