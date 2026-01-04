@@ -49,7 +49,7 @@ def get_vector_db():
         all_docs = []
         
         # A. INGEST STATUTES (The PDFs you just uploaded)
-        pdf_files = ["bns.pdf", "bnss.pdf", "bsa.pdf"]
+        pdf_files = ["bns.pdf", "bnss.pdf", "bsa.pdf", "it_act.pdf"]
         for pdf in pdf_files:
             if os.path.exists(pdf):
                 st.info(f"📖 Reading {pdf}...")
@@ -260,5 +260,6 @@ if user_input := st.chat_input("Ex: 'Can police arrest for 3-year punishment?'")
 
 
     st.session_state.messages.append({"role": "assistant", "content": response})
+
 
 
