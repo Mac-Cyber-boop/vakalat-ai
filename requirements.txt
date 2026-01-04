@@ -6,7 +6,7 @@ langchain-openai
 langchain-chroma
 chromadb
 openai
-pypdf
 pymupdf
+pypdf
 python-dotenv
 tiktoken
