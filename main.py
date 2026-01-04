@@ -33,34 +33,78 @@ st.markdown("""
 # 3. ENGINE SETUP
 # REPLACE THIS FUNCTION IN main.py
 
+# REPLACE THE ENTIRE 'get_vector_db' FUNCTION IN main.py WITH THIS:
+
 @st.cache_resource
 def get_vector_db():
+    from langchain_community.document_loaders import PyMuPDFLoader
+    from langchain_text_splitters import RecursiveCharacterTextSplitter
+    
     embedding_function = OpenAIEmbeddings()
     
-    # CLOUD FIX: If DB is missing, rebuild it on the fly
+    # CHECK: Does the database exist?
     if not os.path.exists("./chroma_db"):
-        st.warning("⚠️ Database not found. Rebuilding Brain... (This takes 1 min)")
+        st.warning("⚠️ Cloud Database missing. Building Brain from PDFs... (This takes ~2 mins)")
         
-        # 1. Re-inject Supreme Court Rules (Hardcoded)
-        from langchain_core.documents import Document
-        judgments = [
-            {"case_name": "Arnesh Kumar vs State of Bihar", "text": "SUPREME COURT GUIDELINES ON ARREST... [Insert full text from inject_precedents.py here]"},
-            {"case_name": "D.K. Basu vs State of West Bengal", "text": "SUPREME COURT GUIDELINES ON CUSTODY... [Insert full text here]"}
+        all_docs = []
+        
+        # A. INGEST STATUTES (The PDFs you just uploaded)
+        pdf_files = ["bns.pdf", "bnss.pdf", "bsa.pdf"]
+        for pdf in pdf_files:
+            if os.path.exists(pdf):
+                st.info(f"📖 Reading {pdf}...")
+                loader = PyMuPDFLoader(pdf)
+                docs = loader.load()
+                for doc in docs:
+                    doc.metadata["source_book"] = pdf
+                all_docs.extend(docs)
+        
+        # Split the PDFs
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        chunks = text_splitter.split_documents(all_docs)
+        
+        # B. INJECT SUPREME COURT PRECEDENTS (Hardcoded)
+        # (We hardcode this so we don't need the 'judgments' folder on Cloud)
+        sc_texts = [
+            {
+                "case": "Arnesh Kumar vs State of Bihar",
+                "text": """SUPREME COURT GUIDELINES ON ARREST (Section 41A CrPC / Section 35 BNSS):
+                1. No automatic arrest for offenses punishable with imprisonment less than 7 years.
+                2. Police must issue a Notice of Appearance (Section 41A) first.
+                3. Arrest is only allowed if the accused fails to comply or if there is a specific risk.
+                4. Magistrate must not authorize detention mechanically."""
+            },
+            {
+                "case": "D.K. Basu vs State of West Bengal",
+                "text": """SUPREME COURT GUIDELINES ON CUSTODY & TORTURE:
+                1. Police personnel must bear accurate name tags.
+                2. Memo of arrest must be prepared and attested by a witness.
+                3. Arrestee has right to inform a relative immediately.
+                4. Medical examination every 48 hours."""
+            }
         ]
-        docs = [Document(page_content=j["text"], metadata={"source_type": "case_law", "case_name": j["case_name"]}) for j in judgments]
         
-        # 2. Re-inject Patch
-        patch = Document(page_content="BNS Section 103(2)... [Mob Lynching text]", metadata={"source_book": "manual_patch_v1"})
-        docs.append(patch)
-        
-        # 3. Build DB
-        db = Chroma.from_documents(docs, embedding_function, persist_directory="./chroma_db")
-        st.success("✅ Brain Rebuilt!")
+        for sc in sc_texts:
+            chunks.append(Document(
+                page_content=sc["text"],
+                metadata={"source_type": "case_law", "case_name": sc["case"]}
+            ))
+
+        # C. INJECT PATCH (Mob Lynching)
+        chunks.append(Document(
+            page_content="BNS Section 103(2) (Mob Lynching): When a group of five or more persons acting in concert commits murder on the ground of race, caste or community, sex, place of birth, language, personal belief or any other like ground, each member of such group shall be punished with death or with imprisonment for life, and shall also be liable to fine.",
+            metadata={"source_book": "bns.pdf"} # Tagged as BNS so it shows up in search
+        ))
+
+        # D. BUILD & SAVE
+        st.info("🧠 Indexing data... Please wait.")
+        db = Chroma.from_documents(chunks, embedding_function, persist_directory="./chroma_db")
+        st.success("✅ System Ready!")
         return db
         
+    # Normal Load (if DB exists)
     db = Chroma(persist_directory="./chroma_db", embedding_function=embedding_function)
     return db
-
 try:
     vector_db = get_vector_db()
 except Exception as e:
@@ -204,5 +248,6 @@ if user_input := st.chat_input("Ex: 'Can police arrest for 3-year punishment?'")
                     st.caption(f"**{i+1}. {source}**")
                     st.text(doc.page_content[:200] + "...")
                     st.divider()
+
 
     st.session_state.messages.append({"role": "assistant", "content": response})
