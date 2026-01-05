@@ -282,7 +282,9 @@ with st.sidebar:
         st.success(f"✅ File Attached: {uploaded_file.name}")
     
     st.markdown("---")
-    
+    st.subheader("🗣️ Language & Audio")
+    enable_hindi = st.toggle("🇮🇳 Reply in Hindi")
+    enable_audio = st.toggle("🔊 Audio Briefing")
     # ADMIN TOOLS
     st.subheader("⚙️ System Admin")
     st.info(f"Database Status: Online")
@@ -457,5 +459,6 @@ if user_input := st.chat_input("Ex: 'Punishment for Section 302' or 'Who are you
                         st.divider()
 
     st.session_state.messages.append({"role": "assistant", "content": response})
+
 
 
