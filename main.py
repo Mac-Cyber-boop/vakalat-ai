@@ -92,12 +92,22 @@ def get_vector_db():
                 all_docs.extend(docs)
             else:
                 st.error(f"❌ Missing File: {pdf} (Please upload to GitHub root)")
-        
+                
         # C. INGEST CASE LAW (Judgments Folder)
         judgment_folder = "./judgments"
         if os.path.exists(judgment_folder):
-            judgments = [f for f in os.listdir(judgment_folder) if f.endswith(".pdf")]
-            st.write(f"📂 Debug: Found {len(judgments)} judgments in folder.")
+            # 1. LIST EVERYTHING (Debug Step)
+            all_files = os.listdir(judgment_folder)
+            st.write(f"📂 Debug: Raw content of 'judgments': {all_files}")
+            
+            # 2. FILTER (Case-Insensitive)
+            # This fixes the .PDF vs .pdf issue
+            judgments = [f for f in all_files if f.lower().endswith(".pdf")]
+            
+            if not judgments:
+                st.error(f"❌ Folder exists but contains no PDFs. valid files must end in .pdf")
+            else:
+                st.success(f"✅ Found {len(judgments)} PDF judgments.")
             
             for filename in judgments:
                 filepath = os.path.join(judgment_folder, filename)
@@ -107,12 +117,18 @@ def get_vector_db():
                     docs = loader.load()
                     for doc in docs:
                         doc.metadata["source_type"] = "case_law"
-                        doc.metadata["case_name"] = filename.replace(".pdf", "").replace("_", " ").title()
+                        doc.metadata["case_name"] = filename
                     all_docs.extend(docs)
                 except Exception as e:
                     st.error(f"Failed to read {filename}: {e}")
         else:
-            st.warning(f"⚠️ 'judgments' folder not found at {os.path.abspath(judgment_folder)}")
+            # SEARCH FOR IT (Maybe it's in a subfolder?)
+            st.warning(f"⚠️ 'judgments' folder missing at {os.path.abspath(judgment_folder)}")
+            st.write("🔍 Walking directory tree to find where you put it...")
+            for root, dirs, files in os.walk("."):
+                if "judgments" in dirs:
+                    st.success(f"✅ FOUND IT! It is located at: {os.path.join(root, 'judgments')}")
+                    st.error("Please move it to the root folder.")
         
         # D. SPLIT TEXT
         if not all_docs:
@@ -320,3 +336,4 @@ if user_input := st.chat_input("Ex: 'Punishment for Section 302' or 'Who are you
                         st.divider()
 
     st.session_state.messages.append({"role": "assistant", "content": response})
+
