@@ -29,10 +29,79 @@ if not os.environ.get("OPENAI_API_KEY"):
     st.stop()
 
 st.set_page_config(
+    # --- UI STYLING (The Facelift) ---
+st.markdown("""
+<style>
+    /* 1. MAIN BACKGROUND */
+    .stApp {
+        background-color: #0E1117;
+        color: #FAFAFA;
+    }
+
+    /* 2. SIDEBAR STYLING */
+    section[data-testid="stSidebar"] {
+        background-color: #161B22;
+        border-right: 1px solid #30363D;
+    }
+    
+    /* 3. CHAT BUBBLES */
+    /* User Message (Blue/Grey) */
+    .stChatMessage[data-testid="stChatMessage"]:nth-child(odd) {
+        background-color: #1F242D;
+        border: 1px solid #30363D;
+        border-radius: 10px;
+    }
+    
+    /* AI Message (Deep Blue/Gold Accent) */
+    .stChatMessage[data-testid="stChatMessage"]:nth-child(even) {
+        background-color: #131720;
+        border-left: 4px solid #D4AF37; /* Gold Border for AI */
+        border-radius: 5px;
+    }
+
+    /* 4. HEADERS (Gold/Serif) */
+    h1, h2, h3 {
+        font-family: 'Merriweather', serif;
+        color: #E6EDF3;
+    }
+    h1 {
+        color: #D4AF37; /* Gold Title */
+        font-weight: 700;
+    }
+
+    /* 5. BUTTONS (Gold Gradient) */
+    div.stButton > button {
+        background: linear-gradient(to right, #D4AF37, #C5A028);
+        color: #0E1117;
+        font-weight: bold;
+        border: none;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+    }
+    div.stButton > button:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+        color: #000;
+    }
+
+    /* 6. INPUT FIELD */
+    .stChatInput {
+        border-radius: 20px;
+        border: 1px solid #30363D;
+    }
+
+    /* 7. HIDE STREAMLIT BRANDING */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    
+</style>
+""", unsafe_allow_html=True)
     page_title="Vakalat AI | Legal Intelligence",
     page_icon="⚖️",
     layout="wide"
 )
+
 
 # PASSWORD BOUNCER
 def check_password():
@@ -381,3 +450,4 @@ if user_input := st.chat_input("Ex: 'Punishment for Section 302' or 'Who are you
                         st.divider()
 
     st.session_state.messages.append({"role": "assistant", "content": response})
+
