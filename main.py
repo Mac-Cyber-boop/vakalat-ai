@@ -89,67 +89,56 @@ def get_vector_db():
     
     # CHECK: Does the database exist?
     if not os.path.exists("./chroma_db"):
-        st.warning("⚠️ Cloud Database missing. Building Brain from PDFs... (This takes ~2 mins)")
+        st.warning("⚠️ Building Brain... This involves heavy reading. Please wait.")
         
         all_docs = []
         
-        # A. INGEST STATUTES (The PDFs you just uploaded)
-        pdf_files = ["bns.pdf", "bnss.pdf", "bsa.pdf", "it_act.pdf"]
-        for pdf in pdf_files:
+        # 1. INGEST STATUTES (Root Folder)
+        statutes = ["bns.pdf", "bnss.pdf", "bsa.pdf"]
+        for pdf in statutes:
             if os.path.exists(pdf):
-                st.info(f"📖 Reading {pdf}...")
+                st.info(f"📖 Reading Statute: {pdf}...")
                 loader = PyMuPDFLoader(pdf)
                 docs = loader.load()
                 for doc in docs:
                     doc.metadata["source_book"] = pdf
+                    doc.metadata["source_type"] = "statute"
                 all_docs.extend(docs)
         
-        # Split the PDFs
+        # 2. INGEST CASE LAW (Judgments Folder) - NEW!
+        judgment_folder = "./judgments"
+        if os.path.exists(judgment_folder):
+            for filename in os.listdir(judgment_folder):
+                if filename.endswith(".pdf"):
+                    filepath = os.path.join(judgment_folder, filename)
+                    st.info(f"⚖️ Reading Judgment: {filename}...")
+                    loader = PyMuPDFLoader(filepath)
+                    docs = loader.load()
+                    for doc in docs:
+                        doc.metadata["source_type"] = "case_law"
+                        doc.metadata["case_name"] = filename.replace(".pdf", "").replace("_", " ").title()
+                    all_docs.extend(docs)
+        
+        # 3. SPLIT TEXT (Chunking)
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
         chunks = text_splitter.split_documents(all_docs)
         
-        # B. INJECT SUPREME COURT PRECEDENTS (Hardcoded)
-        # (We hardcode this so we don't need the 'judgments' folder on Cloud)
-        sc_texts = [
-            {
-                "case": "Arnesh Kumar vs State of Bihar",
-                "text": """SUPREME COURT GUIDELINES ON ARREST (Section 41A CrPC / Section 35 BNSS):
-                1. No automatic arrest for offenses punishable with imprisonment less than 7 years.
-                2. Police must issue a Notice of Appearance (Section 41A) first.
-                3. Arrest is only allowed if the accused fails to comply or if there is a specific risk.
-                4. Magistrate must not authorize detention mechanically."""
-            },
-            {
-                "case": "D.K. Basu vs State of West Bengal",
-                "text": """SUPREME COURT GUIDELINES ON CUSTODY & TORTURE:
-                1. Police personnel must bear accurate name tags.
-                2. Memo of arrest must be prepared and attested by a witness.
-                3. Arrestee has right to inform a relative immediately.
-                4. Medical examination every 48 hours."""
-            }
-        ]
-        
-        for sc in sc_texts:
-            chunks.append(Document(
-                page_content=sc["text"],
-                metadata={"source_type": "case_law", "case_name": sc["case"]}
-            ))
-
-        # C. INJECT PATCH (Mob Lynching)
+        # 4. INJECT PATCH (Mob Lynching Fix)
         chunks.append(Document(
             page_content="BNS Section 103(2) (Mob Lynching): When a group of five or more persons acting in concert commits murder on the ground of race, caste or community, sex, place of birth, language, personal belief or any other like ground, each member of such group shall be punished with death or with imprisonment for life, and shall also be liable to fine.",
-            metadata={"source_book": "bns.pdf"} # Tagged as BNS so it shows up in search
+            metadata={"source_book": "bns.pdf", "source_type": "statute"} 
         ))
 
-        # D. BUILD & SAVE
-        st.info("🧠 Indexing data... Please wait.")
+        # 5. BUILD & SAVE
+        st.info("🧠 Indexing Neural Connections... (This may take 2-3 mins)")
         db = Chroma.from_documents(chunks, embedding_function, persist_directory="./chroma_db")
-        st.success("✅ System Ready!")
+        st.success("✅ Brain Rebuilt! System Online.")
         return db
         
-    # Normal Load (if DB exists)
+    # Normal Load
     db = Chroma(persist_directory="./chroma_db", embedding_function=embedding_function)
     return db
+
 try:
     vector_db = get_vector_db()
 except Exception as e:
@@ -335,6 +324,7 @@ if user_input := st.chat_input("Ex: 'Punishment for Section 302' or 'Who are you
                         st.divider()
 
     st.session_state.messages.append({"role": "assistant", "content": response})
+
 
 
 
