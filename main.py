@@ -12,6 +12,15 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.documents import Document
 
+import shutil # Add this to imports
+
+def reset_brain():
+    """Forcibly deletes the database to trigger a rebuild."""
+    if os.path.exists("./chroma_db"):
+        shutil.rmtree("./chroma_db")
+    st.session_state.clear()
+    st.rerun()
+
 # 1. LOAD SECRETS
 load_dotenv()
 
@@ -324,6 +333,14 @@ if user_input := st.chat_input("Ex: 'Punishment for Section 302' or 'Who are you
                         st.divider()
 
     st.session_state.messages.append({"role": "assistant", "content": response})
+
+# ... existing sidebar code ...
+    
+    st.markdown("---")
+    st.subheader("⚙️ System Admin")
+    if st.button("🔄 Force Rebuild Brain"):
+        st.warning("Deleting old index and rebuilding... (Takes ~2 mins)")
+        reset_brain()
 
 
 
