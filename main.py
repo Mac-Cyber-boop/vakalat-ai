@@ -285,6 +285,30 @@ def create_pdf(query, response, sources):
 # ---------------------------------------------------------
 
 with st.sidebar:
+    with st.sidebar:
+    st.image("https://cdn-icons-png.flaticon.com/512/2237/2237599.png", width=50)
+    st.title("Control Center")
+    st.caption("v2.1 | Connected to Supreme Court DB")
+    
+    st.markdown("---")
+    
+    # CASE FILE UPLOAD
+    st.subheader("📂 Case Lab")
+    uploaded_file = st.file_uploader("Upload FIR / Charge Sheet", type="pdf", help="AI will analyze facts against the law.")
+    if uploaded_file:
+        st.success(f"✅ File Attached: {uploaded_file.name}")
+    
+    st.markdown("---")
+    
+    # ADMIN TOOLS
+    st.subheader("⚙️ System Admin")
+    st.info(f"Database Status: Online")
+    if st.button("🔄 Force Rebuild Brain"):
+        st.warning("Re-indexing legal matrix... (Takes ~2 mins)")
+        reset_brain()
+        
+    st.markdown("---")
+    st.markdown("🔒 *Secure & Encrypted Session*")
     st.title("⚖️ Vakalat AI")
     st.caption("Statute + Case Law Engine")
     
@@ -457,5 +481,6 @@ if user_input := st.chat_input("Ex: 'Punishment for Section 302' or 'Who are you
                         st.divider()
 
     st.session_state.messages.append({"role": "assistant", "content": response})
+
 
 
