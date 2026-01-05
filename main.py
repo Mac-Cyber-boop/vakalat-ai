@@ -373,8 +373,15 @@ ANALYSIS:
 # 6. MAIN CHAT INTERFACE
 # ---------------------------------------------------------
 
-st.subheader("Your Legal Assistant")
+# --- HEADER SECTION ---
+col1, col2 = st.columns([1, 8])
+with col1:
+    st.image("https://cdn-icons-png.flaticon.com/512/924/924915.png", width=60) # Law Icon
+with col2:
+    st.title("Vakalat AI")
+    st.markdown("*Advanced Criminal Law Intelligence System (BNS/BNSS/BSA 2024)*")
 
+st.divider() # Gold separator
 if "messages" not in st.session_state:
     st.session_state.messages = [{"role": "assistant", "content": "I am online. Ready for legal research or case analysis."}]
 
@@ -450,4 +457,5 @@ if user_input := st.chat_input("Ex: 'Punishment for Section 302' or 'Who are you
                         st.divider()
 
     st.session_state.messages.append({"role": "assistant", "content": response})
+
 
