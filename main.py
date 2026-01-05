@@ -1,6 +1,3 @@
-# main.py
-# VAKALAT AI: ULTIMATE EDITION (Diagnostic + Auto-Healing + PDF Report)
-
 import streamlit as st
 import os
 import shutil
@@ -28,8 +25,14 @@ if not os.environ.get("OPENAI_API_KEY"):
     st.error("❌ Critical Error: OpenAI API Key is missing. Check .env or Streamlit Secrets.")
     st.stop()
 
+# PAGE CONFIG (Must be the first Streamlit command)
 st.set_page_config(
-    # --- UI STYLING (The Facelift) ---
+    page_title="Vakalat AI | Legal Intelligence",
+    page_icon="⚖️",
+    layout="wide"
+)
+
+# --- UI STYLING (The Facelift) ---
 st.markdown("""
 <style>
     /* 1. MAIN BACKGROUND */
@@ -97,11 +100,11 @@ st.markdown("""
     
 </style>
 """, unsafe_allow_html=True)
-    page_title="Vakalat AI | Legal Intelligence",
-    page_icon="⚖️",
-    layout="wide"
-)
 
+# PASSWORD BOUNCER
+def check_password():
+    """Returns `True` if the user had the correct password."""
+    # ... (rest of your code continues from here)
 
 # PASSWORD BOUNCER
 def check_password():
@@ -481,6 +484,7 @@ if user_input := st.chat_input("Ex: 'Punishment for Section 302' or 'Who are you
                         st.divider()
 
     st.session_state.messages.append({"role": "assistant", "content": response})
+
 
 
 
