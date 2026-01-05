@@ -426,16 +426,44 @@ if user_input := st.chat_input("Ex: 'Punishment for Section 302' or 'Who are you
                 docs = get_legal_context(full_query, k=4)
                 context_text = "\n\n".join(f"[Source: {d.metadata.get('source_book', d.metadata.get('case_name', 'Unknown'))}]\n{d.page_content}" for d in docs)
                 
-                # Generate
+# ... (Retrieve docs code remains same) ...
+                
+                # --- GENERATION ---
                 if uploaded_file:
                     chain = analysis_prompt | llm | StrOutputParser()
-                    response = chain.invoke({"case_file": case_text, "context": context_text, "question": user_input})
+                    raw_response = chain.invoke({"case_file": case_text, "context": context_text, "question": user_input})
                 else:
                     chain = research_prompt | llm | StrOutputParser()
-                    response = chain.invoke({"context": context_text, "question": user_input})
+                    raw_response = chain.invoke({"context": context_text, "question": user_input})
+                
+                # --- HINDI TRANSLATION LAYER ---
+                if enable_hindi:
+                    with st.spinner("Translating to Legal Hindi..."):
+                        trans_prompt = ChatPromptTemplate.from_template(
+                            "Translate this legal opinion into formal Hindi (Devenagari). Keep English legal terms (like 'Section 498A', 'Quashing') in brackets for clarity.\n\nText: {text}"
+                        )
+                        trans_chain = trans_prompt | llm | StrOutputParser()
+                        response = trans_chain.invoke({"text": raw_response})
+                else:
+                    response = raw_response
                 
                 message_placeholder.markdown(response)
                 
+                # --- AUDIO GENERATION ---
+                if enable_audio:
+                    from gtts import gTTS
+                    from io import BytesIO
+                    
+                    try:
+                        tts_lang = 'hi' if enable_hindi else 'en'
+                        tts = gTTS(text=response, lang=tts_lang, slow=False)
+                        audio_bytes = BytesIO()
+                        tts.write_to_fp(audio_bytes)
+                        st.audio(audio_bytes, format='audio/mp3')
+                    except Exception as e:
+                        st.error(f"Audio Error: {e}")
+
+
                 # --- PDF REPORT ---
                 try:
                     pdf_bytes = create_pdf(user_input, response, docs)
@@ -459,6 +487,7 @@ if user_input := st.chat_input("Ex: 'Punishment for Section 302' or 'Who are you
                         st.divider()
 
     st.session_state.messages.append({"role": "assistant", "content": response})
+
 
 
 
