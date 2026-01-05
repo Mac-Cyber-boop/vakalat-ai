@@ -287,8 +287,12 @@ def create_pdf(query, response, sources):
 # 4. SIDEBAR & ADMIN
 # ---------------------------------------------------------
 
+# ---------------------------------------------------------
+# 4. SIDEBAR & ADMIN
+# ---------------------------------------------------------
+
 with st.sidebar:
-    with st.sidebar:
+    # Everything below this line MUST be indented by 4 spaces
     st.image("https://cdn-icons-png.flaticon.com/512/2237/2237599.png", width=50)
     st.title("Control Center")
     st.caption("v2.1 | Connected to Supreme Court DB")
@@ -302,6 +306,16 @@ with st.sidebar:
         st.success(f"✅ File Attached: {uploaded_file.name}")
     
     st.markdown("---")
+    
+    # ADMIN TOOLS
+    st.subheader("⚙️ System Admin")
+    st.info(f"Database Status: Online")
+    if st.button("🔄 Force Rebuild Brain"):
+        st.warning("Re-indexing legal matrix... (Takes ~2 mins)")
+        reset_brain()
+        
+    st.markdown("---")
+    st.markdown("🔒 *Secure & Encrypted Session*")
     
     # ADMIN TOOLS
     st.subheader("⚙️ System Admin")
@@ -484,6 +498,7 @@ if user_input := st.chat_input("Ex: 'Punishment for Section 302' or 'Who are you
                         st.divider()
 
     st.session_state.messages.append({"role": "assistant", "content": response})
+
 
 
 
