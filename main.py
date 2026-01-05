@@ -143,7 +143,7 @@ def get_vector_db():
         files_in_root = os.listdir(".")
         
         # B. INGEST STATUTES
-        statutes = ["bns.pdf", "bnss.pdf", "bsa.pdf"]
+        statutes = ["bns.pdf", "bnss.pdf", "bsa.pdf", "gst.pdf"]
         for pdf in statutes:
             found_file = next((f for f in files_in_root if f.lower() == pdf), None)
             if found_file:
@@ -303,13 +303,16 @@ with st.sidebar:
 llm = ChatOpenAI(model="gpt-4o", temperature=0)
 
 # A. RETRIEVER
+# A. RETRIEVER
 def get_legal_context(query, k=4):
     docs = []
-    # 1. Broad Statute Search
+    # 1. Broad Statute Search (Now includes GST)
     docs.extend(vector_db.similarity_search(query, k=k, filter={"source_type": "statute"}))
     
     # 2. Smart Case Law Search
-    trigger_words = ["arrest", "police", "custody", "bail", "detention", "torture", "handcuff", "remand", "investigation", "fir", "complaint", "quash"]
+    # Added "tax", "gst", "fraud", "evasion" to the trigger list
+    trigger_words = ["arrest", "police", "custody", "bail", "detention", "torture", "handcuff", "remand", "investigation", "fir", "complaint", "quash", "tax", "gst", "evasion", "fraud", "input tax credit"]
+    
     if any(word in query.lower() for word in trigger_words):
         docs.extend(vector_db.similarity_search(query, k=3, filter={"source_type": "case_law"}))
     
@@ -318,7 +321,7 @@ def get_legal_context(query, k=4):
 # B. ROUTER
 router_prompt = ChatPromptTemplate.from_template("""
 Classify the user's query into one of two categories. Return ONLY the category name.
-1. LEGAL_RESEARCH: Questions about laws, crimes, punishments, police, FIRs, courts, bail, or specific sections.
+1. LEGAL_RESEARCH: Questions about laws, crimes, punishments, tax, GST, police, FIRs, courts, bail, or specific sections.
 2. GENERAL_CHAT: Greetings, asking "who are you", "what can you do", "help", or general conversation.
 Query: {question}
 Category:
@@ -334,17 +337,13 @@ Answer:
 """)
 
 research_prompt = ChatPromptTemplate.from_template("""
-You are Vakalat AI, a Senior Defense Counsel specializing in the 2024 Criminal Laws (BNS/BNSS/BSA).
+You are Vakalat AI, a Senior Legal Consultant specializing in Indian Laws (Criminal & Civil/Tax).
 
 MANDATORY RULES:
-1. **Statutory Translation:** If the user mentions an old IPC/CrPC/Evidence Act section, YOU MUST explicitly map it to the new BNS/BNSS/BSA section.
-   - Example: "Section 498A IPC (Now Section 85 BNS)..."
-   - Example: "Section 41A CrPC (Now Section 35 BNSS)..."
-2. **Procedural Violations:** Check if Police followed the mandatory procedure in Section 35 BNSS (Notice of Appearance).
-3. **Remedies:** explicitly mentions:
-   - **Quashing:** (Section 528 BNSS / 482 CrPC).
-   - **Compensation:** (Cite D.K. Basu / Nilabati Behera).
-   - **Contempt:** (Cite Arnesh Kumar guidelines).
+1. **Statutory Translation:** If the user mentions an old IPC/CrPC section, map it to BNS/BNSS. (Ignore this for GST queries).
+2. **Identify the Law:** Explicitly state if the answer comes from BNS, BNSS, or the **GST Act**.
+3. **Remedies:** - For Criminal: Quashing, Bail, Compensation.
+   - For Tax/GST: Appeal Tribunals, Writ Jurisdiction, Compounding of Offences.
 
 Context:
 {context}
@@ -487,6 +486,7 @@ if user_input := st.chat_input("Ex: 'Punishment for Section 302' or 'Who are you
                         st.divider()
 
     st.session_state.messages.append({"role": "assistant", "content": response})
+
 
 
 
