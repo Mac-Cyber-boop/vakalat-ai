@@ -330,6 +330,7 @@ if user_input := st.chat_input("Ex: 'Punishment for Section 302' or 'Who are you
     with st.chat_message("user"):
         st.markdown(user_input)
 
+    # ... (Inside the loop where user_input is handled)
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
         
@@ -367,24 +368,21 @@ if user_input := st.chat_input("Ex: 'Punishment for Section 302' or 'Who are you
                     response = chain.invoke({"context": context_text, "question": user_input})
                 
                 message_placeholder.markdown(response)
-
                 
-                # --- NEW: PDF BUTTON ---
-                # We generate the PDF in memory
-                pdf_bytes = create_pdf(user_input, response, docs)
+                # --- PDF BUTTON (Corrected Indentation) ---
+                try:
+                    pdf_bytes = create_pdf(user_input, response, docs)
+                    col1, col2 = st.columns([1, 4])
+                    with col1:
+                        st.download_button(
+                            label="📄 Download Report",
+                            data=pdf_bytes,
+                            file_name="Vakalat_Legal_Opinion.pdf",
+                            mime="application/pdf"
+                        )
+                except Exception as e:
+                    st.error(f"PDF Error: {e}")
                 
-                col1, col2 = st.columns([1, 4])
-                with col1:
-                    st.download_button(
-                        label="📄 Download Official Report",
-                        data=pdf_bytes,
-                        file_name="Vakalat_Legal_Opinion.pdf",
-                        mime="application/pdf"
-                    )
-                
-                # Evidence Inspector (Existing code)
-                with st.expander("🔍 Inspect Legal Sources"):
-                    # ...
                 # Evidence Inspector
                 with st.expander("🔍 Inspect Legal Sources"):
                     for i, doc in enumerate(docs):
