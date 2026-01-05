@@ -186,44 +186,61 @@ with st.sidebar:
         st.session_state.messages = []
         st.rerun()
 
+
 # 6. CORE LOGIC (THE BRAIN)
 llm = ChatOpenAI(model="gpt-4o", temperature=0)
 
-# REPLACE THE 'get_legal_context' FUNCTION IN main.py WITH THIS:
+# --- A. THE CORTEX (Intent Classifier) ---
+# This uses the AI to decide if we need the database, instead of hardcoded rules.
+router_prompt = ChatPromptTemplate.from_template("""
+Classify the user's query into one of two categories. Return ONLY the category name.
 
+Categories:
+1. LEGAL_RESEARCH: Questions about laws, crimes, punishments, police, FIRs, courts, bail, or specific sections.
+2. GENERAL_CHAT: Greetings, asking "who are you", "what can you do", "help", or general conversation.
+
+Query: {question}
+Category:
+""")
+router_chain = router_prompt | llm | StrOutputParser()
+
+# --- B. THE RETRIEVER (Search Engine) ---
 def get_legal_context(query, k=4):
     docs = []
-    
-    # 1. ALWAYS SEARCH STATUTES (BNS/BNSS/BSA)
-    # We broaden the search slightly to ensure we catch definitions
+    # 1. Broad Statute Search
     docs.extend(vector_db.similarity_search(query, k=k, filter={"source_book": "bns.pdf"}))
     docs.extend(vector_db.similarity_search(query, k=k, filter={"source_book": "bnss.pdf"}))
     docs.extend(vector_db.similarity_search(query, k=k, filter={"source_book": "bsa.pdf"}))
     
-    # 2. CONDITIONAL SEARCH: CASE LAW (The Fix)
-    # Only fetch Supreme Court rulings if the query touches on Police Powers.
-    # This prevents "Arnesh Kumar" from appearing in queries about "Cheating" or "Contracts".
+    # 2. Smart Case Law Search
     trigger_words = ["arrest", "police", "custody", "bail", "detention", "torture", "handcuff", "remand", "investigation"]
-    
     if any(word in query.lower() for word in trigger_words):
-        # The user is asking about Police Powers -> Fetch the Guidelines
         docs.extend(vector_db.similarity_search(query, k=2, filter={"source_type": "case_law"}))
     
-    # 3. ALWAYS CHECK PATCHES (For Mob Lynching etc)
+    # 3. Patch Search
     docs.extend(vector_db.similarity_search(query, k=2, filter={"source_book": "manual_patch_v1"}))
-    
     return docs
 
-# PROMPTS
+# --- C. PROMPTS ---
+# Prompt 1: For General Chat (No Database)
+general_prompt = ChatPromptTemplate.from_template("""
+You are Vakalat AI, a specialized legal research assistant for Indian Criminal Law (BNS, BNSS, BSA).
+The user is asking a general question. Answer professionally and concisely.
+Explain your capabilities (Case Analysis, Statute Search, Case Law Checks) only if asked.
+
+User Query: {question}
+Answer:
+""")
+
+# Prompt 2: For Legal Research (With Database)
 research_prompt = ChatPromptTemplate.from_template("""
 You are Vakalat AI, a senior legal consultant.
 Use the Context (Statutes + Case Law) to answer.
 
 CRITICAL RULES:
 1. First, state the STATUTE (BNS/BNSS).
-2. Second, check if any SUPREME COURT JUDGMENT (Case Law) overrides or clarifies it.
-IF relevant to Arrest or Custody, mention Supreme Court guidelines (e.g., Arnesh Kumar). Otherwise, focus on the Statute.
-3. If there is a conflict, Case Law prevails.
+2. Second, check if any SUPREME COURT JUDGMENT (Case Law) overrides it.
+3. If no relevant law is found in the context, admit it.
 
 Context:
 {context}
@@ -232,16 +249,14 @@ Question: {question}
 Answer:
 """)
 
+# Prompt 3: For Case Analysis (With File)
 analysis_prompt = ChatPromptTemplate.from_template("""
 You are a Defense Lawyer analyzing a case file.
 
 TASK:
 1. Analyze the CLIENT CASE FILE facts.
-2. Cross-reference with RETRIEVED LAWS (Statutes + Precedents).
-3. Find Loopholes:
-   - Does the FIR violate 'Arnesh Kumar' guidelines (Automatic arrest <7 years)?
-   - Does the FIR violate 'D.K. Basu' (No arrest memo)?
-   - Do the facts match the BNS Section ingredients?
+2. Cross-reference with RETRIEVED LAWS.
+3. Find Loopholes (Arrest rules, Section ingredients).
 
 CLIENT CASE FILE:
 {case_file}
@@ -258,13 +273,13 @@ ANALYSIS:
 st.subheader("Your Legal Assistant")
 
 if "messages" not in st.session_state:
-    st.session_state.messages = [{"role": "assistant", "content": "I am ready. I know BNS, BNSS, BSA, and Supreme Court Guidelines (Arnesh Kumar/D.K. Basu)."}]
+    st.session_state.messages = [{"role": "assistant", "content": "I am online. Ready for legal research or case analysis."}]
 
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
-if user_input := st.chat_input("Ex: 'Can police arrest for 3-year punishment?'"):
+if user_input := st.chat_input("Ex: 'Punishment for Section 302' or 'Who are you?'"):
     st.session_state.messages.append({"role": "user", "content": user_input})
     with st.chat_message("user"):
         st.markdown(user_input)
@@ -272,37 +287,52 @@ if user_input := st.chat_input("Ex: 'Can police arrest for 3-year punishment?'")
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
         
-        with st.spinner("Consulting Statutes & Supreme Court..."):
-            # A. Prepare Data
-            case_text = ""
+        # DECISION TIME: What does the user want?
+        with st.spinner("Thinking..."):
+            # If a file is uploaded, FORCE legal analysis mode
             if uploaded_file:
-                case_text = read_pdf(uploaded_file)
-                full_query = f"{user_input} {case_text[:1500]}"
+                intent = "LEGAL_RESEARCH"
             else:
-                full_query = user_input
-
-            # B. Search
-            docs = get_legal_context(full_query, k=k_val)
-            context_text = "\n\n".join(f"[Source: {d.metadata.get('source_book', d.metadata.get('case_name', 'Unknown'))}]\n{d.page_content}" for d in docs)
-            
-            # C. Generate
-            if uploaded_file:
-                chain = analysis_prompt | llm | StrOutputParser()
-                response = chain.invoke({"case_file": case_text, "context": context_text, "question": user_input})
-            else:
-                chain = research_prompt | llm | StrOutputParser()
-                response = chain.invoke({"context": context_text, "question": user_input})
-            
+                intent = router_chain.invoke({"question": user_input}).strip()
+        
+        # BRANCH 1: GENERAL CHAT (Fast, No DB)
+        if intent == "GENERAL_CHAT":
+            chain = general_prompt | llm | StrOutputParser()
+            response = chain.invoke({"question": user_input})
             message_placeholder.markdown(response)
             
-            # D. Evidence Inspector
-            with st.expander("🔍 Inspect Legal Sources"):
-                for i, doc in enumerate(docs):
-                    source = doc.metadata.get('source_book') or doc.metadata.get('case_name') or "Unknown"
-                    st.caption(f"**{i+1}. {source}**")
-                    st.text(doc.page_content[:200] + "...")
-                    st.divider()
+        # BRANCH 2: LEGAL RESEARCH (Deep, Uses DB)
+        else:
+            with st.spinner("Consulting Legal Database..."):
+                # A. Prepare Data
+                case_text = ""
+                if uploaded_file:
+                    case_text = read_pdf(uploaded_file)
+                    full_query = f"{user_input} {case_text[:1500]}"
+                else:
+                    full_query = user_input
 
+                # B. Retrieve
+                docs = get_legal_context(full_query, k=k_val)
+                context_text = "\n\n".join(f"[Source: {d.metadata.get('source_book', d.metadata.get('case_name', 'Unknown'))}]\n{d.page_content}" for d in docs)
+                
+                # C. Generate
+                if uploaded_file:
+                    chain = analysis_prompt | llm | StrOutputParser()
+                    response = chain.invoke({"case_file": case_text, "context": context_text, "question": user_input})
+                else:
+                    chain = research_prompt | llm | StrOutputParser()
+                    response = chain.invoke({"context": context_text, "question": user_input})
+                
+                message_placeholder.markdown(response)
+                
+                # D. Evidence Inspector
+                with st.expander("🔍 Inspect Legal Sources"):
+                    for i, doc in enumerate(docs):
+                        source = doc.metadata.get('source_book') or doc.metadata.get('case_name') or "Unknown"
+                        st.caption(f"**{i+1}. {source}**")
+                        st.text(doc.page_content[:200] + "...")
+                        st.divider()
 
     st.session_state.messages.append({"role": "assistant", "content": response})
 
