@@ -1,3 +1,6 @@
+# main.py
+# VAKALAT AI: ULTIMATE EDITION (v2.1 - Polished UI)
+
 import streamlit as st
 import os
 import shutil
@@ -25,7 +28,7 @@ if not os.environ.get("OPENAI_API_KEY"):
     st.error("❌ Critical Error: OpenAI API Key is missing. Check .env or Streamlit Secrets.")
     st.stop()
 
-# PAGE CONFIG (Must be the first Streamlit command)
+# PAGE CONFIG (Must be first)
 st.set_page_config(
     page_title="Vakalat AI | Legal Intelligence",
     page_icon="⚖️",
@@ -48,17 +51,14 @@ st.markdown("""
     }
     
     /* 3. CHAT BUBBLES */
-    /* User Message (Blue/Grey) */
     .stChatMessage[data-testid="stChatMessage"]:nth-child(odd) {
         background-color: #1F242D;
         border: 1px solid #30363D;
         border-radius: 10px;
     }
-    
-    /* AI Message (Deep Blue/Gold Accent) */
     .stChatMessage[data-testid="stChatMessage"]:nth-child(even) {
         background-color: #131720;
-        border-left: 4px solid #D4AF37; /* Gold Border for AI */
+        border-left: 4px solid #D4AF37;
         border-radius: 5px;
     }
 
@@ -68,11 +68,11 @@ st.markdown("""
         color: #E6EDF3;
     }
     h1 {
-        color: #D4AF37; /* Gold Title */
+        color: #D4AF37;
         font-weight: 700;
     }
 
-    /* 5. BUTTONS (Gold Gradient) */
+    /* 5. BUTTONS */
     div.stButton > button {
         background: linear-gradient(to right, #D4AF37, #C5A028);
         color: #0E1117;
@@ -97,14 +97,8 @@ st.markdown("""
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
-    
 </style>
 """, unsafe_allow_html=True)
-
-# PASSWORD BOUNCER
-def check_password():
-    """Returns `True` if the user had the correct password."""
-    # ... (rest of your code continues from here)
 
 # PASSWORD BOUNCER
 def check_password():
@@ -146,15 +140,11 @@ def get_vector_db():
         st.warning("⚠️ Building Brain... (This happens once).")
         
         all_docs = []
-        
-        # A. DIAGNOSTIC: What files are actually here?
         files_in_root = os.listdir(".")
-        st.write(f"📂 Debug: Files in Root: {files_in_root}")
         
-        # B. INGEST STATUTES (Root Folder)
+        # B. INGEST STATUTES
         statutes = ["bns.pdf", "bnss.pdf", "bsa.pdf"]
         for pdf in statutes:
-            # Case-insensitive check
             found_file = next((f for f in files_in_root if f.lower() == pdf), None)
             if found_file:
                 st.info(f"📖 Reading Statute: {found_file}...")
@@ -165,15 +155,13 @@ def get_vector_db():
                     doc.metadata["source_type"] = "statute"
                 all_docs.extend(docs)
             else:
-                st.error(f"❌ Missing File: {pdf} (Please upload to GitHub root)")
+                st.error(f"❌ Missing File: {pdf}")
         
-        # C. INGEST CASE LAW (Judgments Folder)
+        # C. INGEST CASE LAW
         judgment_folder = "./judgments"
         if os.path.exists(judgment_folder):
             all_files = os.listdir(judgment_folder)
             judgments = [f for f in all_files if f.lower().endswith(".pdf")]
-            
-            st.write(f"📂 Debug: Found {len(judgments)} judgments in folder.")
             
             for filename in judgments:
                 filepath = os.path.join(judgment_folder, filename)
@@ -187,8 +175,6 @@ def get_vector_db():
                     all_docs.extend(docs)
                 except Exception as e:
                     st.error(f"Failed to read {filename}: {e}")
-        else:
-            st.warning(f"⚠️ 'judgments' folder not found at {os.path.abspath(judgment_folder)}")
         
         # D. SPLIT TEXT
         if not all_docs:
@@ -198,21 +184,19 @@ def get_vector_db():
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
         chunks = text_splitter.split_documents(all_docs)
         
-        # E. INJECT PATCH (Mob Lynching)
+        # E. INJECT PATCH
         chunks.append(Document(
             page_content="BNS Section 103(2) (Mob Lynching): When a group of five or more persons acting in concert commits murder on the ground of race, caste or community, sex, place of birth, language, personal belief or any other like ground, each member of such group shall be punished with death or with imprisonment for life, and shall also be liable to fine.",
             metadata={"source_book": "bns.pdf", "source_type": "statute"} 
         ))
 
         # F. BUILD & SAVE
-        st.info("🧠 Indexing Neural Connections... Please wait.")
+        st.info("🧠 Indexing Neural Connections...")
         db = Chroma.from_documents(chunks, embedding_function, persist_directory=db_path)
         st.success("✅ Brain Rebuilt! System Online.")
         return db
         
-    # Normal Load
-    db = Chroma(persist_directory=db_path, embedding_function=embedding_function)
-    return db
+    return Chroma(persist_directory=db_path, embedding_function=embedding_function)
 
 # FORCE RESET FUNCTION
 def reset_brain():
@@ -229,7 +213,7 @@ except Exception as e:
     st.stop()
 
 # ---------------------------------------------------------
-# 3. HELPER FUNCTIONS (PDF & File Reading)
+# 3. HELPER FUNCTIONS
 # ---------------------------------------------------------
 
 def read_pdf(uploaded_file):
@@ -263,9 +247,8 @@ def create_pdf(query, response, sources):
     pdf.multi_cell(0, 8, f"Query: {query[:200]}...")
     pdf.ln(5)
     
-    # 2. Analysis Body (Sanitize text for basic Latin support)
+    # 2. Analysis Body
     pdf.set_font("Arial", "", 11)
-    # Replace unsupported characters to prevent crash
     safe_response = response.encode('latin-1', 'replace').decode('latin-1')
     pdf.multi_cell(0, 6, safe_response)
     pdf.ln(10)
@@ -275,24 +258,17 @@ def create_pdf(query, response, sources):
     pdf.cell(0, 8, "Legal Sources Referenced:", 0, 1)
     pdf.set_font("Arial", "I", 9)
     for doc in sources:
-        # Sanitize source names too
         raw_source = doc.metadata.get('source_book') or doc.metadata.get('case_name') or "Unknown"
         safe_source = raw_source.encode('latin-1', 'replace').decode('latin-1')
         pdf.cell(0, 6, f"- {safe_source}", 0, 1)
         
-    # RETURN BYTES (Fix: Do not double-encode)
     return bytes(pdf.output(dest='S'))
 
 # ---------------------------------------------------------
 # 4. SIDEBAR & ADMIN
 # ---------------------------------------------------------
 
-# ---------------------------------------------------------
-# 4. SIDEBAR & ADMIN
-# ---------------------------------------------------------
-
 with st.sidebar:
-    # Everything below this line MUST be indented by 4 spaces
     st.image("https://cdn-icons-png.flaticon.com/512/2237/2237599.png", width=50)
     st.title("Control Center")
     st.caption("v2.1 | Connected to Supreme Court DB")
@@ -310,34 +286,13 @@ with st.sidebar:
     # ADMIN TOOLS
     st.subheader("⚙️ System Admin")
     st.info(f"Database Status: Online")
-    if st.button("🔄 Force Rebuild Brain"):
+    # This is the ONLY place this button exists now
+    if st.button("🔄 Force Rebuild Brain", key="rebuild_btn"):
         st.warning("Re-indexing legal matrix... (Takes ~2 mins)")
         reset_brain()
         
     st.markdown("---")
     st.markdown("🔒 *Secure & Encrypted Session*")
-    
-    # ADMIN TOOLS
-    st.subheader("⚙️ System Admin")
-    st.info(f"Database Status: Online")
-    if st.button("🔄 Force Rebuild Brain"):
-        st.warning("Re-indexing legal matrix... (Takes ~2 mins)")
-        reset_brain()
-        
-    st.markdown("---")
-    st.markdown("🔒 *Secure & Encrypted Session*")
-    st.title("⚖️ Vakalat AI")
-    st.caption("Statute + Case Law Engine")
-    
-    st.markdown("---")
-    st.subheader("📂 Analyze Case File")
-    uploaded_file = st.file_uploader("Upload FIR / Charge Sheet (PDF)", type="pdf")
-    
-    st.markdown("---")
-    st.subheader("⚙️ System Admin")
-    if st.button("🔄 Force Rebuild Brain"):
-        st.warning("Deleting old index and rebuilding... (Takes ~2 mins)")
-        reset_brain()
 
 # ---------------------------------------------------------
 # 5. CORE LOGIC (ROUTER + SEARCH)
@@ -414,15 +369,16 @@ ANALYSIS:
 # 6. MAIN CHAT INTERFACE
 # ---------------------------------------------------------
 
-# --- HEADER SECTION ---
+# HEADER SECTION
 col1, col2 = st.columns([1, 8])
 with col1:
-    st.image("https://cdn-icons-png.flaticon.com/512/924/924915.png", width=60) # Law Icon
+    st.image("https://cdn-icons-png.flaticon.com/512/924/924915.png", width=60)
 with col2:
     st.title("Vakalat AI")
     st.markdown("*Advanced Criminal Law Intelligence System (BNS/BNSS/BSA 2024)*")
 
-st.divider() # Gold separator
+st.divider()
+
 if "messages" not in st.session_state:
     st.session_state.messages = [{"role": "assistant", "content": "I am online. Ready for legal research or case analysis."}]
 
@@ -473,11 +429,9 @@ if user_input := st.chat_input("Ex: 'Punishment for Section 302' or 'Who are you
                 
                 message_placeholder.markdown(response)
                 
-                # --- PDF REPORT GENERATION ---
+                # --- PDF REPORT ---
                 try:
                     pdf_bytes = create_pdf(user_input, response, docs)
-                    
-                    # Layout: Button on the left
                     col1, col2 = st.columns([1, 3])
                     with col1:
                         st.download_button(
@@ -498,8 +452,3 @@ if user_input := st.chat_input("Ex: 'Punishment for Section 302' or 'Who are you
                         st.divider()
 
     st.session_state.messages.append({"role": "assistant", "content": response})
-
-
-
-
-
