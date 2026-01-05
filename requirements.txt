@@ -11,3 +11,4 @@ pypdf
 python-dotenv
 tiktoken
 fpdf2
+gTTS
