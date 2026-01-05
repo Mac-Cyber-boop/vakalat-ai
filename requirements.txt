@@ -10,3 +10,4 @@ pymupdf
 pypdf
 python-dotenv
 tiktoken
+fpdf2
