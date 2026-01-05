@@ -1,11 +1,11 @@
 # main.py
-# VAKALAT AI: ULTIMATE EDITION (Diagnostic + Auto-Healing)
-# Features: File Analysis + Supreme Court Engine + Self-Debugging
+# VAKALAT AI: ULTIMATE EDITION (Diagnostic + Auto-Healing + PDF Report)
 
 import streamlit as st
 import os
-import shutil # For deleting the brain
+import shutil
 import fitz  # PyMuPDF
+from fpdf import FPDF
 from langchain_community.vectorstores import Chroma
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
@@ -82,32 +82,26 @@ def get_vector_db():
         # B. INGEST STATUTES (Root Folder)
         statutes = ["bns.pdf", "bnss.pdf", "bsa.pdf"]
         for pdf in statutes:
-            if pdf in files_in_root:
-                st.info(f"📖 Reading Statute: {pdf}...")
-                loader = PyMuPDFLoader(pdf)
+            # Case-insensitive check
+            found_file = next((f for f in files_in_root if f.lower() == pdf), None)
+            if found_file:
+                st.info(f"📖 Reading Statute: {found_file}...")
+                loader = PyMuPDFLoader(found_file)
                 docs = loader.load()
                 for doc in docs:
-                    doc.metadata["source_book"] = pdf
+                    doc.metadata["source_book"] = found_file
                     doc.metadata["source_type"] = "statute"
                 all_docs.extend(docs)
             else:
                 st.error(f"❌ Missing File: {pdf} (Please upload to GitHub root)")
-                
+        
         # C. INGEST CASE LAW (Judgments Folder)
         judgment_folder = "./judgments"
         if os.path.exists(judgment_folder):
-            # 1. LIST EVERYTHING (Debug Step)
             all_files = os.listdir(judgment_folder)
-            st.write(f"📂 Debug: Raw content of 'judgments': {all_files}")
-            
-            # 2. FILTER (Case-Insensitive)
-            # This fixes the .PDF vs .pdf issue
             judgments = [f for f in all_files if f.lower().endswith(".pdf")]
             
-            if not judgments:
-                st.error(f"❌ Folder exists but contains no PDFs. valid files must end in .pdf")
-            else:
-                st.success(f"✅ Found {len(judgments)} PDF judgments.")
+            st.write(f"📂 Debug: Found {len(judgments)} judgments in folder.")
             
             for filename in judgments:
                 filepath = os.path.join(judgment_folder, filename)
@@ -122,13 +116,7 @@ def get_vector_db():
                 except Exception as e:
                     st.error(f"Failed to read {filename}: {e}")
         else:
-            # SEARCH FOR IT (Maybe it's in a subfolder?)
-            st.warning(f"⚠️ 'judgments' folder missing at {os.path.abspath(judgment_folder)}")
-            st.write("🔍 Walking directory tree to find where you put it...")
-            for root, dirs, files in os.walk("."):
-                if "judgments" in dirs:
-                    st.success(f"✅ FOUND IT! It is located at: {os.path.join(root, 'judgments')}")
-                    st.error("Please move it to the root folder.")
+            st.warning(f"⚠️ 'judgments' folder not found at {os.path.abspath(judgment_folder)}")
         
         # D. SPLIT TEXT
         if not all_docs:
@@ -169,7 +157,7 @@ except Exception as e:
     st.stop()
 
 # ---------------------------------------------------------
-# 3. HELPER FUNCTIONS
+# 3. HELPER FUNCTIONS (PDF & File Reading)
 # ---------------------------------------------------------
 
 def read_pdf(uploaded_file):
@@ -182,19 +170,12 @@ def read_pdf(uploaded_file):
     except Exception as e:
         return f"Error reading PDF: {e}"
 
-# ---------------------------------------------------------
-# 4. SIDEBAR & ADMIN
-# ---------------------------------------------------------
-
-# --- PDF GENERATOR ---
-from fpdf import FPDF
-
 def create_pdf(query, response, sources):
     class PDF(FPDF):
         def header(self):
             self.set_font('Arial', 'B', 12)
             self.cell(0, 10, 'Vakalat AI | Legal Opinion Report', 0, 1, 'C')
-            self.ln(10)
+            self.ln(5)
 
         def footer(self):
             self.set_y(-15)
@@ -205,27 +186,34 @@ def create_pdf(query, response, sources):
     pdf.add_page()
     pdf.set_auto_page_break(auto=True, margin=15)
     
-    # 1. Title / Query
-    pdf.set_font("Arial", "B", 14)
-    pdf.multi_cell(0, 10, f"Query: {query[:100]}...")
+    # 1. Title
+    pdf.set_font("Arial", "B", 12)
+    pdf.multi_cell(0, 8, f"Query: {query[:200]}...")
     pdf.ln(5)
     
-    # 2. Analysis Body
+    # 2. Analysis Body (Sanitize text for basic Latin support)
     pdf.set_font("Arial", "", 11)
-    # Replace unicode characters that might break PDF (like emojis)
-    safe_text = response.encode('latin-1', 'replace').decode('latin-1') 
-    pdf.multi_cell(0, 7, safe_text)
+    # Replace unsupported characters to prevent crash
+    safe_response = response.encode('latin-1', 'replace').decode('latin-1')
+    pdf.multi_cell(0, 6, safe_response)
     pdf.ln(10)
     
-    # 3. Sources Used
+    # 3. Sources
     pdf.set_font("Arial", "B", 10)
-    pdf.cell(0, 10, "Legal Sources Referenced:", 0, 1)
+    pdf.cell(0, 8, "Legal Sources Referenced:", 0, 1)
     pdf.set_font("Arial", "I", 9)
     for doc in sources:
-        source_name = doc.metadata.get('source_book') or doc.metadata.get('case_name') or "Unknown"
-        pdf.cell(0, 7, f"- {source_name}", 0, 1)
+        # Sanitize source names too
+        raw_source = doc.metadata.get('source_book') or doc.metadata.get('case_name') or "Unknown"
+        safe_source = raw_source.encode('latin-1', 'replace').decode('latin-1')
+        pdf.cell(0, 6, f"- {safe_source}", 0, 1)
         
-    return pdf.output(dest='S').encode('latin-1')
+    # RETURN BYTES (Fix: Do not double-encode)
+    return bytes(pdf.output(dest='S'))
+
+# ---------------------------------------------------------
+# 4. SIDEBAR & ADMIN
+# ---------------------------------------------------------
 
 with st.sidebar:
     st.title("⚖️ Vakalat AI")
@@ -253,8 +241,8 @@ def get_legal_context(query, k=4):
     # 1. Broad Statute Search
     docs.extend(vector_db.similarity_search(query, k=k, filter={"source_type": "statute"}))
     
-    # 2. Smart Case Law Search (Only if relevant)
-    trigger_words = ["arrest", "police", "custody", "bail", "detention", "torture", "handcuff", "remand", "investigation", "fir", "complaint"]
+    # 2. Smart Case Law Search
+    trigger_words = ["arrest", "police", "custody", "bail", "detention", "torture", "handcuff", "remand", "investigation", "fir", "complaint", "quash"]
     if any(word in query.lower() for word in trigger_words):
         docs.extend(vector_db.similarity_search(query, k=3, filter={"source_type": "case_law"}))
     
@@ -330,7 +318,6 @@ if user_input := st.chat_input("Ex: 'Punishment for Section 302' or 'Who are you
     with st.chat_message("user"):
         st.markdown(user_input)
 
-    # ... (Inside the loop where user_input is handled)
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
         
@@ -369,19 +356,21 @@ if user_input := st.chat_input("Ex: 'Punishment for Section 302' or 'Who are you
                 
                 message_placeholder.markdown(response)
                 
-                # --- PDF BUTTON (Corrected Indentation) ---
+                # --- PDF REPORT GENERATION ---
                 try:
                     pdf_bytes = create_pdf(user_input, response, docs)
-                    col1, col2 = st.columns([1, 4])
+                    
+                    # Layout: Button on the left
+                    col1, col2 = st.columns([1, 3])
                     with col1:
                         st.download_button(
-                            label="📄 Download Report",
+                            label="📄 Download Official Report",
                             data=pdf_bytes,
                             file_name="Vakalat_Legal_Opinion.pdf",
                             mime="application/pdf"
                         )
                 except Exception as e:
-                    st.error(f"PDF Error: {e}")
+                    st.error(f"⚠️ Could not generate PDF: {e}")
                 
                 # Evidence Inspector
                 with st.expander("🔍 Inspect Legal Sources"):
@@ -392,5 +381,3 @@ if user_input := st.chat_input("Ex: 'Punishment for Section 302' or 'Who are you
                         st.divider()
 
     st.session_state.messages.append({"role": "assistant", "content": response})
-
-
