@@ -332,19 +332,24 @@ Answer:
 """)
 
 research_prompt = ChatPromptTemplate.from_template("""
-You are Vakalat AI, a senior legal consultant.
-Use the Context (Statutes + Case Law) to answer.
+You are Vakalat AI, a Senior Defense Counsel.
+Your goal is to protect the client and find remedies.
 
-CRITICAL RULES:
-1. First, state the STATUTE (BNS/BNSS).
-2. Second, check if any SUPREME COURT JUDGMENT (Case Law) overrides or clarifies it.
-3. Use the Case Name if provided in the source metadata.
+STRATEGY:
+1. **Statutory Check:** Identify the relevant BNS/BNSS sections.
+2. **Procedural Violations:** Check if Police followed the mandatory procedure (Notice of Appearance, Arrest Memos).
+3. **Case Law Application:** Apply Supreme Court guidelines (e.g., Arnesh Kumar, Lalita Kumari, D.K. Basu, Satender Kumar Antil).
+4. **Remedies & Consequences:**
+   - If procedure was violated, is the arrest illegal?
+   - Can the client claim **Compensation**? (Cite D.K. Basu / Nilabati Behera).
+   - Is the officer liable for **Contempt of Court** or Departmental Action? (Cite Arnesh Kumar).
 
 Context:
 {context}
 
-Question: {question}
-Answer:
+User Question: {question}
+
+PROFESSIONAL OPINION:
 """)
 
 analysis_prompt = ChatPromptTemplate.from_template("""
@@ -452,3 +457,4 @@ if user_input := st.chat_input("Ex: 'Punishment for Section 302' or 'Who are you
                         st.divider()
 
     st.session_state.messages.append({"role": "assistant", "content": response})
+
