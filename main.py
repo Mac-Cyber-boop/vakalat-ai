@@ -98,53 +98,50 @@ vector_db = get_vector_store()
 # ---------------------------------------------------------
 
 def ingest_data():
-    """Reads local GitHub folders and uploads to Cloud."""
+    """Reads all PDFs in the project (Root + Library + Judgments) and syncs to Pinecone."""
     status_container = st.empty()
-    status_container.info("☁️ Starting Cloud Sync... Please wait.")
+    status_container.info("☁️ Starting Cloud Sync... Scanning all folders.")
     
     from langchain_community.document_loaders import PyMuPDFLoader
     
     all_docs = []
+    total_files = 0
     
-    # 1. Scan Root for Statutes
-    files_in_root = [f for f in os.listdir(".") if f.lower().endswith(".pdf")]
-    for pdf in files_in_root:
-        try:
-            loader = PyMuPDFLoader(pdf)
-            docs = loader.load()
-            for doc in docs:
-                doc.metadata = {"source": pdf, "type": "statute"}
-            all_docs.extend(docs)
-            st.toast(f"📖 Queued: {pdf}")
-        except:
-            pass
+    # WALK THROUGH ALL FOLDERS
+    # This will find PDFs in root, 'judgments', 'library', etc.
+    for root, dirs, files in os.walk("."):
+        # Skip hidden folders like .git
+        if ".git" in root: continue
+        
+        for file in files:
+            if file.lower().endswith(".pdf"):
+                filepath = os.path.join(root, file)
+                try:
+                    loader = PyMuPDFLoader(filepath)
+                    docs = loader.load()
+                    
+                    # Clean filename for metadata (Remove "01_", ".pdf")
+                    clean_name = file.replace(".pdf", "").replace("_", " ")
+                    for doc in docs:
+                        doc.metadata = {"source": clean_name, "type": "statute"}
+                        
+                    all_docs.extend(docs)
+                    total_files += 1
+                    st.toast(f"📖 Found: {clean_name}")
+                except Exception as e:
+                    print(f"Error reading {file}: {e}")
 
-    # 2. Scan Judgments Folder
-    if os.path.exists("./judgments"):
-        judgments = [f for f in os.listdir("./judgments") if f.lower().endswith(".pdf")]
-        for j in judgments:
-            try:
-                path = os.path.join("./judgments", j)
-                loader = PyMuPDFLoader(path)
-                docs = loader.load()
-                for doc in docs:
-                    doc.metadata = {"source": j, "type": "case_law"}
-                all_docs.extend(docs)
-                st.toast(f"⚖️ Queued: {j}")
-            except:
-                pass
-    
     if not all_docs:
-        status_container.warning("⚠️ No PDFs found to upload.")
+        status_container.warning("⚠️ No PDFs found anywhere in the project.")
         return
 
-    # 3. Split & Upload
+    # Split & Upload
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=150)
     splits = text_splitter.split_documents(all_docs)
     
-    status_container.info(f"🚀 Uploading {len(splits)} chunks to Pinecone Cloud...")
+    status_container.info(f"🚀 Processing {total_files} Acts. Uploading {len(splits)} chunks to Pinecone...")
     vector_db.add_documents(splits)
-    status_container.success("✅ Cloud Sync Complete! The Brain is updated.")
+    status_container.success(f"✅ Sync Complete! {total_files} Acts are now live in the Brain.")
 
 def create_pdf(query, response, sources):
     class PDF(FPDF):
@@ -184,24 +181,32 @@ llm = ChatOpenAI(model="gpt-4o", temperature=0) # Low temp for accuracy
 
 # STRICT "NO HALLUCINATION" PROMPT
 # This is the "Lobotamy" layer your lawyer asked for.
+# ---------------------------------------------------------
+# 4. INTELLIGENCE LAYER (Prompts)
+# ---------------------------------------------------------
+
+llm = ChatOpenAI(model="gpt-4o", temperature=0)
+
 research_prompt = ChatPromptTemplate.from_template("""
 You are Vakalat Pro, a Precision Legal Assistant.
 
-STRICT ACCURACY RULES:
-1. Answer ONLY based on the "Context" provided below.
-2. If the answer is NOT in the Context, say "I cannot find specific information in the uploaded database regarding this query."
-3. DO NOT use your internal training data to invent laws or case names.
-4. If the user asks about a document (uploaded file), prioritize that.
+STRICT RESPONSE FORMAT:
+1. **Direct Answer:** Start with the specific provision/law.
+2. **Analysis:** Apply the law to the user's query facts.
+3. **Exceptions/Nuance:** Mention relevant provisos or case law.
+4. **MANDATORY FOOTER:** You MUST end every single response with a structured citation list exactly like the example below.
+
+EXAMPLE FOOTER FORMAT:
+Authority:
+• [Act Name, Year] – [Section Number]
+• [Case Name] – [Ratio/One-line summary]
 
 CONTEXT FROM DATABASE:
 {context}
 
 USER QUERY: {question}
 
-RESPONSE STRUCTURE:
-1. **Direct Answer:** The specific provision/law.
-2. **Analysis:** How it applies to the facts.
-3. **Authorities:** Cite the specific Case Name or Section from the Context.
+YOUR LEGAL OPINION:
 """)
 
 # ---------------------------------------------------------
@@ -303,3 +308,4 @@ if user_input := st.chat_input("Draft a notice, Search a law, or Analyze a file.
                 st.error(f"PDF Gen Error: {e}")
 
     st.session_state.messages.append({"role": "assistant", "content": final_response})
+
