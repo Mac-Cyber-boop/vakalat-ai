@@ -1,493 +1,305 @@
 # main.py
-# VAKALAT AI: ULTIMATE EDITION (v2.1 - Polished UI)
+# VAKALAT PRO: CLOUD EDITION (Pinecone + Accuracy Guardrails)
 
 import streamlit as st
 import os
-import shutil
 import fitz  # PyMuPDF
-from fpdf import FPDF
-from langchain_community.vectorstores import Chroma
+from pinecone import Pinecone, ServerlessSpec
+from langchain_pinecone import PineconeVectorStore
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
+from fpdf import FPDF
+from gtts import gTTS
+from io import BytesIO
 
 # ---------------------------------------------------------
 # 1. AUTHENTICATION & SETUP
 # ---------------------------------------------------------
 
-# Bridge for Secrets (Works on Cloud & Local)
-if "OPENAI_API_KEY" in st.secrets:
-    os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
-else:
-    from dotenv import load_dotenv
-    load_dotenv()
+st.set_page_config(page_title="Vakalat Pro | Legal OS", page_icon="⚖️", layout="wide")
 
-# Verify Key
-if not os.environ.get("OPENAI_API_KEY"):
-    st.error("❌ Critical Error: OpenAI API Key is missing. Check .env or Streamlit Secrets.")
+# Load Secrets
+if "PINECONE_API_KEY" not in st.secrets:
+    st.error("❌ Critical Error: PINECONE_API_KEY missing in Secrets.")
     st.stop()
 
-# PAGE CONFIG (Must be first)
-st.set_page_config(
-    page_title="Vakalat AI | Legal Intelligence",
-    page_icon="⚖️",
-    layout="wide"
-)
+os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
+os.environ["PINECONE_API_KEY"] = st.secrets["PINECONE_API_KEY"]
+INDEX_NAME = st.secrets["PINECONE_INDEX_NAME"]
 
-# --- UI STYLING (The Facelift) ---
+# CSS Styling (Dark/Gold Theme)
 st.markdown("""
 <style>
-    /* 1. MAIN BACKGROUND */
-    .stApp {
-        background-color: #0E1117;
-        color: #FAFAFA;
-    }
-
-    /* 2. SIDEBAR STYLING */
-    section[data-testid="stSidebar"] {
-        background-color: #161B22;
-        border-right: 1px solid #30363D;
-    }
-    
-    /* 3. CHAT BUBBLES */
-    .stChatMessage[data-testid="stChatMessage"]:nth-child(odd) {
-        background-color: #1F242D;
-        border: 1px solid #30363D;
-        border-radius: 10px;
-    }
-    .stChatMessage[data-testid="stChatMessage"]:nth-child(even) {
-        background-color: #131720;
-        border-left: 4px solid #D4AF37;
-        border-radius: 5px;
-    }
-
-    /* 4. HEADERS (Gold/Serif) */
-    h1, h2, h3 {
-        font-family: 'Merriweather', serif;
-        color: #E6EDF3;
-    }
-    h1 {
-        color: #D4AF37;
-        font-weight: 700;
-    }
-
-    /* 5. BUTTONS */
-    div.stButton > button {
-        background: linear-gradient(to right, #D4AF37, #C5A028);
-        color: #0E1117;
-        font-weight: bold;
-        border: none;
-        border-radius: 6px;
-        transition: all 0.3s ease;
-    }
-    div.stButton > button:hover {
-        transform: scale(1.02);
-        box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
-        color: #000;
-    }
-
-    /* 6. INPUT FIELD */
-    .stChatInput {
-        border-radius: 20px;
-        border: 1px solid #30363D;
-    }
-
-    /* 7. HIDE STREAMLIT BRANDING */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
+    .stApp { background-color: #0E1117; color: #FAFAFA; }
+    section[data-testid="stSidebar"] { background-color: #161B22; border-right: 1px solid #30363D; }
+    .stChatMessage[data-testid="stChatMessage"]:nth-child(odd) { background-color: #1F242D; border: 1px solid #30363D; border-radius: 10px; }
+    .stChatMessage[data-testid="stChatMessage"]:nth-child(even) { background-color: #131720; border-left: 4px solid #D4AF37; border-radius: 5px; }
+    h1, h2, h3 { font-family: 'Merriweather', serif; color: #E6EDF3; }
+    h1 { color: #D4AF37; font-weight: 700; }
+    div.stButton > button { background: linear-gradient(to right, #D4AF37, #C5A028); color: #0E1117; font-weight: bold; border: none; }
+    #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
 </style>
 """, unsafe_allow_html=True)
 
-# PASSWORD BOUNCER
+# Password Protection
 def check_password():
-    """Returns `True` if the user had the correct password."""
-    def password_entered():
-        if st.session_state["password"] == st.secrets["APP_PASSWORD"]:
-            st.session_state["password_correct"] = True
-            del st.session_state["password"]
-        else:
-            st.session_state["password_correct"] = False
-
     if "password_correct" not in st.session_state:
-        st.text_input("🔒 Enter Access Code:", type="password", on_change=password_entered, key="password")
+        st.text_input("🔒 Enter Access Code:", type="password", key="password_input", on_change=validate_password)
         return False
-    elif not st.session_state["password_correct"]:
-        st.text_input("🔒 Enter Access Code:", type="password", on_change=password_entered, key="password")
-        st.error("❌ Access Denied")
-        return False
+    return st.session_state["password_correct"]
+
+def validate_password():
+    if st.session_state["password_input"] == st.secrets["APP_PASSWORD"]:
+        st.session_state["password_correct"] = True
     else:
-        return True
+        st.session_state["password_correct"] = False
+        st.error("❌ Access Denied")
 
 if not check_password():
     st.stop()
 
 # ---------------------------------------------------------
-# 2. THE BRAIN (DATABASE ENGINE)
+# 2. CLOUD BRAIN (PINECONE ENGINE)
 # ---------------------------------------------------------
 
 @st.cache_resource
-def get_vector_db():
+def get_vector_store():
+    """Connects to the existing Pinecone Index."""
+    embeddings = OpenAIEmbeddings()
+    pc = Pinecone(api_key=os.environ["PINECONE_API_KEY"])
+    
+    # Check if index exists
+    existing_indexes = [i.name for i in pc.list_indexes()]
+    if INDEX_NAME not in existing_indexes:
+        # Create Index if missing (Serverless)
+        try:
+            pc.create_index(
+                name=INDEX_NAME,
+                dimension=1536,
+                metric="cosine",
+                spec=ServerlessSpec(cloud="aws", region="us-east-1")
+            )
+            st.toast("✅ Created New Cloud Index", icon="☁️")
+        except Exception as e:
+            st.error(f"Failed to create index: {e}")
+            st.stop()
+            
+    # Connect Langchain to Pinecone
+    vector_store = PineconeVectorStore(index_name=INDEX_NAME, embedding=embeddings)
+    return vector_store
+
+vector_db = get_vector_store()
+
+# ---------------------------------------------------------
+# 3. HELPER FUNCTIONS (PDF, Audio, Sync)
+# ---------------------------------------------------------
+
+def ingest_data():
+    """Reads local GitHub folders and uploads to Cloud."""
+    status_container = st.empty()
+    status_container.info("☁️ Starting Cloud Sync... Please wait.")
+    
     from langchain_community.document_loaders import PyMuPDFLoader
-    from langchain_text_splitters import RecursiveCharacterTextSplitter
     
-    embedding_function = OpenAIEmbeddings()
-    db_path = "./chroma_db"
+    all_docs = []
     
-    # CHECK: Does the database exist?
-    if not os.path.exists(db_path):
-        st.warning("⚠️ Building Brain... (This happens once).")
-        
-        all_docs = []
-        files_in_root = os.listdir(".")
-        
-        # B. INGEST STATUTES
-        statutes = ["bns.pdf", "bnss.pdf", "bsa.pdf", "gst.pdf"]
-        for pdf in statutes:
-            found_file = next((f for f in files_in_root if f.lower() == pdf), None)
-            if found_file:
-                st.info(f"📖 Reading Statute: {found_file}...")
-                loader = PyMuPDFLoader(found_file)
+    # 1. Scan Root for Statutes
+    files_in_root = [f for f in os.listdir(".") if f.lower().endswith(".pdf")]
+    for pdf in files_in_root:
+        try:
+            loader = PyMuPDFLoader(pdf)
+            docs = loader.load()
+            for doc in docs:
+                doc.metadata = {"source": pdf, "type": "statute"}
+            all_docs.extend(docs)
+            st.toast(f"📖 Queued: {pdf}")
+        except:
+            pass
+
+    # 2. Scan Judgments Folder
+    if os.path.exists("./judgments"):
+        judgments = [f for f in os.listdir("./judgments") if f.lower().endswith(".pdf")]
+        for j in judgments:
+            try:
+                path = os.path.join("./judgments", j)
+                loader = PyMuPDFLoader(path)
                 docs = loader.load()
                 for doc in docs:
-                    doc.metadata["source_book"] = found_file
-                    doc.metadata["source_type"] = "statute"
+                    doc.metadata = {"source": j, "type": "case_law"}
                 all_docs.extend(docs)
-            else:
-                st.error(f"❌ Missing File: {pdf}")
-        
-        # C. INGEST CASE LAW
-        judgment_folder = "./judgments"
-        if os.path.exists(judgment_folder):
-            all_files = os.listdir(judgment_folder)
-            judgments = [f for f in all_files if f.lower().endswith(".pdf")]
-            
-            for filename in judgments:
-                filepath = os.path.join(judgment_folder, filename)
-                st.info(f"⚖️ Reading Judgment: {filename}...")
-                try:
-                    loader = PyMuPDFLoader(filepath)
-                    docs = loader.load()
-                    for doc in docs:
-                        doc.metadata["source_type"] = "case_law"
-                        doc.metadata["case_name"] = filename
-                    all_docs.extend(docs)
-                except Exception as e:
-                    st.error(f"Failed to read {filename}: {e}")
-        
-        # D. SPLIT TEXT
-        if not all_docs:
-            st.error("❌ No documents found! Database will be empty.")
-            return Chroma(persist_directory=db_path, embedding_function=embedding_function)
+                st.toast(f"⚖️ Queued: {j}")
+            except:
+                pass
+    
+    if not all_docs:
+        status_container.warning("⚠️ No PDFs found to upload.")
+        return
 
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-        chunks = text_splitter.split_documents(all_docs)
-        
-        # E. INJECT PATCH
-        chunks.append(Document(
-            page_content="BNS Section 103(2) (Mob Lynching): When a group of five or more persons acting in concert commits murder on the ground of race, caste or community, sex, place of birth, language, personal belief or any other like ground, each member of such group shall be punished with death or with imprisonment for life, and shall also be liable to fine.",
-            metadata={"source_book": "bns.pdf", "source_type": "statute"} 
-        ))
-
-        # F. BUILD & SAVE
-        st.info("🧠 Indexing Neural Connections...")
-        db = Chroma.from_documents(chunks, embedding_function, persist_directory=db_path)
-        st.success("✅ Brain Rebuilt! System Online.")
-        return db
-        
-    return Chroma(persist_directory=db_path, embedding_function=embedding_function)
-
-# FORCE RESET FUNCTION
-def reset_brain():
-    if os.path.exists("./chroma_db"):
-        shutil.rmtree("./chroma_db")
-    st.session_state.clear()
-    st.rerun()
-
-# Initialize DB
-try:
-    vector_db = get_vector_db()
-except Exception as e:
-    st.error(f"Database Error: {e}")
-    st.stop()
-
-# ---------------------------------------------------------
-# 3. HELPER FUNCTIONS
-# ---------------------------------------------------------
-
-def read_pdf(uploaded_file):
-    try:
-        doc = fitz.open(stream=uploaded_file.read(), filetype="pdf")
-        text = ""
-        for page in doc:
-            text += page.get_text()
-        return text
-    except Exception as e:
-        return f"Error reading PDF: {e}"
+    # 3. Split & Upload
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=150)
+    splits = text_splitter.split_documents(all_docs)
+    
+    status_container.info(f"🚀 Uploading {len(splits)} chunks to Pinecone Cloud...")
+    vector_db.add_documents(splits)
+    status_container.success("✅ Cloud Sync Complete! The Brain is updated.")
 
 def create_pdf(query, response, sources):
     class PDF(FPDF):
         def header(self):
             self.set_font('Arial', 'B', 12)
-            self.cell(0, 10, 'Vakalat AI | Legal Opinion Report', 0, 1, 'C')
+            self.cell(0, 10, 'Vakalat Pro | Legal Opinion', 0, 1, 'C')
             self.ln(5)
-
         def footer(self):
             self.set_y(-15)
             self.set_font('Arial', 'I', 8)
-            self.cell(0, 10, 'Generated by Vakalat AI. Not a substitute for professional legal counsel.', 0, 0, 'C')
+            self.cell(0, 10, 'AI Generated. Not a substitute for professional counsel.', 0, 0, 'C')
 
     pdf = PDF()
     pdf.add_page()
     pdf.set_auto_page_break(auto=True, margin=15)
-    
-    # 1. Title
     pdf.set_font("Arial", "B", 12)
-    pdf.multi_cell(0, 8, f"Query: {query[:200]}...")
+    pdf.multi_cell(0, 8, f"Ref: {query[:200]}...")
     pdf.ln(5)
-    
-    # 2. Analysis Body
     pdf.set_font("Arial", "", 11)
-    safe_response = response.encode('latin-1', 'replace').decode('latin-1')
-    pdf.multi_cell(0, 6, safe_response)
+    safe_resp = response.encode('latin-1', 'replace').decode('latin-1')
+    pdf.multi_cell(0, 6, safe_resp)
     pdf.ln(10)
-    
-    # 3. Sources
     pdf.set_font("Arial", "B", 10)
-    pdf.cell(0, 8, "Legal Sources Referenced:", 0, 1)
+    pdf.cell(0, 8, "Sources Used:", 0, 1)
     pdf.set_font("Arial", "I", 9)
     for doc in sources:
-        raw_source = doc.metadata.get('source_book') or doc.metadata.get('case_name') or "Unknown"
-        safe_source = raw_source.encode('latin-1', 'replace').decode('latin-1')
-        pdf.cell(0, 6, f"- {safe_source}", 0, 1)
-        
+        src = doc.metadata.get('source', 'Unknown')
+        safe_src = src.encode('latin-1', 'replace').decode('latin-1')
+        pdf.cell(0, 6, f"- {safe_src}", 0, 1)
     return bytes(pdf.output(dest='S'))
 
 # ---------------------------------------------------------
-# 4. SIDEBAR & ADMIN
+# 4. INTELLIGENCE LAYER (Prompts & Router)
+# ---------------------------------------------------------
+
+llm = ChatOpenAI(model="gpt-4o", temperature=0) # Low temp for accuracy
+
+# STRICT "NO HALLUCINATION" PROMPT
+# This is the "Lobotamy" layer your lawyer asked for.
+research_prompt = ChatPromptTemplate.from_template("""
+You are Vakalat Pro, a Precision Legal Assistant.
+
+STRICT ACCURACY RULES:
+1. Answer ONLY based on the "Context" provided below.
+2. If the answer is NOT in the Context, say "I cannot find specific information in the uploaded database regarding this query."
+3. DO NOT use your internal training data to invent laws or case names.
+4. If the user asks about a document (uploaded file), prioritize that.
+
+CONTEXT FROM DATABASE:
+{context}
+
+USER QUERY: {question}
+
+RESPONSE STRUCTURE:
+1. **Direct Answer:** The specific provision/law.
+2. **Analysis:** How it applies to the facts.
+3. **Authorities:** Cite the specific Case Name or Section from the Context.
+""")
+
+# ---------------------------------------------------------
+# 5. UI & SIDEBAR
 # ---------------------------------------------------------
 
 with st.sidebar:
-    st.image("https://cdn-icons-png.flaticon.com/512/2237/2237599.png", width=50)
-    st.title("Control Center")
-    st.caption("v2.1 | Connected to Supreme Court DB")
+    st.image("https://cdn-icons-png.flaticon.com/512/924/924915.png", width=50)
+    st.title("Vakalat Pro")
+    st.caption("Cloud Enterprise Edition")
     
     st.markdown("---")
-    
-    # CASE FILE UPLOAD
-    st.subheader("📂 Case Lab")
-    uploaded_file = st.file_uploader("Upload FIR / Charge Sheet", type="pdf", help="AI will analyze facts against the law.")
-    if uploaded_file:
-        st.success(f"✅ File Attached: {uploaded_file.name}")
+    st.subheader("📂 Document Lab")
+    uploaded_file = st.file_uploader("Upload Writ / Notice / Contract", type="pdf")
     
     st.markdown("---")
-    st.subheader("🗣️ Language & Audio")
+    st.subheader("⚙️ Admin Console")
+    if st.button("☁️ Sync DB to Cloud"):
+        ingest_data() # This uploads local PDFs to Pinecone
+    
+    st.markdown("---")
+    st.subheader("🗣️ Output Options")
     enable_hindi = st.toggle("🇮🇳 Reply in Hindi")
-    enable_audio = st.toggle("🔊 Audio Briefing")
-    # ADMIN TOOLS
-    st.subheader("⚙️ System Admin")
-    st.info(f"Database Status: Online")
-    # This is the ONLY place this button exists now
-    if st.button("🔄 Force Rebuild Brain", key="rebuild_btn"):
-        st.warning("Re-indexing legal matrix... (Takes ~2 mins)")
-        reset_brain()
-        
-    st.markdown("---")
-    st.markdown("🔒 *Secure & Encrypted Session*")
+    enable_audio = st.toggle("🔊 Audio Mode")
 
 # ---------------------------------------------------------
-# 5. CORE LOGIC (ROUTER + SEARCH)
+# 6. MAIN CHAT ENGINE
 # ---------------------------------------------------------
 
-llm = ChatOpenAI(model="gpt-4o", temperature=0)
-
-# A. RETRIEVER
-# A. RETRIEVER
-def get_legal_context(query, k=4):
-    docs = []
-    # 1. Broad Statute Search (Now includes GST)
-    docs.extend(vector_db.similarity_search(query, k=k, filter={"source_type": "statute"}))
-    
-    # 2. Smart Case Law Search
-    # Added "tax", "gst", "fraud", "evasion" to the trigger list
-    trigger_words = ["arrest", "police", "custody", "bail", "detention", "torture", "handcuff", "remand", "investigation", "fir", "complaint", "quash", "tax", "gst", "evasion", "fraud", "input tax credit"]
-    
-    if any(word in query.lower() for word in trigger_words):
-        docs.extend(vector_db.similarity_search(query, k=3, filter={"source_type": "case_law"}))
-    
-    return docs
-
-# B. ROUTER
-router_prompt = ChatPromptTemplate.from_template("""
-Classify the user's query into one of two categories. Return ONLY the category name.
-1. LEGAL_RESEARCH: Questions about laws, crimes, punishments, tax, GST, police, FIRs, courts, bail, or specific sections.
-2. GENERAL_CHAT: Greetings, asking "who are you", "what can you do", "help", or general conversation.
-Query: {question}
-Category:
-""")
-router_chain = router_prompt | llm | StrOutputParser()
-
-# C. PROMPTS
-general_prompt = ChatPromptTemplate.from_template("""
-You are Vakalat AI, a specialized legal research assistant for Indian Criminal Law (BNS, BNSS, BSA).
-The user is asking a general question. Answer professionally and concisely.
-User Query: {question}
-Answer:
-""")
-
-research_prompt = ChatPromptTemplate.from_template("""
-You are Vakalat AI, a Senior Legal Consultant specializing in Indian Laws (Criminal & Civil/Tax).
-
-MANDATORY RULES:
-1. **Statutory Translation:** If the user mentions an old IPC/CrPC section, map it to BNS/BNSS. (Ignore this for GST queries).
-2. **Identify the Law:** Explicitly state if the answer comes from BNS, BNSS, or the **GST Act**.
-3. **Remedies:** - For Criminal: Quashing, Bail, Compensation.
-   - For Tax/GST: Appeal Tribunals, Writ Jurisdiction, Compounding of Offences.
-
-Context:
-{context}
-
-User Question: {question}
-
-PROFESSIONAL OPINION:
-""")
-
-analysis_prompt = ChatPromptTemplate.from_template("""
-You are a Defense Lawyer analyzing a case file.
-TASK:
-1. Analyze the CLIENT CASE FILE facts.
-2. Cross-reference with RETRIEVED LAWS.
-3. Find Loopholes (Arrest rules, Section ingredients).
-
-CLIENT CASE FILE:
-{case_file}
-
-RETRIEVED LAWS:
-{context}
-
-USER QUESTION: {question}
-
-ANALYSIS:
-""")
-
-# ---------------------------------------------------------
-# 6. MAIN CHAT INTERFACE
-# ---------------------------------------------------------
-
-# HEADER SECTION
 col1, col2 = st.columns([1, 8])
-with col1:
-    st.image("https://cdn-icons-png.flaticon.com/512/924/924915.png", width=60)
-with col2:
-    st.title("Vakalat AI")
-    st.markdown("*Advanced Criminal Law Intelligence System (BNS/BNSS/BSA 2024)*")
-
+with col1: st.image("https://cdn-icons-png.flaticon.com/512/2237/2237599.png", width=60)
+with col2: 
+    st.title("Vakalat Pro")
+    st.markdown("*Civil & Criminal Intelligence System*")
 st.divider()
 
 if "messages" not in st.session_state:
-    st.session_state.messages = [{"role": "assistant", "content": "I am online. Ready for legal research or case analysis."}]
+    st.session_state.messages = [{"role": "assistant", "content": "System Online. Connected to Secure Cloud Database."}]
 
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
-if user_input := st.chat_input("Ex: 'Punishment for Section 302' or 'Who are you?'"):
+if user_input := st.chat_input("Draft a notice, Search a law, or Analyze a file..."):
     st.session_state.messages.append({"role": "user", "content": user_input})
     with st.chat_message("user"):
         st.markdown(user_input)
 
     with st.chat_message("assistant"):
-        message_placeholder = st.empty()
-        
-        with st.spinner("Thinking..."):
-            if uploaded_file:
-                intent = "LEGAL_RESEARCH"
-            else:
-                intent = router_chain.invoke({"question": user_input}).strip()
-        
-        if intent == "GENERAL_CHAT":
-            chain = general_prompt | llm | StrOutputParser()
-            response = chain.invoke({"question": user_input})
-            message_placeholder.markdown(response)
+        with st.spinner("Processing..."):
             
-        else:
-            with st.spinner("Consulting Legal Database..."):
-                # Prepare Data
-                case_text = ""
-                if uploaded_file:
-                    case_text = read_pdf(uploaded_file)
-                    full_query = f"{user_input} {case_text[:1500]}"
-                else:
-                    full_query = user_input
-
-                # Retrieve
-                docs = get_legal_context(full_query, k=4)
-                context_text = "\n\n".join(f"[Source: {d.metadata.get('source_book', d.metadata.get('case_name', 'Unknown'))}]\n{d.page_content}" for d in docs)
-                
-# ... (Retrieve docs code remains same) ...
-                
-                # --- GENERATION ---
-                if uploaded_file:
-                    chain = analysis_prompt | llm | StrOutputParser()
-                    raw_response = chain.invoke({"case_file": case_text, "context": context_text, "question": user_input})
-                else:
-                    chain = research_prompt | llm | StrOutputParser()
-                    raw_response = chain.invoke({"context": context_text, "question": user_input})
-                
-                # --- HINDI TRANSLATION LAYER ---
-                if enable_hindi:
-                    with st.spinner("Translating to Legal Hindi..."):
-                        trans_prompt = ChatPromptTemplate.from_template(
-                            "Translate this legal opinion into formal Hindi (Devenagari). Keep English legal terms (like 'Section 498A', 'Quashing') in brackets for clarity.\n\nText: {text}"
-                        )
-                        trans_chain = trans_prompt | llm | StrOutputParser()
-                        response = trans_chain.invoke({"text": raw_response})
-                else:
-                    response = raw_response
-                
-                message_placeholder.markdown(response)
-                
-                # --- AUDIO GENERATION ---
-                if enable_audio:
-                    from gtts import gTTS
-                    from io import BytesIO
-                    
-                    try:
-                        tts_lang = 'hi' if enable_hindi else 'en'
-                        tts = gTTS(text=response, lang=tts_lang, slow=False)
-                        audio_bytes = BytesIO()
-                        tts.write_to_fp(audio_bytes)
-                        st.audio(audio_bytes, format='audio/mp3')
-                    except Exception as e:
-                        st.error(f"Audio Error: {e}")
-
-
-                # --- PDF REPORT ---
+            # 1. RETRIEVAL (The "RAG" Step)
+            # If user uploaded a file, we read ONLY that file (Session Mode)
+            # If not, we search the massive Cloud Database
+            docs = []
+            context_text = ""
+            
+            if uploaded_file:
+                # File Analysis Mode
+                file_text = ""
                 try:
-                    pdf_bytes = create_pdf(user_input, response, docs)
-                    col1, col2 = st.columns([1, 3])
-                    with col1:
-                        st.download_button(
-                            label="📄 Download Official Report",
-                            data=pdf_bytes,
-                            file_name="Vakalat_Legal_Opinion.pdf",
-                            mime="application/pdf"
-                        )
-                except Exception as e:
-                    st.error(f"⚠️ Could not generate PDF: {e}")
+                    with fitz.open(stream=uploaded_file.read(), filetype="pdf") as doc:
+                        for page in doc: file_text += page.get_text()
+                    context_text = file_text[:10000] # Limit context window
+                    docs = [Document(page_content="Uploaded File Analysis", metadata={"source": uploaded_file.name})]
+                except:
+                    st.error("Error reading file.")
+            else:
+                # Database Mode (Search Pinecone)
+                docs = vector_db.similarity_search(user_input, k=5)
+                context_text = "\n\n".join([f"[Source: {d.metadata.get('source', 'Unknown')}]\n{d.page_content}" for d in docs])
+
+            # 2. GENERATION
+            chain = research_prompt | llm | StrOutputParser()
+            raw_response = chain.invoke({"context": context_text, "question": user_input})
+            
+            # 3. TRANSLATION (Hindi)
+            final_response = raw_response
+            if enable_hindi:
+                trans_chain = ChatPromptTemplate.from_template("Translate to Hindi (Legal Formal). Keep English terms in brackets.\n\n{text}") | llm | StrOutputParser()
+                final_response = trans_chain.invoke({"text": raw_response})
+            
+            st.markdown(final_response)
+            
+            # 4. AUDIO
+            if enable_audio:
+                try:
+                    tts = gTTS(text=final_response, lang='hi' if enable_hindi else 'en', slow=False)
+                    audio_bytes = BytesIO()
+                    tts.write_to_fp(audio_bytes)
+                    st.audio(audio_bytes, format='audio/mp3')
+                except: pass
                 
-                # Evidence Inspector
-                with st.expander("🔍 Inspect Legal Sources"):
-                    for i, doc in enumerate(docs):
-                        source = doc.metadata.get('source_book') or doc.metadata.get('case_name') or "Unknown"
-                        st.caption(f"**{i+1}. {source}**")
-                        st.text(doc.page_content[:200] + "...")
-                        st.divider()
+            # 5. PDF REPORT
+            try:
+                pdf_data = create_pdf(user_input, final_response, docs)
+                st.download_button("📄 Download Legal Opinion", data=pdf_data, file_name="Legal_Opinion.pdf", mime="application/pdf")
+            except Exception as e:
+                st.error(f"PDF Gen Error: {e}")
 
-    st.session_state.messages.append({"role": "assistant", "content": response})
-
-
-
-
-
+    st.session_state.messages.append({"role": "assistant", "content": final_response})
