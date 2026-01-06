@@ -1,6 +1,6 @@
 # main.py
-# VAKALAT PRO: LOGIC PATCH (v8.0)
-# Fixes: Cheque Bounce Math, Mandatory Mediation, and Date Logic
+# VAKALAT PRO: OPEN ACCESS EDITION (v9.0)
+# Features: Logic Traps + Drafting Studio + No Password
 
 import streamlit as st
 import os
@@ -13,26 +13,29 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from fpdf import FPDF
 from gtts import gTTS
 from io import BytesIO
-from datetime import date, timedelta
+from datetime import date
 
 # ---------------------------------------------------------
-# 1. SETUP
+# 1. SETUP & CONFIG
 # ---------------------------------------------------------
 st.set_page_config(page_title="Vakalat Pro | Legal OS", page_icon="⚖️", layout="wide")
 
+# Critical Secrets Check
 if "PINECONE_API_KEY" not in st.secrets:
-    st.error("❌ Critical: Secrets missing.")
+    st.error("❌ Critical Error: PINECONE_API_KEY is missing in Streamlit Secrets.")
     st.stop()
 
 os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
 os.environ["PINECONE_API_KEY"] = st.secrets["PINECONE_API_KEY"]
 INDEX_NAME = st.secrets["PINECONE_INDEX_NAME"]
 
+# Theme Styling (Dark Mode)
 st.markdown("""
 <style>
     .stApp { background-color: #0E1117; color: #FAFAFA; }
     section[data-testid="stSidebar"] { background-color: #161B22; border-right: 1px solid #30363D; }
     h1, h2, h3 { color: #D4AF37; font-family: 'Merriweather', serif; }
+    div.stButton > button { background: linear-gradient(to right, #D4AF37, #C5A028); color: #000; border: none; font-weight: bold;}
     .stTabs [data-baseweb="tab-list"] { gap: 10px; }
     .stTabs [data-baseweb="tab"] { background-color: #1F242D; border-radius: 5px; color: #FAFAFA; }
     .stTabs [aria-selected="true"] { background-color: #D4AF37; color: #000; font-weight: bold; }
@@ -40,7 +43,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# 2. LOGIC ENGINES
+# 2. INTELLIGENCE ENGINES
 # ---------------------------------------------------------
 llm = ChatOpenAI(model="gpt-4o", temperature=0)
 
@@ -48,18 +51,30 @@ llm = ChatOpenAI(model="gpt-4o", temperature=0)
 def get_vector_store():
     embeddings = OpenAIEmbeddings()
     pc = Pinecone(api_key=os.environ["PINECONE_API_KEY"])
+    
+    # Auto-Create Index if missing
     if INDEX_NAME not in [i.name for i in pc.list_indexes()]:
-        try: pc.create_index(name=INDEX_NAME, dimension=1536, metric="cosine", spec=ServerlessSpec(cloud="aws", region="us-east-1"))
+        try: 
+            pc.create_index(
+                name=INDEX_NAME, 
+                dimension=1536, 
+                metric="cosine", 
+                spec=ServerlessSpec(cloud="aws", region="us-east-1")
+            )
         except: pass
+            
     return PineconeVectorStore(index_name=INDEX_NAME, embedding=embeddings)
 
 vector_db = get_vector_store()
 
 def ingest_data():
+    """Recursively scans all folders and syncs PDFs to Cloud."""
     status = st.empty()
     status.info("🔍 Scanning Library...")
+    
     from langchain_community.document_loaders import PyMuPDFLoader
     all_docs = []
+    
     for root, dirs, files in os.walk("."):
         if ".git" in root: continue
         for file in files:
@@ -67,18 +82,24 @@ def ingest_data():
                 try:
                     loader = PyMuPDFLoader(os.path.join(root, file))
                     docs = loader.load()
+                    # Metadata: Use filename as source
                     clean_source = file.replace(".pdf", "").replace("_", " ")
                     for doc in docs: doc.metadata = {"source": clean_source}
                     all_docs.extend(docs)
                 except: pass
     
-    if not all_docs: return
+    if not all_docs:
+        status.warning("⚠️ No PDFs found.")
+        return
+
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=150)
     splits = text_splitter.split_documents(all_docs)
+    
+    status.info(f"🚀 Uploading {len(splits)} legal segments to Neural Cloud...")
     vector_db.add_documents(splits)
-    status.success(f"✅ Indexed {len(splits)} segments!")
+    status.success(f"✅ Indexed {len(splits)} segments! Brain Updated.")
 
-# --- LOGIC ENHANCED PROMPT ---
+# --- RESEARCH LOGIC (TRAP DETECTOR) ---
 research_prompt = ChatPromptTemplate.from_template("""
 You are Vakalat Pro, a Senior Legal Consultant.
 TODAY'S DATE: {current_date}
@@ -104,11 +125,20 @@ RESPONSE STRUCTURE:
    • [Exact Filename] – [Section/Context]
 """)
 
-# DRAFTING BRAIN
+# --- DRAFTING LOGIC ---
 drafting_prompt = ChatPromptTemplate.from_template("""
-You are a Senior Drafter. Draft a {doc_type}.
-DETAILS: {user_details}
-REQUIREMENTS: Professional legal language. Cite laws. Strict formatting.
+You are a Senior Drafter at a Top Law Firm.
+Task: Draft a professional {doc_type}.
+
+DETAILS:
+{user_details}
+
+REQUIREMENTS:
+1. Use professional legal language (Whereas, Therefore, Hereby).
+2. Cite relevant laws (e.g., Section 138 NI Act, Section 80 CPC) where applicable.
+3. Be aggressive but polite (if it's a notice) or humble (if it's a petition).
+4. Strict formatting.
+
 DRAFT:
 """)
 
@@ -119,7 +149,7 @@ DRAFT:
 with st.sidebar:
     st.image("https://cdn-icons-png.flaticon.com/512/924/924915.png", width=50)
     st.title("Vakalat Pro")
-    st.caption("Legal OS v8.0")
+    st.caption("Open Access | v9.0")
     if st.button("☁️ Sync Library"): ingest_data()
     st.markdown("---")
     enable_hindi = st.toggle("🇮🇳 Hindi Mode")
@@ -134,10 +164,11 @@ with tab1:
     
     if user_input := st.chat_input("Query Law Database..."):
         with st.spinner("Analyzing Law & Procedure..."):
-            # Increased k to 8 to catch Commercial Courts Act if present
+            # Fetch 8 docs to capture procedural nuance
             results = vector_db.similarity_search(user_input, k=8)
             context_text = ""
-            for doc in results: context_text += f"\n[Document: {doc.metadata.get('source', 'Unknown')}]\n{doc.page_content}\n"
+            for doc in results: 
+                context_text += f"\n[Document: {doc.metadata.get('source', 'Unknown')}]\n{doc.page_content}\n"
             
             chain = research_prompt | llm | StrOutputParser()
             response = chain.invoke({
@@ -162,10 +193,12 @@ with tab2:
         "Legal Notice (Recovery of Money)",
         "Legal Notice (Dishonour of Cheque - Sec 138)",
         "Writ Petition (General)",
+        "Reply to Show Cause Notice",
         "Rent Agreement",
         "Custom Document"
     ])
     st.divider()
+    
     with st.form("drafting_form"):
         col_a, col_b = st.columns(2)
         with col_a:
@@ -182,8 +215,10 @@ with tab2:
             details = f"Client: {client_name}\nOpponent: {opponent_name}\nDate: {date_of_incident}\nAmount: {amount}\nFacts: {facts}"
             d_chain = drafting_prompt | llm | StrOutputParser()
             draft = d_chain.invoke({"doc_type": doc_type, "user_details": details})
+            
             st.markdown(draft)
             
+            # PDF Generation
             pdf = FPDF()
             pdf.add_page()
             pdf.set_font("Arial", size=11)
