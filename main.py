@@ -1,9 +1,11 @@
 # main.py
-# VAKALAT PRO: SECURE ENTERPRISE EDITION (v10.0)
-# Features: Password Protection + Logic Traps + Drafting Studio
+# VAKALAT PRO: COMPLETE SUITE (v11.0)
+# Features: Logic Gates + Drafting Studio + Case Watch (Simulated) + Secure Access
 
 import streamlit as st
 import os
+import time
+import random
 from pinecone import Pinecone, ServerlessSpec
 from langchain_pinecone import PineconeVectorStore
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
@@ -11,51 +13,40 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from fpdf import FPDF
-from gtts import gTTS
-from io import BytesIO
-from datetime import date
+from datetime import date, timedelta
 
 # ---------------------------------------------------------
 # 1. SETUP & AUTHENTICATION
 # ---------------------------------------------------------
 st.set_page_config(page_title="Vakalat Pro | Legal OS", page_icon="⚖️", layout="wide")
 
-# Check Critical Secrets
 if "PINECONE_API_KEY" not in st.secrets:
     st.error("❌ Critical Error: PINECONE_API_KEY is missing.")
     st.stop()
 
-# Load Envs
 os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
 os.environ["PINECONE_API_KEY"] = st.secrets["PINECONE_API_KEY"]
 INDEX_NAME = st.secrets["PINECONE_INDEX_NAME"]
 
-# --- PASSWORD PROTECTION START ---
+# --- PASSWORD GATE ---
 def check_password():
-    """Returns `True` if the user had the correct password."""
     def password_entered():
         if st.session_state["password"] == st.secrets["APP_PASSWORD"]:
             st.session_state["password_correct"] = True
-            del st.session_state["password"]  # clean up
+            del st.session_state["password"]
         else:
             st.session_state["password_correct"] = False
 
     if "password_correct" not in st.session_state:
-        # First run, show input
         st.text_input("🔒 Enter Access Code:", type="password", on_change=password_entered, key="password")
         return False
     elif not st.session_state["password_correct"]:
-        # Wrong password, show input again
         st.text_input("🔒 Enter Access Code:", type="password", on_change=password_entered, key="password")
         st.error("❌ Access Denied")
         return False
-    else:
-        # Password correct
-        return True
+    return True
 
-if not check_password():
-    st.stop()  # STOPS HERE if password is wrong
-# --- PASSWORD PROTECTION END ---
+if not check_password(): st.stop()
 
 # Theme Styling
 st.markdown("""
@@ -67,6 +58,7 @@ st.markdown("""
     .stTabs [data-baseweb="tab-list"] { gap: 10px; }
     .stTabs [data-baseweb="tab"] { background-color: #1F242D; border-radius: 5px; color: #FAFAFA; }
     .stTabs [aria-selected="true"] { background-color: #D4AF37; color: #000; font-weight: bold; }
+    .metric-card { background-color: #1F242D; padding: 15px; border-radius: 10px; border-left: 4px solid #D4AF37; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -81,25 +73,17 @@ def get_vector_store():
     pc = Pinecone(api_key=os.environ["PINECONE_API_KEY"])
     if INDEX_NAME not in [i.name for i in pc.list_indexes()]:
         try: 
-            pc.create_index(
-                name=INDEX_NAME, 
-                dimension=1536, 
-                metric="cosine", 
-                spec=ServerlessSpec(cloud="aws", region="us-east-1")
-            )
+            pc.create_index(name=INDEX_NAME, dimension=1536, metric="cosine", spec=ServerlessSpec(cloud="aws", region="us-east-1"))
         except: pass
     return PineconeVectorStore(index_name=INDEX_NAME, embedding=embeddings)
 
 vector_db = get_vector_store()
 
 def ingest_data():
-    """Recursively scans all folders and syncs to Cloud."""
     status = st.empty()
     status.info("🔍 Scanning Library...")
-    
     from langchain_community.document_loaders import PyMuPDFLoader
     all_docs = []
-    
     for root, dirs, files in os.walk("."):
         if ".git" in root: continue
         for file in files:
@@ -112,44 +96,40 @@ def ingest_data():
                     all_docs.extend(docs)
                 except: pass
     
-    if not all_docs:
-        status.warning("⚠️ No PDFs found.")
-        return
-
+    if not all_docs: status.warning("⚠️ No PDFs found."); return
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=150)
     splits = text_splitter.split_documents(all_docs)
-    
-    status.info(f"🚀 Uploading {len(splits)} legal segments to Neural Cloud...")
     vector_db.add_documents(splits)
     status.success(f"✅ Indexed {len(splits)} segments! Brain Updated.")
 
-# --- STRICT LOGIC PROMPT ---
+# --- RESEARCH LOGIC (AGGRESSIVE) ---
 research_prompt = ChatPromptTemplate.from_template("""
 You are Vakalat Pro, a Senior Legal Consultant.
 TODAY'S DATE: {current_date}
 
 CRITICAL LOGIC GATES (Overrides Retrieval):
 1. **Commercial Disputes (>3 Lakhs):**
-   - Rule: Pre-Institution Mediation (Sec 12A, Commercial Courts Act) is MANDATORY.
-   - Trap: If user wants to file "immediately" or "directly", the Answer is **NO**, unless they specifically seek "Urgent Interim Relief".
+   - Rule: Pre-Institution Mediation (Sec 12A) is MANDATORY.
+   - Trap: If user wants to file "immediately" without Mediation, the Answer is **NO**, unless they seek "Urgent Interim Relief".
 2. **Cheque Bounce (Sec 138 NI Act):**
-   - Rule: Filing before the 15-day notice period expires is ILLEGAL (Premature).
+   - Rule: Filing before 15-day notice period expires is ILLEGAL.
    - Logic: Notice Date + 15 Days = Earliest Filing Date.
 3. **Limitation Act:**
    - Rule: Debt recovery limit is 3 Years.
-   - Logic: Compare Incident Date with Today. If > 3 years, Answer is **NO** (Time-Barred).
+   - Logic: If Incident Date > 3 years ago, Answer is **NO** (Time-Barred).
 
-LEGAL CONTEXT FROM DB:
+LEGAL CONTEXT:
 {context}
 
 QUERY: {question}
 
-RESPONSE STRUCTURE:
-1. **Direct Answer:** (Must be "NO" if any Logic Gate fails).
-2. **Procedural Check:** (Explain the missing step: Mediation/Notice Period).
+RESPONSE:
+1. **Direct Answer:** (Must be "NO" if Logic Gate fails).
+2. **Procedural Check:**
 3. **Authority Footer:**
-   • [Exact Filename] – [Section/Context]
+   • [Exact Filename] – [Section]
 """)
+
 # --- DRAFTING LOGIC ---
 drafting_prompt = ChatPromptTemplate.from_template("""
 You are a Senior Drafter. Draft a professional {doc_type}.
@@ -158,6 +138,29 @@ REQUIREMENTS: Professional legal language. Cite laws. Strict formatting.
 DRAFT:
 """)
 
+# --- CASE TRACKING SIMULATION ---
+def fetch_case_status(c_type, c_num, c_year):
+    """
+    SIMULATION MODE: Returns realistic dummy data.
+    Replace this function with real API calls (e.g., Legistify/RapidAPI) in Production.
+    """
+    time.sleep(1.5) # Simulate Network Latency
+    
+    # Randomly generate a status for demo
+    statuses = ["Pending Hearing", "Disposed", "Order Reserved", "Awaiting Summons"]
+    stages = ["Arguments", "Evidence", "Admission", "Final Hearing"]
+    next_dates = [date.today() + timedelta(days=random.randint(5, 60)) for _ in range(5)]
+    
+    return {
+        "status": random.choice(statuses),
+        "stage": random.choice(stages),
+        "next_date": random.choice(next_dates).strftime("%d %B %Y"),
+        "court": "High Court of Delhi",
+        "judge": "Hon'ble Justice S. Sharma",
+        "petitioner": "Tech Solutions Pvt Ltd",
+        "respondent": "State of NCT & Ors"
+    }
+
 # ---------------------------------------------------------
 # 3. INTERFACE
 # ---------------------------------------------------------
@@ -165,12 +168,12 @@ DRAFT:
 with st.sidebar:
     st.image("https://cdn-icons-png.flaticon.com/512/924/924915.png", width=50)
     st.title("Vakalat Pro")
-    st.caption("Secure Enterprise | v10.0")
+    st.caption("Secure Enterprise | v11.0")
     if st.button("☁️ Sync Library"): ingest_data()
     st.markdown("---")
     enable_hindi = st.toggle("🇮🇳 Hindi Mode")
 
-tab1, tab2 = st.tabs(["🔍 Research", "📝 Drafting Studio"])
+tab1, tab2, tab3 = st.tabs(["🔍 Research", "📝 Drafting Studio", "📡 Case Watch"])
 
 # --- TAB 1: RESEARCH ---
 with tab1:
@@ -179,7 +182,7 @@ with tab1:
     with col2: st.header("Legal Research")
     
     if user_input := st.chat_input("Query Law Database..."):
-        with st.spinner("Analyzing Law & Procedure..."):
+        with st.spinner("Running Logic Gates & Analyzing..."):
             results = vector_db.similarity_search(user_input, k=8)
             context_text = ""
             for doc in results: 
@@ -206,9 +209,8 @@ with tab2:
     
     doc_type = st.selectbox("Select Document Type", [
         "Legal Notice (Recovery of Money)",
-        "Legal Notice (Dishonour of Cheque - Sec 138)",
+        "Legal Notice (Dishonour of Cheque)",
         "Writ Petition (General)",
-        "Reply to Show Cause Notice",
         "Rent Agreement",
         "Custom Document"
     ])
@@ -232,11 +234,41 @@ with tab2:
             draft = d_chain.invoke({"doc_type": doc_type, "user_details": details})
             
             st.markdown(draft)
-            
-            # PDF Generation
             pdf = FPDF()
             pdf.add_page()
             pdf.set_font("Arial", size=11)
             pdf.multi_cell(0, 6, draft.encode('latin-1', 'replace').decode('latin-1'))
             st.download_button("Download PDF", bytes(pdf.output(dest='S')), "Draft.pdf", "application/pdf")
 
+# --- TAB 3: CASE WATCH (NEW) ---
+with tab3:
+    col1, col2 = st.columns([1, 8])
+    with col1: st.image("https://cdn-icons-png.flaticon.com/512/3222/3222625.png", width=50)
+    with col2: st.header("Case Watch (Live Radar)")
+    
+    st.info("ℹ️ Connected to: National Judicial Data Grid (Simulated Mode)")
+    
+    with st.form("case_track_form"):
+        c_col1, c_col2, c_col3 = st.columns(3)
+        with c_col1: case_type = st.selectbox("Case Type", ["W.P.(C) - Writ Petition", "CS(COMM) - Commercial Suit", "Bail App"])
+        with c_col2: case_num = st.text_input("Case Number", "1234")
+        with c_col3: case_year = st.text_input("Year", "2024")
+        
+        track_btn = st.form_submit_button("📡 Track Case")
+    
+    if track_btn:
+        with st.spinner("Fetching Live Status from Court Server..."):
+            data = fetch_case_status(case_type, case_num, case_year)
+            
+            st.markdown("### 🏛️ Case Status Report")
+            
+            m1, m2, m3, m4 = st.columns(4)
+            m1.markdown(f"<div class='metric-card'><b>Next Hearing</b><br><h2 style='color:#D4AF37'>{data['next_date']}</h2></div>", unsafe_allow_html=True)
+            m2.markdown(f"<div class='metric-card'><b>Current Stage</b><br><h3>{data['stage']}</h3></div>", unsafe_allow_html=True)
+            m3.markdown(f"<div class='metric-card'><b>Status</b><br><h3>{data['status']}</h3></div>", unsafe_allow_html=True)
+            m4.markdown(f"<div class='metric-card'><b>Court</b><br><h5>{data['court']}</h5></div>", unsafe_allow_html=True)
+            
+            st.markdown("---")
+            st.write(f"**Parties:** {data['petitioner']} V/s {data['respondent']}")
+            st.write(f"**Coram:** {data['judge']}")
+            st.success("✅ Data Sync Complete")
