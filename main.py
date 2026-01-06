@@ -1,6 +1,6 @@
 # main.py
-# VAKALAT PRO: OPEN ACCESS EDITION (v9.0)
-# Features: Logic Traps + Drafting Studio + No Password
+# VAKALAT PRO: SECURE ENTERPRISE EDITION (v10.0)
+# Features: Password Protection + Logic Traps + Drafting Studio
 
 import streamlit as st
 import os
@@ -16,20 +16,48 @@ from io import BytesIO
 from datetime import date
 
 # ---------------------------------------------------------
-# 1. SETUP & CONFIG
+# 1. SETUP & AUTHENTICATION
 # ---------------------------------------------------------
 st.set_page_config(page_title="Vakalat Pro | Legal OS", page_icon="⚖️", layout="wide")
 
-# Critical Secrets Check
+# Check Critical Secrets
 if "PINECONE_API_KEY" not in st.secrets:
-    st.error("❌ Critical Error: PINECONE_API_KEY is missing in Streamlit Secrets.")
+    st.error("❌ Critical Error: PINECONE_API_KEY is missing.")
     st.stop()
 
+# Load Envs
 os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
 os.environ["PINECONE_API_KEY"] = st.secrets["PINECONE_API_KEY"]
 INDEX_NAME = st.secrets["PINECONE_INDEX_NAME"]
 
-# Theme Styling (Dark Mode)
+# --- PASSWORD PROTECTION START ---
+def check_password():
+    """Returns `True` if the user had the correct password."""
+    def password_entered():
+        if st.session_state["password"] == st.secrets["APP_PASSWORD"]:
+            st.session_state["password_correct"] = True
+            del st.session_state["password"]  # clean up
+        else:
+            st.session_state["password_correct"] = False
+
+    if "password_correct" not in st.session_state:
+        # First run, show input
+        st.text_input("🔒 Enter Access Code:", type="password", on_change=password_entered, key="password")
+        return False
+    elif not st.session_state["password_correct"]:
+        # Wrong password, show input again
+        st.text_input("🔒 Enter Access Code:", type="password", on_change=password_entered, key="password")
+        st.error("❌ Access Denied")
+        return False
+    else:
+        # Password correct
+        return True
+
+if not check_password():
+    st.stop()  # STOPS HERE if password is wrong
+# --- PASSWORD PROTECTION END ---
+
+# Theme Styling
 st.markdown("""
 <style>
     .stApp { background-color: #0E1117; color: #FAFAFA; }
@@ -51,8 +79,6 @@ llm = ChatOpenAI(model="gpt-4o", temperature=0)
 def get_vector_store():
     embeddings = OpenAIEmbeddings()
     pc = Pinecone(api_key=os.environ["PINECONE_API_KEY"])
-    
-    # Auto-Create Index if missing
     if INDEX_NAME not in [i.name for i in pc.list_indexes()]:
         try: 
             pc.create_index(
@@ -62,13 +88,12 @@ def get_vector_store():
                 spec=ServerlessSpec(cloud="aws", region="us-east-1")
             )
         except: pass
-            
     return PineconeVectorStore(index_name=INDEX_NAME, embedding=embeddings)
 
 vector_db = get_vector_store()
 
 def ingest_data():
-    """Recursively scans all folders and syncs PDFs to Cloud."""
+    """Recursively scans all folders and syncs to Cloud."""
     status = st.empty()
     status.info("🔍 Scanning Library...")
     
@@ -82,7 +107,6 @@ def ingest_data():
                 try:
                     loader = PyMuPDFLoader(os.path.join(root, file))
                     docs = loader.load()
-                    # Metadata: Use filename as source
                     clean_source = file.replace(".pdf", "").replace("_", " ")
                     for doc in docs: doc.metadata = {"source": clean_source}
                     all_docs.extend(docs)
@@ -99,46 +123,33 @@ def ingest_data():
     vector_db.add_documents(splits)
     status.success(f"✅ Indexed {len(splits)} segments! Brain Updated.")
 
-# --- RESEARCH LOGIC (TRAP DETECTOR) ---
+# --- RESEARCH LOGIC ---
 research_prompt = ChatPromptTemplate.from_template("""
 You are Vakalat Pro, a Senior Legal Consultant.
 TODAY'S DATE: {current_date}
 
-CRITICAL LOGIC CHECKS (Must Apply):
-1. **Commercial Disputes:** If the user asks about a business/vendor dispute > ₹3 Lakhs, CHECK for "Pre-Institution Mediation" (Section 12A, Commercial Courts Act). If they skip it, warn them the suit will be rejected.
-2. **Cheque Bounce (Sec 138 NI Act):**
-   - Step 1: Notice Service Date.
-   - Step 2: ADD 15 Days (Waiting Period).
-   - Step 3: Cause of Action arises ONLY on Day 16.
-   - **Rule:** A complaint filed BEFORE Day 16 is PREMATURE and illegal (Yogendra Pratap Singh judgment).
-3. **Limitation Act:** Compare Incident Date with Today's Date. If > 3 years (for debt), it is Time-Barred.
+CRITICAL LOGIC CHECKS:
+1. **Commercial Disputes:** Check for "Pre-Institution Mediation" (Section 12A). Warn if skipped.
+2. **Cheque Bounce:** Check dates. Filing before 15-day notice period expires is ILLEGAL.
+3. **Limitation Act:** Compare Incident Date vs Today. If > 3 years (debt), it is Time-Barred.
 
-LEGAL CONTEXT FROM DB:
+LEGAL CONTEXT:
 {context}
 
 QUERY: {question}
 
-RESPONSE STRUCTURE:
-1. **Direct Answer:** (Yes/No/Maybe with reasoning).
-2. **Procedural Check:** (Did the user miss Mediation? Is the date premature?).
+RESPONSE:
+1. **Direct Answer:**
+2. **Procedural Check:**
 3. **Authority Footer:**
    • [Exact Filename] – [Section/Context]
 """)
 
 # --- DRAFTING LOGIC ---
 drafting_prompt = ChatPromptTemplate.from_template("""
-You are a Senior Drafter at a Top Law Firm.
-Task: Draft a professional {doc_type}.
-
-DETAILS:
-{user_details}
-
-REQUIREMENTS:
-1. Use professional legal language (Whereas, Therefore, Hereby).
-2. Cite relevant laws (e.g., Section 138 NI Act, Section 80 CPC) where applicable.
-3. Be aggressive but polite (if it's a notice) or humble (if it's a petition).
-4. Strict formatting.
-
+You are a Senior Drafter. Draft a professional {doc_type}.
+DETAILS: {user_details}
+REQUIREMENTS: Professional legal language. Cite laws. Strict formatting.
 DRAFT:
 """)
 
@@ -149,7 +160,7 @@ DRAFT:
 with st.sidebar:
     st.image("https://cdn-icons-png.flaticon.com/512/924/924915.png", width=50)
     st.title("Vakalat Pro")
-    st.caption("Open Access | v9.0")
+    st.caption("Secure Enterprise | v10.0")
     if st.button("☁️ Sync Library"): ingest_data()
     st.markdown("---")
     enable_hindi = st.toggle("🇮🇳 Hindi Mode")
@@ -164,7 +175,6 @@ with tab1:
     
     if user_input := st.chat_input("Query Law Database..."):
         with st.spinner("Analyzing Law & Procedure..."):
-            # Fetch 8 docs to capture procedural nuance
             results = vector_db.similarity_search(user_input, k=8)
             context_text = ""
             for doc in results: 
