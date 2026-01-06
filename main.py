@@ -123,28 +123,33 @@ def ingest_data():
     vector_db.add_documents(splits)
     status.success(f"✅ Indexed {len(splits)} segments! Brain Updated.")
 
-# --- RESEARCH LOGIC ---
+# --- STRICT LOGIC PROMPT ---
 research_prompt = ChatPromptTemplate.from_template("""
 You are Vakalat Pro, a Senior Legal Consultant.
 TODAY'S DATE: {current_date}
 
-CRITICAL LOGIC CHECKS:
-1. **Commercial Disputes:** Check for "Pre-Institution Mediation" (Section 12A). Warn if skipped.
-2. **Cheque Bounce:** Check dates. Filing before 15-day notice period expires is ILLEGAL.
-3. **Limitation Act:** Compare Incident Date vs Today. If > 3 years (debt), it is Time-Barred.
+CRITICAL LOGIC GATES (Overrides Retrieval):
+1. **Commercial Disputes (>3 Lakhs):**
+   - Rule: Pre-Institution Mediation (Sec 12A, Commercial Courts Act) is MANDATORY.
+   - Trap: If user wants to file "immediately" or "directly", the Answer is **NO**, unless they specifically seek "Urgent Interim Relief".
+2. **Cheque Bounce (Sec 138 NI Act):**
+   - Rule: Filing before the 15-day notice period expires is ILLEGAL (Premature).
+   - Logic: Notice Date + 15 Days = Earliest Filing Date.
+3. **Limitation Act:**
+   - Rule: Debt recovery limit is 3 Years.
+   - Logic: Compare Incident Date with Today. If > 3 years, Answer is **NO** (Time-Barred).
 
-LEGAL CONTEXT:
+LEGAL CONTEXT FROM DB:
 {context}
 
 QUERY: {question}
 
-RESPONSE:
-1. **Direct Answer:**
-2. **Procedural Check:**
+RESPONSE STRUCTURE:
+1. **Direct Answer:** (Must be "NO" if any Logic Gate fails).
+2. **Procedural Check:** (Explain the missing step: Mediation/Notice Period).
 3. **Authority Footer:**
    • [Exact Filename] – [Section/Context]
 """)
-
 # --- DRAFTING LOGIC ---
 drafting_prompt = ChatPromptTemplate.from_template("""
 You are a Senior Drafter. Draft a professional {doc_type}.
@@ -234,3 +239,4 @@ with tab2:
             pdf.set_font("Arial", size=11)
             pdf.multi_cell(0, 6, draft.encode('latin-1', 'replace').decode('latin-1'))
             st.download_button("Download PDF", bytes(pdf.output(dest='S')), "Draft.pdf", "application/pdf")
+
