@@ -1,21 +1,19 @@
 # main.py
-# VAKALAT PRO: FINAL GOLD (v7.0)
-# Features: Date-Awareness + Intelligent RAG + Drafting Studio
+# VAKALAT PRO: LOGIC PATCH (v8.0)
+# Fixes: Cheque Bounce Math, Mandatory Mediation, and Date Logic
 
 import streamlit as st
 import os
-import fitz  # PyMuPDF
 from pinecone import Pinecone, ServerlessSpec
 from langchain_pinecone import PineconeVectorStore
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_core.documents import Document
 from fpdf import FPDF
 from gtts import gTTS
 from io import BytesIO
-from datetime import date
+from datetime import date, timedelta
 
 # ---------------------------------------------------------
 # 1. SETUP
@@ -80,53 +78,48 @@ def ingest_data():
     vector_db.add_documents(splits)
     status.success(f"✅ Indexed {len(splits)} segments!")
 
-# --- DATE-AWARE RESEARCH PROMPT ---
+# --- LOGIC ENHANCED PROMPT ---
 research_prompt = ChatPromptTemplate.from_template("""
-You are Vakalat Pro, a Senior Legal Researcher.
+You are Vakalat Pro, a Senior Legal Consultant.
 TODAY'S DATE: {current_date}
 
-Protocol:
-1. Search the "LEGAL CONTEXT" for answers.
-2. **Time-Bar Check:** If the user mentions dates (e.g., loan date), compare them with TODAY'S DATE. If the Limitation period has expired, EXPLICITLY WARN the user.
-3. Cite sources for every claim using [Source: Filename].
-4. If info is missing, say "Not found in database."
+CRITICAL LOGIC CHECKS (Must Apply):
+1. **Commercial Disputes:** If the user asks about a business/vendor dispute > ₹3 Lakhs, CHECK for "Pre-Institution Mediation" (Section 12A, Commercial Courts Act). If they skip it, warn them the suit will be rejected.
+2. **Cheque Bounce (Sec 138 NI Act):**
+   - Step 1: Notice Service Date.
+   - Step 2: ADD 15 Days (Waiting Period).
+   - Step 3: Cause of Action arises ONLY on Day 16.
+   - **Rule:** A complaint filed BEFORE Day 16 is PREMATURE and illegal (Yogendra Pratap Singh judgment).
+3. **Limitation Act:** Compare Incident Date with Today's Date. If > 3 years (for debt), it is Time-Barred.
 
-LEGAL CONTEXT:
+LEGAL CONTEXT FROM DB:
 {context}
 
 QUERY: {question}
 
-RESPONSE:
-1. **Opinion:**
-2. **Authority Footer:**
-   • [Filename] – [Context]
+RESPONSE STRUCTURE:
+1. **Direct Answer:** (Yes/No/Maybe with reasoning).
+2. **Procedural Check:** (Did the user miss Mediation? Is the date premature?).
+3. **Authority Footer:**
+   • [Exact Filename] – [Section/Context]
 """)
 
-# B. DRAFTING BRAIN
+# DRAFTING BRAIN
 drafting_prompt = ChatPromptTemplate.from_template("""
-You are a Senior Drafter at a Top Law Firm.
-Task: Draft a professional {doc_type}.
-
-DETAILS:
-{user_details}
-
-REQUIREMENTS:
-1. Use professional legal language (Whereas, Therefore, Hereby).
-2. Cite relevant laws (e.g., Section 138 NI Act, Section 80 CPC) where applicable.
-3. Be aggressive but polite (if it's a notice) or humble (if it's a petition).
-4. Strict formatting.
-
+You are a Senior Drafter. Draft a {doc_type}.
+DETAILS: {user_details}
+REQUIREMENTS: Professional legal language. Cite laws. Strict formatting.
 DRAFT:
 """)
 
 # ---------------------------------------------------------
-# 3. INTERFACE (TABS)
+# 3. INTERFACE
 # ---------------------------------------------------------
 
 with st.sidebar:
     st.image("https://cdn-icons-png.flaticon.com/512/924/924915.png", width=50)
     st.title("Vakalat Pro")
-    st.caption("Legal OS v7.0")
+    st.caption("Legal OS v8.0")
     if st.button("☁️ Sync Library"): ingest_data()
     st.markdown("---")
     enable_hindi = st.toggle("🇮🇳 Hindi Mode")
@@ -140,13 +133,13 @@ with tab1:
     with col2: st.header("Legal Research")
     
     if user_input := st.chat_input("Query Law Database..."):
-        with st.spinner("Analyzing..."):
-            results = vector_db.similarity_search(user_input, k=6)
+        with st.spinner("Analyzing Law & Procedure..."):
+            # Increased k to 8 to catch Commercial Courts Act if present
+            results = vector_db.similarity_search(user_input, k=8)
             context_text = ""
             for doc in results: context_text += f"\n[Document: {doc.metadata.get('source', 'Unknown')}]\n{doc.page_content}\n"
             
             chain = research_prompt | llm | StrOutputParser()
-            # INJECT TODAY'S DATE HERE
             response = chain.invoke({
                 "context": context_text, 
                 "question": user_input, 
@@ -169,13 +162,10 @@ with tab2:
         "Legal Notice (Recovery of Money)",
         "Legal Notice (Dishonour of Cheque - Sec 138)",
         "Writ Petition (General)",
-        "Reply to Show Cause Notice",
         "Rent Agreement",
-        "Custom Document (Describe below)"
+        "Custom Document"
     ])
-    
     st.divider()
-    
     with st.form("drafting_form"):
         col_a, col_b = st.columns(2)
         with col_a:
@@ -183,32 +173,19 @@ with tab2:
             opponent_name = st.text_input("Opponent Name")
         with col_b:
             date_of_incident = st.date_input("Date of Incident", date.today())
-            amount = st.text_input("Amount Involved (₹)", "0")
-            
-        facts = st.text_area("Key Facts / Narrative", height=150, placeholder="E.g., We supplied goods on 1st Jan, Invoice #123. They have not paid despite reminders.")
-        
+            amount = st.text_input("Amount (₹)", "0")
+        facts = st.text_area("Facts", height=150)
         generate_btn = st.form_submit_button("⚡ Generate Draft")
     
     if generate_btn:
-        with st.spinner("Drafting Document..."):
-            details = f"""
-            Client: {client_name}
-            Opponent: {opponent_name}
-            Date: {date_of_incident}
-            Amount: {amount}
-            Facts: {facts}
-            """
-            
+        with st.spinner("Drafting..."):
+            details = f"Client: {client_name}\nOpponent: {opponent_name}\nDate: {date_of_incident}\nAmount: {amount}\nFacts: {facts}"
             d_chain = drafting_prompt | llm | StrOutputParser()
             draft = d_chain.invoke({"doc_type": doc_type, "user_details": details})
-            
-            st.subheader("📄 Draft Preview")
             st.markdown(draft)
             
             pdf = FPDF()
             pdf.add_page()
             pdf.set_font("Arial", size=11)
             pdf.multi_cell(0, 6, draft.encode('latin-1', 'replace').decode('latin-1'))
-            pdf_bytes = bytes(pdf.output(dest='S'))
-            
-            st.download_button("Download PDF", pdf_bytes, "Draft.pdf", "application/pdf")
+            st.download_button("Download PDF", bytes(pdf.output(dest='S')), "Draft.pdf", "application/pdf")
