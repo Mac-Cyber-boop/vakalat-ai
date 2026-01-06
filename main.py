@@ -1,6 +1,6 @@
 # main.py
-# VAKALAT PRO: SUITE EDITION (v6.0)
-# Features: Research Engine + Drafting Studio + Intelligent RAG
+# VAKALAT PRO: FINAL GOLD (v7.0)
+# Features: Date-Awareness + Intelligent RAG + Drafting Studio
 
 import streamlit as st
 import os
@@ -46,7 +46,6 @@ st.markdown("""
 # ---------------------------------------------------------
 llm = ChatOpenAI(model="gpt-4o", temperature=0)
 
-# A. RESEARCH BRAIN
 @st.cache_resource
 def get_vector_store():
     embeddings = OpenAIEmbeddings()
@@ -81,12 +80,16 @@ def ingest_data():
     vector_db.add_documents(splits)
     status.success(f"✅ Indexed {len(splits)} segments!")
 
+# --- DATE-AWARE RESEARCH PROMPT ---
 research_prompt = ChatPromptTemplate.from_template("""
 You are Vakalat Pro, a Senior Legal Researcher.
+TODAY'S DATE: {current_date}
+
 Protocol:
 1. Search the "LEGAL CONTEXT" for answers.
-2. Cite sources for every claim using [Source: Filename].
-3. If info is missing, say "Not found in database."
+2. **Time-Bar Check:** If the user mentions dates (e.g., loan date), compare them with TODAY'S DATE. If the Limitation period has expired, EXPLICITLY WARN the user.
+3. Cite sources for every claim using [Source: Filename].
+4. If info is missing, say "Not found in database."
 
 LEGAL CONTEXT:
 {context}
@@ -123,12 +126,11 @@ DRAFT:
 with st.sidebar:
     st.image("https://cdn-icons-png.flaticon.com/512/924/924915.png", width=50)
     st.title("Vakalat Pro")
-    st.caption("Legal OS v6.0")
+    st.caption("Legal OS v7.0")
     if st.button("☁️ Sync Library"): ingest_data()
     st.markdown("---")
     enable_hindi = st.toggle("🇮🇳 Hindi Mode")
 
-# TABS FOR MODES
 tab1, tab2 = st.tabs(["🔍 Research", "📝 Drafting Studio"])
 
 # --- TAB 1: RESEARCH ---
@@ -144,7 +146,12 @@ with tab1:
             for doc in results: context_text += f"\n[Document: {doc.metadata.get('source', 'Unknown')}]\n{doc.page_content}\n"
             
             chain = research_prompt | llm | StrOutputParser()
-            response = chain.invoke({"context": context_text, "question": user_input})
+            # INJECT TODAY'S DATE HERE
+            response = chain.invoke({
+                "context": context_text, 
+                "question": user_input, 
+                "current_date": date.today()
+            })
             
             if enable_hindi:
                 trans = ChatPromptTemplate.from_template("Translate to Hindi. Keep citations in English.\n\n{text}") | llm | StrOutputParser()
@@ -158,7 +165,6 @@ with tab2:
     with col1: st.image("https://cdn-icons-png.flaticon.com/512/2921/2921222.png", width=50)
     with col2: st.header("Drafting Studio")
     
-    # 1. Select Template
     doc_type = st.selectbox("Select Document Type", [
         "Legal Notice (Recovery of Money)",
         "Legal Notice (Dishonour of Cheque - Sec 138)",
@@ -170,7 +176,6 @@ with tab2:
     
     st.divider()
     
-    # 2. Input Form
     with st.form("drafting_form"):
         col_a, col_b = st.columns(2)
         with col_a:
@@ -184,7 +189,6 @@ with tab2:
         
         generate_btn = st.form_submit_button("⚡ Generate Draft")
     
-    # 3. Generate
     if generate_btn:
         with st.spinner("Drafting Document..."):
             details = f"""
@@ -201,7 +205,6 @@ with tab2:
             st.subheader("📄 Draft Preview")
             st.markdown(draft)
             
-            # Download Button
             pdf = FPDF()
             pdf.add_page()
             pdf.set_font("Arial", size=11)
