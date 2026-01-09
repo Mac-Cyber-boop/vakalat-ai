@@ -1,11 +1,9 @@
-streamlit
+fastapi
+uvicorn
+python-dotenv
+pinecone-client
 langchain
 langchain-openai
-langchain-community
 langchain-pinecone
-pinecone-client
-pypdf
+requests
 pymupdf
-python-dotenv
-fpdf2
-gTTS
