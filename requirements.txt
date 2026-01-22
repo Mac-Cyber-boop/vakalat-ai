@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+python-dotenv
+pinecone-client
+langchain
+langchain-openai
+langchain-pinecone
+requests
+pymupdf
+pydantic>=2.0
+structlog
+cachetools
