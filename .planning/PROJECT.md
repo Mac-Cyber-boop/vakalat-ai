@@ -1,5 +1,16 @@
 # Vakalat AI
 
+## Current Milestone: v1.0 Professional Document Drafting
+
+**Goal:** Add professional legal document drafting with court-standard templates, verified citations, and proper legal language.
+
+**Target features:**
+- Citation verification system (prevents hallucinated case references)
+- Template-based document generation (bail applications, legal notices, affidavits)
+- RAG-grounded content with inline citations
+- PDF/DOCX export with court-standard formatting
+- Template management API for custom uploads
+
 ## What This Is
 
 An AI legal assistant for Indian lawyers, judges, and legal consultants that provides trusted legal research and document drafting. Unlike generic AI tools that hallucinate fake cases, Vakalat AI only speaks from a verified database of Indian laws and Supreme Court judgments — it says "I don't know" when information isn't in the database.
@@ -76,4 +87,4 @@ An AI legal assistant for Indian lawyers, judges, and legal consultants that pro
 | Focus on drafting over research | User research showed drafting is the bigger pain point | — Pending |
 
 ---
-*Last updated: 2026-01-21 after initialization*
+*Last updated: 2026-01-22 after milestone v1.0 started*
