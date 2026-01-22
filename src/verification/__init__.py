@@ -12,12 +12,18 @@ from src.verification.models import (
     CaseCitationInput,
     StatuteCitationInput,
 )
+from src.verification.code_mapper import LegalCodeMapper
 
 __all__ = [
+    # Status enums
     "VerificationStatus",
     "CodeMappingStatus",
+    # Result models
     "VerificationResult",
     "CodeMappingResult",
+    # Input models
     "CaseCitationInput",
     "StatuteCitationInput",
+    # Mapper class
+    "LegalCodeMapper",
 ]
