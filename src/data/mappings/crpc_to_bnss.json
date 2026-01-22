@@ -1,0 +1,617 @@
+{
+  "_metadata": {
+    "source": "Code of Criminal Procedure, 1973",
+    "target": "Bharatiya Nagarik Suraksha Sanhita, 2023",
+    "effective_date": "2024-07-01",
+    "version": "1.0"
+  },
+  "41": {
+    "new_code": "BNSS",
+    "new_section": "35",
+    "confidence": 1.0,
+    "notes": "When police may arrest without warrant",
+    "status": "active"
+  },
+  "41A": {
+    "new_code": "BNSS",
+    "new_section": "35",
+    "confidence": 1.0,
+    "notes": "Notice of appearance before police officer (Arnesh Kumar guidelines codified)",
+    "status": "active"
+  },
+  "41B": {
+    "new_code": "BNSS",
+    "new_section": "37",
+    "confidence": 1.0,
+    "notes": "Procedure of arrest and duties of officer making arrest",
+    "status": "active"
+  },
+  "41C": {
+    "new_code": "BNSS",
+    "new_section": "37",
+    "confidence": 1.0,
+    "notes": "Control room at districts",
+    "status": "active"
+  },
+  "41D": {
+    "new_code": "BNSS",
+    "new_section": "36",
+    "confidence": 1.0,
+    "notes": "Right of arrested person to meet advocate",
+    "status": "active"
+  },
+  "46": {
+    "new_code": "BNSS",
+    "new_section": "40",
+    "confidence": 1.0,
+    "notes": "How arrest is made",
+    "status": "active"
+  },
+  "50": {
+    "new_code": "BNSS",
+    "new_section": "44",
+    "confidence": 1.0,
+    "notes": "Person arrested to be informed of grounds of arrest and right to bail",
+    "status": "active"
+  },
+  "50A": {
+    "new_code": "BNSS",
+    "new_section": "45",
+    "confidence": 1.0,
+    "notes": "Obligation of person making arrest to inform about arrest",
+    "status": "active"
+  },
+  "54": {
+    "new_code": "BNSS",
+    "new_section": "49",
+    "confidence": 1.0,
+    "notes": "Examination of arrested person by medical practitioner",
+    "status": "active"
+  },
+  "57": {
+    "new_code": "BNSS",
+    "new_section": "51",
+    "confidence": 1.0,
+    "notes": "Person arrested not to be detained more than 24 hours",
+    "status": "active"
+  },
+  "125": {
+    "new_code": "BNSS",
+    "new_section": "144",
+    "confidence": 1.0,
+    "notes": "Order for maintenance of wives, children and parents",
+    "status": "active"
+  },
+  "144": {
+    "new_code": "BNSS",
+    "new_section": "163",
+    "confidence": 1.0,
+    "notes": "Power to issue order in urgent cases of nuisance or apprehended danger",
+    "status": "active"
+  },
+  "154": {
+    "new_code": "BNSS",
+    "new_section": "173",
+    "confidence": 1.0,
+    "notes": "Information in cognizable cases (FIR)",
+    "status": "active"
+  },
+  "155": {
+    "new_code": "BNSS",
+    "new_section": "174",
+    "confidence": 1.0,
+    "notes": "Information as to non-cognizable cases",
+    "status": "active"
+  },
+  "156": {
+    "new_code": "BNSS",
+    "new_section": "175",
+    "confidence": 1.0,
+    "notes": "Police officer's power to investigate cognizable case",
+    "status": "active"
+  },
+  "157": {
+    "new_code": "BNSS",
+    "new_section": "176",
+    "confidence": 1.0,
+    "notes": "Procedure for investigation",
+    "status": "active"
+  },
+  "160": {
+    "new_code": "BNSS",
+    "new_section": "179",
+    "confidence": 1.0,
+    "notes": "Police officer's power to require attendance of witnesses",
+    "status": "active"
+  },
+  "161": {
+    "new_code": "BNSS",
+    "new_section": "180",
+    "confidence": 1.0,
+    "notes": "Examination of witnesses by police",
+    "status": "active"
+  },
+  "162": {
+    "new_code": "BNSS",
+    "new_section": "181",
+    "confidence": 1.0,
+    "notes": "Statements to police not to be signed (use in evidence)",
+    "status": "active"
+  },
+  "164": {
+    "new_code": "BNSS",
+    "new_section": "183",
+    "confidence": 1.0,
+    "notes": "Recording of confessions and statements",
+    "status": "active"
+  },
+  "164A": {
+    "new_code": "BNSS",
+    "new_section": "184",
+    "confidence": 1.0,
+    "notes": "Medical examination of rape victim",
+    "status": "active"
+  },
+  "167": {
+    "new_code": "BNSS",
+    "new_section": "187",
+    "confidence": 1.0,
+    "notes": "Procedure when investigation cannot be completed in 24 hours (remand)",
+    "status": "active"
+  },
+  "169": {
+    "new_code": "BNSS",
+    "new_section": "189",
+    "confidence": 1.0,
+    "notes": "Release of accused when evidence deficient",
+    "status": "active"
+  },
+  "170": {
+    "new_code": "BNSS",
+    "new_section": "193",
+    "confidence": 1.0,
+    "notes": "Cases to be sent to Magistrate when evidence is sufficient",
+    "status": "active"
+  },
+  "173": {
+    "new_code": "BNSS",
+    "new_section": "193",
+    "confidence": 1.0,
+    "notes": "Report of police officer on completion of investigation (chargesheet)",
+    "status": "active"
+  },
+  "177": {
+    "new_code": "BNSS",
+    "new_section": "197",
+    "confidence": 1.0,
+    "notes": "Ordinary place of inquiry and trial",
+    "status": "active"
+  },
+  "190": {
+    "new_code": "BNSS",
+    "new_section": "210",
+    "confidence": 1.0,
+    "notes": "Cognizance of offences by Magistrates",
+    "status": "active"
+  },
+  "197": {
+    "new_code": "BNSS",
+    "new_section": "218",
+    "confidence": 1.0,
+    "notes": "Prosecution of Judges and public servants",
+    "status": "active"
+  },
+  "200": {
+    "new_code": "BNSS",
+    "new_section": "223",
+    "confidence": 1.0,
+    "notes": "Examination of complainant",
+    "status": "active"
+  },
+  "202": {
+    "new_code": "BNSS",
+    "new_section": "225",
+    "confidence": 1.0,
+    "notes": "Postponement of issue of process",
+    "status": "active"
+  },
+  "203": {
+    "new_code": "BNSS",
+    "new_section": "227",
+    "confidence": 1.0,
+    "notes": "Dismissal of complaint",
+    "status": "active"
+  },
+  "204": {
+    "new_code": "BNSS",
+    "new_section": "226",
+    "confidence": 1.0,
+    "notes": "Issue of process",
+    "status": "active"
+  },
+  "207": {
+    "new_code": "BNSS",
+    "new_section": "230",
+    "confidence": 1.0,
+    "notes": "Supply of copy of police report and other documents to accused",
+    "status": "active"
+  },
+  "208": {
+    "new_code": "BNSS",
+    "new_section": "231",
+    "confidence": 1.0,
+    "notes": "Supply of copies of statements and documents to accused in cases instituted otherwise than on police report",
+    "status": "active"
+  },
+  "211": {
+    "new_code": "BNSS",
+    "new_section": "234",
+    "confidence": 1.0,
+    "notes": "Contents of charge",
+    "status": "active"
+  },
+  "225": {
+    "new_code": "BNSS",
+    "new_section": "251",
+    "confidence": 1.0,
+    "notes": "Trial before a Court of Session - opening case for prosecution",
+    "status": "active"
+  },
+  "227": {
+    "new_code": "BNSS",
+    "new_section": "250",
+    "confidence": 1.0,
+    "notes": "Discharge",
+    "status": "active"
+  },
+  "228": {
+    "new_code": "BNSS",
+    "new_section": "251",
+    "confidence": 1.0,
+    "notes": "Framing of charge",
+    "status": "active"
+  },
+  "230": {
+    "new_code": "BNSS",
+    "new_section": "255",
+    "confidence": 1.0,
+    "notes": "Date for prosecution evidence",
+    "status": "active"
+  },
+  "233": {
+    "new_code": "BNSS",
+    "new_section": "254",
+    "confidence": 1.0,
+    "notes": "Entering upon defence",
+    "status": "active"
+  },
+  "239": {
+    "new_code": "BNSS",
+    "new_section": "262",
+    "confidence": 1.0,
+    "notes": "When accused shall be discharged (warrant cases by Magistrate)",
+    "status": "active"
+  },
+  "240": {
+    "new_code": "BNSS",
+    "new_section": "263",
+    "confidence": 1.0,
+    "notes": "Framing of charge",
+    "status": "active"
+  },
+  "242": {
+    "new_code": "BNSS",
+    "new_section": "265",
+    "confidence": 1.0,
+    "notes": "Evidence for prosecution",
+    "status": "active"
+  },
+  "243": {
+    "new_code": "BNSS",
+    "new_section": "266",
+    "confidence": 1.0,
+    "notes": "Evidence for defence",
+    "status": "active"
+  },
+  "244": {
+    "new_code": "BNSS",
+    "new_section": "267",
+    "confidence": 1.0,
+    "notes": "Procedure when accused appears (summons case)",
+    "status": "active"
+  },
+  "245": {
+    "new_code": "BNSS",
+    "new_section": "268",
+    "confidence": 1.0,
+    "notes": "When accused shall be acquitted (summons case)",
+    "status": "active"
+  },
+  "246": {
+    "new_code": "BNSS",
+    "new_section": "269",
+    "confidence": 1.0,
+    "notes": "Procedure when accused does not understand charge",
+    "status": "active"
+  },
+  "251": {
+    "new_code": "BNSS",
+    "new_section": "274",
+    "confidence": 1.0,
+    "notes": "Substance of accusation to be stated (summons case)",
+    "status": "active"
+  },
+  "252": {
+    "new_code": "BNSS",
+    "new_section": "275",
+    "confidence": 1.0,
+    "notes": "Conviction on plea of guilty",
+    "status": "active"
+  },
+  "253": {
+    "new_code": "BNSS",
+    "new_section": "276",
+    "confidence": 1.0,
+    "notes": "Conviction on plea of guilty in absence of accused",
+    "status": "active"
+  },
+  "260": {
+    "new_code": "BNSS",
+    "new_section": "283",
+    "confidence": 1.0,
+    "notes": "Summary trials",
+    "status": "active"
+  },
+  "265A": {
+    "new_code": "BNSS",
+    "new_section": "288",
+    "confidence": 1.0,
+    "notes": "Application of Chapter - plea bargaining",
+    "status": "active"
+  },
+  "265B": {
+    "new_code": "BNSS",
+    "new_section": "289",
+    "confidence": 1.0,
+    "notes": "Application for plea bargaining",
+    "status": "active"
+  },
+  "273": {
+    "new_code": "BNSS",
+    "new_section": "299",
+    "confidence": 1.0,
+    "notes": "Evidence to be taken in presence of accused",
+    "status": "active"
+  },
+  "293": {
+    "new_code": "BNSS",
+    "new_section": "326",
+    "confidence": 1.0,
+    "notes": "Reports of certain experts",
+    "status": "active"
+  },
+  "300": {
+    "new_code": "BNSS",
+    "new_section": "337",
+    "confidence": 1.0,
+    "notes": "Person once convicted or acquitted not to be tried for same offence (double jeopardy)",
+    "status": "active"
+  },
+  "309": {
+    "new_code": "BNSS",
+    "new_section": "346",
+    "confidence": 1.0,
+    "notes": "Power to postpone or adjourn proceedings",
+    "status": "active"
+  },
+  "311": {
+    "new_code": "BNSS",
+    "new_section": "348",
+    "confidence": 1.0,
+    "notes": "Power to summon material witness or examine person present",
+    "status": "active"
+  },
+  "313": {
+    "new_code": "BNSS",
+    "new_section": "351",
+    "confidence": 1.0,
+    "notes": "Power to examine the accused",
+    "status": "active"
+  },
+  "354": {
+    "new_code": "BNSS",
+    "new_section": "392",
+    "confidence": 1.0,
+    "notes": "Language and contents of judgment",
+    "status": "active"
+  },
+  "357": {
+    "new_code": "BNSS",
+    "new_section": "395",
+    "confidence": 1.0,
+    "notes": "Order to pay compensation",
+    "status": "active"
+  },
+  "357A": {
+    "new_code": "BNSS",
+    "new_section": "396",
+    "confidence": 1.0,
+    "notes": "Victim compensation scheme",
+    "status": "active"
+  },
+  "358": {
+    "new_code": "BNSS",
+    "new_section": "399",
+    "confidence": 1.0,
+    "notes": "Compensation to persons groundlessly arrested",
+    "status": "active"
+  },
+  "359": {
+    "new_code": "BNSS",
+    "new_section": "400",
+    "confidence": 1.0,
+    "notes": "Order to pay costs in non-cognizable cases",
+    "status": "active"
+  },
+  "360": {
+    "new_code": "BNSS",
+    "new_section": "401",
+    "confidence": 1.0,
+    "notes": "Order to release on probation of good conduct or after admonition",
+    "status": "active"
+  },
+  "374": {
+    "new_code": "BNSS",
+    "new_section": "414",
+    "confidence": 1.0,
+    "notes": "Appeals from convictions",
+    "status": "active"
+  },
+  "378": {
+    "new_code": "BNSS",
+    "new_section": "419",
+    "confidence": 1.0,
+    "notes": "Appeal in case of acquittal",
+    "status": "active"
+  },
+  "386": {
+    "new_code": "BNSS",
+    "new_section": "427",
+    "confidence": 1.0,
+    "notes": "Powers of Appellate Court",
+    "status": "active"
+  },
+  "389": {
+    "new_code": "BNSS",
+    "new_section": "430",
+    "confidence": 1.0,
+    "notes": "Suspension of sentence pending appeal; release on bail",
+    "status": "active"
+  },
+  "397": {
+    "new_code": "BNSS",
+    "new_section": "438",
+    "confidence": 1.0,
+    "notes": "Calling for records to exercise powers of revision",
+    "status": "active"
+  },
+  "398": {
+    "new_code": "BNSS",
+    "new_section": "439",
+    "confidence": 1.0,
+    "notes": "Power to order inquiry",
+    "status": "active"
+  },
+  "399": {
+    "new_code": "BNSS",
+    "new_section": "440",
+    "confidence": 1.0,
+    "notes": "Sessions Judge's powers of revision",
+    "status": "active"
+  },
+  "401": {
+    "new_code": "BNSS",
+    "new_section": "442",
+    "confidence": 1.0,
+    "notes": "High Court's powers of revision",
+    "status": "active"
+  },
+  "406": {
+    "new_code": "BNSS",
+    "new_section": "447",
+    "confidence": 1.0,
+    "notes": "Power of Supreme Court to transfer cases",
+    "status": "active"
+  },
+  "407": {
+    "new_code": "BNSS",
+    "new_section": "448",
+    "confidence": 1.0,
+    "notes": "Power of High Court to transfer cases",
+    "status": "active"
+  },
+  "432": {
+    "new_code": "BNSS",
+    "new_section": "473",
+    "confidence": 1.0,
+    "notes": "Power to suspend or remit sentences",
+    "status": "active"
+  },
+  "433": {
+    "new_code": "BNSS",
+    "new_section": "474",
+    "confidence": 1.0,
+    "notes": "Power to commute sentence",
+    "status": "active"
+  },
+  "436": {
+    "new_code": "BNSS",
+    "new_section": "478",
+    "confidence": 1.0,
+    "notes": "In what cases bail to be taken (bailable offences)",
+    "status": "active"
+  },
+  "436A": {
+    "new_code": "BNSS",
+    "new_section": "479",
+    "confidence": 1.0,
+    "notes": "Maximum period for which an undertrial prisoner can be detained",
+    "status": "active"
+  },
+  "437": {
+    "new_code": "BNSS",
+    "new_section": "480",
+    "confidence": 1.0,
+    "notes": "When bail may be taken in case of non-bailable offence",
+    "status": "active"
+  },
+  "438": {
+    "new_code": "BNSS",
+    "new_section": "482",
+    "confidence": 1.0,
+    "notes": "Direction for grant of bail to person apprehending arrest (anticipatory bail)",
+    "status": "active"
+  },
+  "439": {
+    "new_code": "BNSS",
+    "new_section": "483",
+    "confidence": 1.0,
+    "notes": "Special powers of High Court or Court of Session regarding bail",
+    "status": "active"
+  },
+  "440": {
+    "new_code": "BNSS",
+    "new_section": "484",
+    "confidence": 1.0,
+    "notes": "Amount of bond and reduction thereof",
+    "status": "active"
+  },
+  "441": {
+    "new_code": "BNSS",
+    "new_section": "485",
+    "confidence": 1.0,
+    "notes": "Bond of accused and sureties",
+    "status": "active"
+  },
+  "446": {
+    "new_code": "BNSS",
+    "new_section": "490",
+    "confidence": 1.0,
+    "notes": "Procedure when bond has been forfeited",
+    "status": "active"
+  },
+  "468": {
+    "new_code": "BNSS",
+    "new_section": "512",
+    "confidence": 1.0,
+    "notes": "Bar to taking cognizance after lapse of period of limitation",
+    "status": "active"
+  },
+  "482": {
+    "new_code": "BNSS",
+    "new_section": "528",
+    "confidence": 1.0,
+    "notes": "Saving of inherent power of High Court",
+    "status": "active"
+  }
+}

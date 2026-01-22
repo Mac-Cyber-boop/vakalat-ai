@@ -1,0 +1,736 @@
+{
+  "_metadata": {
+    "source": "Indian Evidence Act, 1872",
+    "target": "Bharatiya Sakshya Adhiniyam, 2023",
+    "effective_date": "2024-07-01",
+    "version": "1.0"
+  },
+  "1": {
+    "new_code": "BSA",
+    "new_section": "1",
+    "confidence": 1.0,
+    "notes": "Short title, extent and commencement",
+    "status": "active"
+  },
+  "3": {
+    "new_code": "BSA",
+    "new_section": "2",
+    "confidence": 1.0,
+    "notes": "Interpretation clause (definitions including document, evidence, fact, etc.)",
+    "status": "active"
+  },
+  "4": {
+    "new_code": "BSA",
+    "new_section": "3",
+    "confidence": 1.0,
+    "notes": "May presume",
+    "status": "active"
+  },
+  "5": {
+    "new_code": "BSA",
+    "new_section": "4",
+    "confidence": 1.0,
+    "notes": "Evidence may be given of facts in issue and relevant facts",
+    "status": "active"
+  },
+  "6": {
+    "new_code": "BSA",
+    "new_section": "5",
+    "confidence": 1.0,
+    "notes": "Relevancy of facts forming part of same transaction (res gestae)",
+    "status": "active"
+  },
+  "7": {
+    "new_code": "BSA",
+    "new_section": "6",
+    "confidence": 1.0,
+    "notes": "Facts which are the occasion, cause or effect of facts in issue",
+    "status": "active"
+  },
+  "8": {
+    "new_code": "BSA",
+    "new_section": "7",
+    "confidence": 1.0,
+    "notes": "Motive, preparation and previous or subsequent conduct",
+    "status": "active"
+  },
+  "9": {
+    "new_code": "BSA",
+    "new_section": "8",
+    "confidence": 1.0,
+    "notes": "Facts necessary to explain or introduce relevant facts",
+    "status": "active"
+  },
+  "10": {
+    "new_code": "BSA",
+    "new_section": "9",
+    "confidence": 1.0,
+    "notes": "Things said or done by conspirator in reference to common design",
+    "status": "active"
+  },
+  "11": {
+    "new_code": "BSA",
+    "new_section": "10",
+    "confidence": 1.0,
+    "notes": "When facts not otherwise relevant become relevant",
+    "status": "active"
+  },
+  "12": {
+    "new_code": "BSA",
+    "new_section": "11",
+    "confidence": 1.0,
+    "notes": "In suits for damages, facts tending to enable Court to determine amount are relevant",
+    "status": "active"
+  },
+  "14": {
+    "new_code": "BSA",
+    "new_section": "13",
+    "confidence": 1.0,
+    "notes": "Facts showing existence of state of mind, or of body or bodily feeling",
+    "status": "active"
+  },
+  "15": {
+    "new_code": "BSA",
+    "new_section": "14",
+    "confidence": 1.0,
+    "notes": "Facts bearing on question whether act was accidental or intentional",
+    "status": "active"
+  },
+  "17": {
+    "new_code": "BSA",
+    "new_section": "16",
+    "confidence": 1.0,
+    "notes": "Admission defined",
+    "status": "active"
+  },
+  "18": {
+    "new_code": "BSA",
+    "new_section": "17",
+    "confidence": 1.0,
+    "notes": "Admission by party to proceeding or his agent",
+    "status": "active"
+  },
+  "21": {
+    "new_code": "BSA",
+    "new_section": "20",
+    "confidence": 1.0,
+    "notes": "Proof of admissions against persons making them, and by or on their behalf",
+    "status": "active"
+  },
+  "22": {
+    "new_code": "BSA",
+    "new_section": "21",
+    "confidence": 1.0,
+    "notes": "When oral admissions as to contents of documents are relevant",
+    "status": "active"
+  },
+  "24": {
+    "new_code": "BSA",
+    "new_section": "23",
+    "confidence": 1.0,
+    "notes": "Confession caused by inducement, threat or promise, when irrelevant",
+    "status": "active"
+  },
+  "25": {
+    "new_code": "BSA",
+    "new_section": "24",
+    "confidence": 1.0,
+    "notes": "Confession to police officer not to be proved",
+    "status": "active"
+  },
+  "26": {
+    "new_code": "BSA",
+    "new_section": "25",
+    "confidence": 1.0,
+    "notes": "Confession by accused while in custody of police not to be proved against him",
+    "status": "active"
+  },
+  "27": {
+    "new_code": "BSA",
+    "new_section": "26",
+    "confidence": 1.0,
+    "notes": "How much of information received from accused may be proved",
+    "status": "active"
+  },
+  "30": {
+    "new_code": "BSA",
+    "new_section": "29",
+    "confidence": 1.0,
+    "notes": "Consideration of proved confession affecting person making it and others jointly under trial",
+    "status": "active"
+  },
+  "32": {
+    "new_code": "BSA",
+    "new_section": "26",
+    "confidence": 0.9,
+    "notes": "Statements by persons who cannot be called as witnesses (dying declaration, etc.) - partially covered",
+    "status": "active"
+  },
+  "32(1)": {
+    "new_code": "BSA",
+    "new_section": "26(a)",
+    "confidence": 1.0,
+    "notes": "Dying declaration - statement by person as to cause of his death",
+    "status": "active"
+  },
+  "45": {
+    "new_code": "BSA",
+    "new_section": "39",
+    "confidence": 1.0,
+    "notes": "Opinions of experts",
+    "status": "active"
+  },
+  "47": {
+    "new_code": "BSA",
+    "new_section": "41",
+    "confidence": 1.0,
+    "notes": "Opinion as to handwriting, when relevant",
+    "status": "active"
+  },
+  "47A": {
+    "new_code": "BSA",
+    "new_section": "42",
+    "confidence": 1.0,
+    "notes": "Opinion as to electronic signature when relevant",
+    "status": "active"
+  },
+  "57": {
+    "new_code": "BSA",
+    "new_section": "51",
+    "confidence": 1.0,
+    "notes": "Facts of which Court must take judicial notice",
+    "status": "active"
+  },
+  "59": {
+    "new_code": "BSA",
+    "new_section": "53",
+    "confidence": 1.0,
+    "notes": "Proof of facts by oral evidence",
+    "status": "active"
+  },
+  "60": {
+    "new_code": "BSA",
+    "new_section": "54",
+    "confidence": 1.0,
+    "notes": "Oral evidence must be direct",
+    "status": "active"
+  },
+  "61": {
+    "new_code": "BSA",
+    "new_section": "55",
+    "confidence": 1.0,
+    "notes": "Proof of contents of documents",
+    "status": "active"
+  },
+  "62": {
+    "new_code": "BSA",
+    "new_section": "56",
+    "confidence": 1.0,
+    "notes": "Primary evidence",
+    "status": "active"
+  },
+  "63": {
+    "new_code": "BSA",
+    "new_section": "57",
+    "confidence": 1.0,
+    "notes": "Secondary evidence",
+    "status": "active"
+  },
+  "64": {
+    "new_code": "BSA",
+    "new_section": "58",
+    "confidence": 1.0,
+    "notes": "Proof of documents by primary evidence",
+    "status": "active"
+  },
+  "65": {
+    "new_code": "BSA",
+    "new_section": "59",
+    "confidence": 1.0,
+    "notes": "Cases in which secondary evidence relating to documents may be given",
+    "status": "active"
+  },
+  "65A": {
+    "new_code": "BSA",
+    "new_section": "61",
+    "confidence": 1.0,
+    "notes": "Special provisions as to evidence relating to electronic record",
+    "status": "active"
+  },
+  "65B": {
+    "new_code": "BSA",
+    "new_section": "63",
+    "confidence": 1.0,
+    "notes": "Admissibility of electronic records - certificate requirement for electronic evidence",
+    "status": "active"
+  },
+  "73": {
+    "new_code": "BSA",
+    "new_section": "71",
+    "confidence": 1.0,
+    "notes": "Comparison of signature, writing or seal with others admitted or proved",
+    "status": "active"
+  },
+  "73A": {
+    "new_code": "BSA",
+    "new_section": "72",
+    "confidence": 1.0,
+    "notes": "Proof as to verification of digital signature",
+    "status": "active"
+  },
+  "74": {
+    "new_code": "BSA",
+    "new_section": "73",
+    "confidence": 1.0,
+    "notes": "Public documents",
+    "status": "active"
+  },
+  "76": {
+    "new_code": "BSA",
+    "new_section": "75",
+    "confidence": 1.0,
+    "notes": "Certified copies of public documents",
+    "status": "active"
+  },
+  "78": {
+    "new_code": "BSA",
+    "new_section": "77",
+    "confidence": 1.0,
+    "notes": "Proof of other official documents",
+    "status": "active"
+  },
+  "79": {
+    "new_code": "BSA",
+    "new_section": "78",
+    "confidence": 1.0,
+    "notes": "Presumption as to genuineness of certified copies",
+    "status": "active"
+  },
+  "81": {
+    "new_code": "BSA",
+    "new_section": "80",
+    "confidence": 1.0,
+    "notes": "Presumption as to Gazettes, newspapers, etc.",
+    "status": "active"
+  },
+  "81A": {
+    "new_code": "BSA",
+    "new_section": "81",
+    "confidence": 1.0,
+    "notes": "Presumption as to electronic records five years old",
+    "status": "active"
+  },
+  "85": {
+    "new_code": "BSA",
+    "new_section": "84",
+    "confidence": 1.0,
+    "notes": "Presumption as to powers of attorney",
+    "status": "active"
+  },
+  "85A": {
+    "new_code": "BSA",
+    "new_section": "85",
+    "confidence": 1.0,
+    "notes": "Presumption as to electronic agreements",
+    "status": "active"
+  },
+  "85B": {
+    "new_code": "BSA",
+    "new_section": "86",
+    "confidence": 1.0,
+    "notes": "Presumption as to electronic records and electronic signatures",
+    "status": "active"
+  },
+  "85C": {
+    "new_code": "BSA",
+    "new_section": "87",
+    "confidence": 1.0,
+    "notes": "Presumption as to Electronic Signature Certificates",
+    "status": "active"
+  },
+  "88": {
+    "new_code": "BSA",
+    "new_section": "90",
+    "confidence": 1.0,
+    "notes": "Presumption as to telegraphic messages",
+    "status": "active"
+  },
+  "88A": {
+    "new_code": "BSA",
+    "new_section": "91",
+    "confidence": 1.0,
+    "notes": "Presumption as to electronic messages",
+    "status": "active"
+  },
+  "90": {
+    "new_code": "BSA",
+    "new_section": "93",
+    "confidence": 1.0,
+    "notes": "Presumption as to documents thirty years old",
+    "status": "active"
+  },
+  "90A": {
+    "new_code": "BSA",
+    "new_section": "94",
+    "confidence": 1.0,
+    "notes": "Presumption as to electronic records five years old",
+    "status": "active"
+  },
+  "91": {
+    "new_code": "BSA",
+    "new_section": "95",
+    "confidence": 1.0,
+    "notes": "Evidence of terms of contracts, grants and other dispositions of property reduced to form of document",
+    "status": "active"
+  },
+  "92": {
+    "new_code": "BSA",
+    "new_section": "96",
+    "confidence": 1.0,
+    "notes": "Exclusion of evidence of oral agreement",
+    "status": "active"
+  },
+  "101": {
+    "new_code": "BSA",
+    "new_section": "104",
+    "confidence": 1.0,
+    "notes": "Burden of proof",
+    "status": "active"
+  },
+  "102": {
+    "new_code": "BSA",
+    "new_section": "105",
+    "confidence": 1.0,
+    "notes": "On whom burden of proof lies",
+    "status": "active"
+  },
+  "103": {
+    "new_code": "BSA",
+    "new_section": "106",
+    "confidence": 1.0,
+    "notes": "Burden of proof as to particular fact",
+    "status": "active"
+  },
+  "104": {
+    "new_code": "BSA",
+    "new_section": "107",
+    "confidence": 1.0,
+    "notes": "Burden of proving fact to be proved to make evidence admissible",
+    "status": "active"
+  },
+  "105": {
+    "new_code": "BSA",
+    "new_section": "108",
+    "confidence": 1.0,
+    "notes": "Burden of proving that case of accused comes within exceptions",
+    "status": "active"
+  },
+  "106": {
+    "new_code": "BSA",
+    "new_section": "109",
+    "confidence": 1.0,
+    "notes": "Burden of proving fact especially within knowledge",
+    "status": "active"
+  },
+  "107": {
+    "new_code": "BSA",
+    "new_section": "110",
+    "confidence": 1.0,
+    "notes": "Burden of proving death of person known to have been alive within thirty years",
+    "status": "active"
+  },
+  "108": {
+    "new_code": "BSA",
+    "new_section": "111",
+    "confidence": 1.0,
+    "notes": "Burden of proving that person is alive who has not been heard of for seven years",
+    "status": "active"
+  },
+  "112": {
+    "new_code": "BSA",
+    "new_section": "115",
+    "confidence": 1.0,
+    "notes": "Birth during marriage, conclusive proof of legitimacy",
+    "status": "active"
+  },
+  "113A": {
+    "new_code": "BSA",
+    "new_section": "116",
+    "confidence": 1.0,
+    "notes": "Presumption as to abetment of suicide by married woman",
+    "status": "active"
+  },
+  "113B": {
+    "new_code": "BSA",
+    "new_section": "117",
+    "confidence": 1.0,
+    "notes": "Presumption as to dowry death",
+    "status": "active"
+  },
+  "114": {
+    "new_code": "BSA",
+    "new_section": "118",
+    "confidence": 1.0,
+    "notes": "Court may presume existence of certain facts",
+    "status": "active"
+  },
+  "114A": {
+    "new_code": "BSA",
+    "new_section": "119",
+    "confidence": 1.0,
+    "notes": "Presumption as to absence of consent in certain prosecutions for rape",
+    "status": "active"
+  },
+  "115": {
+    "new_code": "BSA",
+    "new_section": "120",
+    "confidence": 1.0,
+    "notes": "Estoppel",
+    "status": "active"
+  },
+  "118": {
+    "new_code": "BSA",
+    "new_section": "123",
+    "confidence": 1.0,
+    "notes": "Who may testify",
+    "status": "active"
+  },
+  "119": {
+    "new_code": "BSA",
+    "new_section": "124",
+    "confidence": 1.0,
+    "notes": "Dumb witnesses",
+    "status": "active"
+  },
+  "120": {
+    "new_code": "BSA",
+    "new_section": "125",
+    "confidence": 1.0,
+    "notes": "Parties to civil suit and their wives or husbands, husband or wife of person under criminal trial",
+    "status": "active"
+  },
+  "121": {
+    "new_code": "BSA",
+    "new_section": "126",
+    "confidence": 1.0,
+    "notes": "Judges and Magistrates",
+    "status": "active"
+  },
+  "122": {
+    "new_code": "BSA",
+    "new_section": "127",
+    "confidence": 1.0,
+    "notes": "Communications during marriage",
+    "status": "active"
+  },
+  "123": {
+    "new_code": "BSA",
+    "new_section": "128",
+    "confidence": 1.0,
+    "notes": "Evidence as to affairs of State",
+    "status": "active"
+  },
+  "124": {
+    "new_code": "BSA",
+    "new_section": "129",
+    "confidence": 1.0,
+    "notes": "Official communications",
+    "status": "active"
+  },
+  "125": {
+    "new_code": "BSA",
+    "new_section": "130",
+    "confidence": 1.0,
+    "notes": "Information as to commission of offences",
+    "status": "active"
+  },
+  "126": {
+    "new_code": "BSA",
+    "new_section": "131",
+    "confidence": 1.0,
+    "notes": "Professional communications",
+    "status": "active"
+  },
+  "129": {
+    "new_code": "BSA",
+    "new_section": "134",
+    "confidence": 1.0,
+    "notes": "Confidential communications with legal advisers",
+    "status": "active"
+  },
+  "132": {
+    "new_code": "BSA",
+    "new_section": "137",
+    "confidence": 1.0,
+    "notes": "Witness not excused from answering on ground that answer will criminate",
+    "status": "active"
+  },
+  "133": {
+    "new_code": "BSA",
+    "new_section": "138",
+    "confidence": 1.0,
+    "notes": "Accomplice",
+    "status": "active"
+  },
+  "134": {
+    "new_code": "BSA",
+    "new_section": "139",
+    "confidence": 1.0,
+    "notes": "Number of witnesses",
+    "status": "active"
+  },
+  "135": {
+    "new_code": "BSA",
+    "new_section": "140",
+    "confidence": 1.0,
+    "notes": "Order of production and examination of witnesses",
+    "status": "active"
+  },
+  "136": {
+    "new_code": "BSA",
+    "new_section": "141",
+    "confidence": 1.0,
+    "notes": "Judge to decide as to admissibility of evidence",
+    "status": "active"
+  },
+  "137": {
+    "new_code": "BSA",
+    "new_section": "142",
+    "confidence": 1.0,
+    "notes": "Examination-in-chief, cross-examination and re-examination",
+    "status": "active"
+  },
+  "138": {
+    "new_code": "BSA",
+    "new_section": "143",
+    "confidence": 1.0,
+    "notes": "Order of examinations",
+    "status": "active"
+  },
+  "139": {
+    "new_code": "BSA",
+    "new_section": "144",
+    "confidence": 1.0,
+    "notes": "Cross-examination of person called to produce a document",
+    "status": "active"
+  },
+  "140": {
+    "new_code": "BSA",
+    "new_section": "145",
+    "confidence": 1.0,
+    "notes": "Witnesses to character",
+    "status": "active"
+  },
+  "141": {
+    "new_code": "BSA",
+    "new_section": "146",
+    "confidence": 1.0,
+    "notes": "Leading questions",
+    "status": "active"
+  },
+  "143": {
+    "new_code": "BSA",
+    "new_section": "148",
+    "confidence": 1.0,
+    "notes": "Leading questions in cross-examination",
+    "status": "active"
+  },
+  "145": {
+    "new_code": "BSA",
+    "new_section": "150",
+    "confidence": 1.0,
+    "notes": "Cross-examination as to previous statements in writing",
+    "status": "active"
+  },
+  "146": {
+    "new_code": "BSA",
+    "new_section": "151",
+    "confidence": 1.0,
+    "notes": "Questions lawful in cross-examination",
+    "status": "active"
+  },
+  "148": {
+    "new_code": "BSA",
+    "new_section": "153",
+    "confidence": 1.0,
+    "notes": "When witness to be compelled to answer",
+    "status": "active"
+  },
+  "151": {
+    "new_code": "BSA",
+    "new_section": "156",
+    "confidence": 1.0,
+    "notes": "Indecent and scandalous questions",
+    "status": "active"
+  },
+  "152": {
+    "new_code": "BSA",
+    "new_section": "157",
+    "confidence": 1.0,
+    "notes": "Questions intended to insult or annoy",
+    "status": "active"
+  },
+  "153": {
+    "new_code": "BSA",
+    "new_section": "158",
+    "confidence": 1.0,
+    "notes": "Exclusion of evidence to contradict answers to questions testing veracity",
+    "status": "active"
+  },
+  "154": {
+    "new_code": "BSA",
+    "new_section": "159",
+    "confidence": 1.0,
+    "notes": "Question by party to his own witness (hostile witness)",
+    "status": "active"
+  },
+  "155": {
+    "new_code": "BSA",
+    "new_section": "160",
+    "confidence": 1.0,
+    "notes": "Impeaching credit of witness",
+    "status": "active"
+  },
+  "156": {
+    "new_code": "BSA",
+    "new_section": "161",
+    "confidence": 1.0,
+    "notes": "Questions tending to corroborate evidence of relevant fact admissible",
+    "status": "active"
+  },
+  "157": {
+    "new_code": "BSA",
+    "new_section": "162",
+    "confidence": 1.0,
+    "notes": "Former statements of witness may be proved to corroborate later testimony",
+    "status": "active"
+  },
+  "159": {
+    "new_code": "BSA",
+    "new_section": "164",
+    "confidence": 1.0,
+    "notes": "Refreshing memory",
+    "status": "active"
+  },
+  "165": {
+    "new_code": "BSA",
+    "new_section": "170",
+    "confidence": 1.0,
+    "notes": "Judge's power to put questions or order production",
+    "status": "active"
+  },
+  "166": {
+    "new_code": "BSA",
+    "new_section": "171",
+    "confidence": 1.0,
+    "notes": "Power of jury or assessors to put questions",
+    "status": "active"
+  },
+  "167": {
+    "new_code": "BSA",
+    "new_section": "172",
+    "confidence": 1.0,
+    "notes": "No new trial for improper admission or rejection of evidence",
+    "status": "active"
+  }
+}
