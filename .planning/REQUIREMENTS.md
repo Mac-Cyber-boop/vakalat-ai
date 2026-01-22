@@ -11,7 +11,7 @@ Requirements for professional document drafting milestone. Each maps to roadmap 
 
 - [ ] **TRUST-01**: System verifies every case citation against legal database before including in document
 - [ ] **TRUST-02**: Unverified citations are blocked from output (never generate unverified)
-- [ ] **TRUST-03**: System maps old legal codes to new (IPC→BNS, CrPC→BNSS, Evidence Act→BSA)
+- [ ] **TRUST-03**: System maps old legal codes to new (IPC->BNS, CrPC->BNSS, Evidence Act->BSA)
 - [ ] **TRUST-04**: System verifies section numbers exist and aren't repealed before citing
 - [ ] **TRUST-05**: System flags outdated legal code references and suggests current equivalents
 
@@ -76,7 +76,7 @@ Explicitly excluded. Documented to prevent scope creep.
 
 | Feature | Reason |
 |---------|--------|
-| Fully automated filing | Creates liability, loses trust — lawyers must review |
+| Fully automated filing | Creates liability, loses trust - lawyers must review |
 | Generic "AI will handle it" messaging | Black-box AI is untrustworthy; need transparency |
 | Chat-only interface | Hides structure, makes editing difficult |
 | Legal advice mode | Unauthorized practice of law concerns |
@@ -90,13 +90,40 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| (To be filled by roadmapper) | | |
+| TRUST-01 | Phase 1 - Trust Foundation | Pending |
+| TRUST-02 | Phase 1 - Trust Foundation | Pending |
+| TRUST-03 | Phase 1 - Trust Foundation | Pending |
+| TRUST-04 | Phase 1 - Trust Foundation | Pending |
+| TRUST-05 | Phase 1 - Trust Foundation | Pending |
+| TMPL-01 | Phase 2 - Template Storage | Pending |
+| TMPL-02 | Phase 2 - Template Storage | Pending |
+| CITE-01 | Phase 3 - Citation Engine | Pending |
+| CITE-02 | Phase 3 - Citation Engine | Pending |
+| CITE-03 | Phase 3 - Citation Engine | Pending |
+| CITE-04 | Phase 3 - Citation Engine | Pending |
+| CITE-05 | Phase 3 - Citation Engine | Pending |
+| CITE-06 | Phase 3 - Citation Engine | Pending |
+| DOC-01 | Phase 4 - Document Generation | Pending |
+| DOC-02 | Phase 4 - Document Generation | Pending |
+| DOC-03 | Phase 4 - Document Generation | Pending |
+| DOC-04 | Phase 4 - Document Generation | Pending |
+| DOC-07 | Phase 4 - Document Generation | Pending |
+| TMPL-03 | Phase 5 - Template Management | Pending |
+| TMPL-04 | Phase 5 - Template Management | Pending |
+| TMPL-05 | Phase 5 - Template Management | Pending |
+| TMPL-06 | Phase 5 - Template Management | Pending |
+| TMPL-07 | Phase 5 - Template Management | Pending |
+| DOC-05 | Phase 6 - Production Integration | Pending |
+| DOC-06 | Phase 6 - Production Integration | Pending |
+| PROD-01 | Phase 6 - Production Integration | Pending |
+| PROD-02 | Phase 6 - Production Integration | Pending |
+| PROD-03 | Phase 6 - Production Integration | Pending |
 
 **Coverage:**
 - v1 requirements: 22 total
-- Mapped to phases: 0
-- Unmapped: 22 (pending roadmap creation)
+- Mapped to phases: 22
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-01-22*
-*Last updated: 2026-01-22 after initial definition*
+*Last updated: 2026-01-22 - Traceability table populated after roadmap creation*
