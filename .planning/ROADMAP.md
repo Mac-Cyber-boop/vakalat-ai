@@ -35,6 +35,15 @@ Research confirmed the critical insight: "current AI tools hallucinate fake case
 
 **Research Flags:** Integration with external legal databases (IndianKanoon, SCC Online) may need API investigation during planning.
 
+**Plans:** 5 plans
+
+Plans:
+- [x] 01-01-PLAN.md — Legal code mapping foundation (LegalCodeMapper with IPC->BNS, CrPC->BNSS, IEA->BSA)
+- [ ] 01-02-PLAN.md — Citation verifier and audit logging (CitationVerifier + structlog infrastructure)
+- [ ] 01-03-PLAN.md — Section validator (verify sections exist in actual law, repeal status)
+- [ ] 01-04-PLAN.md — Citation gate and API integration (block unverified citations in draft endpoint)
+- [ ] 01-05-PLAN.md — Outdated code detection and full integration (complete trust foundation)
+
 ---
 
 ## Phase 2: Template Storage
@@ -54,6 +63,8 @@ Research confirmed the critical insight: "current AI tools hallucinate fake case
 4. Templates include court-specific formatting metadata (margins, font, spacing requirements)
 
 **Research Flags:** None - standard file-based storage pattern.
+
+**Plans:** (created by /gsd:plan-phase)
 
 ---
 
@@ -80,6 +91,8 @@ Research confirmed the critical insight: "current AI tools hallucinate fake case
 
 **Research Flags:** None - builds on existing Pinecone retrieval.
 
+**Plans:** (created by /gsd:plan-phase)
+
 ---
 
 ## Phase 4: Document Generation
@@ -103,6 +116,8 @@ Research confirmed the critical insight: "current AI tools hallucinate fake case
 5. Document structure matches court-specific template (Supreme Court format differs from District Court)
 
 **Research Flags:** LLM prompt engineering for legal tone may need iteration during implementation.
+
+**Plans:** (created by /gsd:plan-phase)
 
 ---
 
@@ -128,6 +143,8 @@ Research confirmed the critical insight: "current AI tools hallucinate fake case
 
 **Research Flags:** None - standard CRUD and validation patterns.
 
+**Plans:** (created by /gsd:plan-phase)
+
 ---
 
 ## Phase 6: Production Integration
@@ -152,13 +169,15 @@ Research confirmed the critical insight: "current AI tools hallucinate fake case
 
 **Research Flags:** WeasyPrint Windows compatibility needs testing during implementation.
 
+**Plans:** (created by /gsd:plan-phase)
+
 ---
 
 ## Progress
 
 | Phase | Name | Requirements | Status |
 |-------|------|--------------|--------|
-| 1 | Trust Foundation | TRUST-01, TRUST-02, TRUST-03, TRUST-04, TRUST-05 | Pending |
+| 1 | Trust Foundation | TRUST-01, TRUST-02, TRUST-03, TRUST-04, TRUST-05 | In Progress (1/5 plans complete) |
 | 2 | Template Storage | TMPL-01, TMPL-02 | Pending |
 | 3 | Citation Engine | CITE-01, CITE-02, CITE-03, CITE-04, CITE-05, CITE-06 | Pending |
 | 4 | Document Generation | DOC-01, DOC-02, DOC-03, DOC-04, DOC-07 | Pending |
@@ -195,4 +214,4 @@ Phase 2 (Template Storage) -----------------------------------------------+-----
 
 ---
 *Roadmap created: 2026-01-22*
-*Next: /gsd:plan-phase 1*
+*Updated: 2026-01-23 - Phase 1 gap closure plans added*
