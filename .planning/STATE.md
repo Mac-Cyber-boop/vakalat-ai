@@ -49,6 +49,8 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 | Separate CodeMappingStatus from VerificationStatus | Different outcomes for mapping vs verification operations | 01-01 |
 | Old codes return OUTDATED, not UNVERIFIED | IPC/CrPC/IEA still valid for pre-2024 cases, OUTDATED indicates should be updated | 01-03 |
 | Module-level cached mapper for quick_check | Fast pre-filtering without Pinecone queries | 01-03 |
+| Semantic search with post-filtering for cases | Database metadata varies, so verify match via filename/content | 01-02 |
+| Manual dict cache for verification results | Allows cache clearing and 0ms timing for cache hits | 01-02 |
 
 ### Technical Decisions
 | Decision | Details | Plan |
@@ -94,4 +96,4 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 
 ---
 *State initialized: 2026-01-22*
-*Last updated: 2026-01-23 - Plan 01-03 complete*
+*Last updated: 2026-01-24 - Plan 01-02 SUMMARY.md created*
