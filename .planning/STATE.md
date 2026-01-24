@@ -52,6 +52,8 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 | Semantic search with post-filtering for cases | Database metadata varies, so verify match via filename/content | 01-02 |
 | Manual dict cache for verification results | Allows cache clearing and 0ms timing for cache hits | 01-02 |
 | Fail-closed citation gate | Unverified citations blocked by default, explicit allow-list | 01-04 |
+| Omit and continue for blocked citations | Remove unverified citations, add footnote, don't fail generation | 01-04 |
+| OUTDATED passes through CitationGate | Old code citations still valid for pre-2024 cases, not blocked | 01-04 |
 | Regex patterns for both section orderings | Captures "Section 302, IPC" and "IPC Section 302" variants | 01-05 |
 | Additive response fields | New fields don't break existing API clients | 01-05 |
 
@@ -63,6 +65,8 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 | Pydantic models with Field descriptions | Follows api.py conventions for consistency | 01-01 |
 | structlog for audit logging | JSON output for container compatibility | 01-02 |
 | Pinecone filter with source_type and source_book | Efficient metadata-based filtering for section lookup | 01-03 |
+| Multiple regex patterns for citation extraction | Case: vs format, SCC, AIR; Statute: Section N, Act formats | 01-04 |
+| Response metadata for verification | citations_verified and citations_blocked fields in /draft response | 01-04 |
 | HTML warning box styling | Yellow background with amber border for outdated code notices | 01-05 |
 
 ### Blockers
