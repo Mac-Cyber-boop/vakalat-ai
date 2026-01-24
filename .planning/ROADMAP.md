@@ -64,7 +64,11 @@ Plans:
 
 **Research Flags:** None - standard file-based storage pattern.
 
-**Plans:** (created by /gsd:plan-phase)
+**Plans:** 2 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Template schemas and repository (Pydantic models + TemplateRepository class)
+- [ ] 02-02-PLAN.md — Template data and API integration (12 default templates + FastAPI endpoints)
 
 ---
 
@@ -178,7 +182,7 @@ Plans:
 | Phase | Name | Requirements | Status |
 |-------|------|--------------|--------|
 | 1 | Trust Foundation | TRUST-01, TRUST-02, TRUST-03, TRUST-04, TRUST-05 | In Progress (1/5 plans complete) |
-| 2 | Template Storage | TMPL-01, TMPL-02 | Pending |
+| 2 | Template Storage | TMPL-01, TMPL-02 | Planned (2 plans ready) |
 | 3 | Citation Engine | CITE-01, CITE-02, CITE-03, CITE-04, CITE-05, CITE-06 | Pending |
 | 4 | Document Generation | DOC-01, DOC-02, DOC-03, DOC-04, DOC-07 | Pending |
 | 5 | Template Management | TMPL-03, TMPL-04, TMPL-05, TMPL-06, TMPL-07 | Pending |
@@ -214,4 +218,4 @@ Phase 2 (Template Storage) -----------------------------------------------+-----
 
 ---
 *Roadmap created: 2026-01-22*
-*Updated: 2026-01-23 - Phase 1 gap closure plans added*
+*Updated: 2026-01-24 - Phase 2 plans created*
