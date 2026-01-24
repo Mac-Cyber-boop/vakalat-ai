@@ -3,11 +3,11 @@
 ## Current Position
 
 **Phase:** 1 of 6 - Trust Foundation
-**Plan:** 3 of 5 complete
-**Status:** In progress
-**Progress:** [####------] 1/6 phases (Plans 01-01, 01-02, 01-03 complete)
+**Plan:** 5 of 5 complete
+**Status:** Phase complete
+**Progress:** [##########] 1/6 phases (Phase 01 complete)
 
-**Last activity:** 2026-01-23 - Completed 01-03-PLAN.md (Section Validator)
+**Last activity:** 2026-01-24 - Completed 01-05-PLAN.md (Outdated Code Detection)
 
 ## Project Reference
 
@@ -22,19 +22,19 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 
 **Requirements:**
 - TRUST-01: Verify case citations against database [DONE - 01-02]
-- TRUST-02: Block unverified citations [DONE - 01-02]
+- TRUST-02: Block unverified citations [DONE - 01-04]
 - TRUST-03: Map IPC->BNS, CrPC->BNSS, Evidence Act->BSA [DONE - 01-01]
 - TRUST-04: Verify section numbers exist and not repealed [DONE - 01-03]
-- TRUST-05: Flag outdated codes, suggest current equivalents [PARTIAL - 01-03]
+- TRUST-05: Flag outdated codes, suggest current equivalents [DONE - 01-05]
 
 **Success Criteria:**
 1. Citation verification returns status within 2 seconds [DONE - 01-02]
 2. IPC-to-BNS mapping returns equivalent section with confidence [DONE - 01-01]
 3. Statute citations confirmed as existing and not repealed [DONE - 01-03]
-4. Unverified citations blocked (fail-safe) [DONE - 01-02]
-5. All verification attempts logged for audit [DONE - 01-02, 01-03]
+4. Unverified citations blocked (fail-safe) [DONE - 01-04]
+5. All verification attempts logged for audit [DONE - 01-02, 01-03, 01-05]
 
-**Research Flag:** External legal database API integration (IndianKanoon, SCC Online) may need investigation.
+**Phase 1 COMPLETE** - All trust foundation requirements satisfied.
 
 ## Accumulated Context
 
@@ -51,6 +51,9 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 | Module-level cached mapper for quick_check | Fast pre-filtering without Pinecone queries | 01-03 |
 | Semantic search with post-filtering for cases | Database metadata varies, so verify match via filename/content | 01-02 |
 | Manual dict cache for verification results | Allows cache clearing and 0ms timing for cache hits | 01-02 |
+| Fail-closed citation gate | Unverified citations blocked by default, explicit allow-list | 01-04 |
+| Regex patterns for both section orderings | Captures "Section 302, IPC" and "IPC Section 302" variants | 01-05 |
+| Additive response fields | New fields don't break existing API clients | 01-05 |
 
 ### Technical Decisions
 | Decision | Details | Plan |
@@ -60,6 +63,7 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 | Pydantic models with Field descriptions | Follows api.py conventions for consistency | 01-01 |
 | structlog for audit logging | JSON output for container compatibility | 01-02 |
 | Pinecone filter with source_type and source_book | Efficient metadata-based filtering for section lookup | 01-03 |
+| HTML warning box styling | Yellow background with amber border for outdated code notices | 01-05 |
 
 ### Blockers
 (None)
@@ -76,10 +80,13 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 - **Plan 01-01 complete**: LegalCodeMapper with 283 section mappings (IPC->BNS, CrPC->BNSS, IEA->BSA)
 - **Plan 01-02 complete**: Audit logging with structlog, CitationVerifier for case citations
 - **Plan 01-03 complete**: SectionValidator for Pinecone-based section existence verification
+- **Plan 01-04 complete**: CitationGate for filtering unverified citations in draft output
+- **Plan 01-05 complete**: OutdatedCodeDetector, /verify-citation and /map-code endpoints
 
 ### What's Next
-1. Execute Plan 01-04: Outdated code detection integration
-2. Execute Plan 01-05: Phase verification and integration testing
+1. Begin Phase 2: Core Drafting
+2. Create bail application template with verification hooks
+3. Implement template engine with citation injection
 
 ### Open Questions
 - External legal database API availability (IndianKanoon, SCC Online, Manupatra)
@@ -93,7 +100,10 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 - `src/verification/audit.py` - Audit logging with structlog
 - `src/verification/citation_verifier.py` - Case citation verification
 - `src/verification/section_validator.py` - Section existence validation with old code detection
+- `src/verification/citation_gate.py` - Citation filtering and sanitization
+- `src/verification/outdated_detector.py` - Outdated legal code detection
+- `api.py` - Updated with all verification integrations
 
 ---
 *State initialized: 2026-01-22*
-*Last updated: 2026-01-24 - Plan 01-02 SUMMARY.md created*
+*Last updated: 2026-01-24 - Phase 1 Trust Foundation complete*
