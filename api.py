@@ -7,6 +7,7 @@ from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
+from typing import Optional
 import os
 from dotenv import load_dotenv
 from pinecone import Pinecone
@@ -125,6 +126,17 @@ class DraftRequest(BaseModel):
 
 class ReviewRequest(BaseModel):
     doc_text: str
+
+class VerifyCitationRequest(BaseModel):
+    citation_type: str = Field(description="'case' or 'statute'")
+    case_name: Optional[str] = None
+    year: Optional[int] = None
+    act_name: Optional[str] = None
+    section: Optional[str] = None
+
+class MapCodeRequest(BaseModel):
+    old_code: str = Field(description="Old code name (IPC, CrPC, Evidence Act)")
+    section: str = Field(description="Section number")
 
 # 6. PROMPTS
 PLANNER_PROMPT = ChatPromptTemplate.from_template("""
@@ -259,3 +271,36 @@ async def analyze(req: ReviewRequest):
     ctx = "\n".join([d.page_content for d in vector_db.similarity_search(f"legality enforceability {req.doc_text[:200]}", k=10)])
     res = await (REVIEW_PROMPT | llm | StrOutputParser()).ainvoke({"doc_text": req.doc_text, "context": ctx})
     return {"analysis": res.replace("```html", "").replace("```", "").strip()}
+
+# 8. VERIFICATION ENDPOINTS
+
+@app.post("/verify-citation")
+async def verify_citation(req: VerifyCitationRequest):
+    """
+    Verify a legal citation (case or statute).
+
+    For case citations: Checks if the case exists in the database.
+    For statute citations: Validates section exists and is not repealed.
+    """
+    if req.citation_type == "case":
+        if not citation_verifier:
+            raise HTTPException(500, "Citation verifier not available")
+        result = citation_verifier.verify_case_citation(req.case_name, req.year)
+        return result.model_dump()
+    elif req.citation_type == "statute":
+        if not section_validator:
+            raise HTTPException(500, "Section validator not available")
+        result = section_validator.validate_section(req.act_name, req.section)
+        return result.model_dump()
+    else:
+        raise HTTPException(400, "citation_type must be 'case' or 'statute'")
+
+@app.post("/map-code")
+async def map_code(req: MapCodeRequest):
+    """
+    Map an old legal code section to its new equivalent.
+
+    Converts IPC -> BNS, CrPC -> BNSS, Evidence Act -> BSA sections.
+    """
+    result = code_mapper.map_section(req.old_code, req.section)
+    return result.model_dump()
