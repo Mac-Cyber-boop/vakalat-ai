@@ -13,6 +13,11 @@ from src.citations.models import (
     FormattedCitation,
 )
 from src.citations.formatter import CitationFormatter
+from src.citations.retriever import (
+    PrecedentRetriever,
+    RetrievedPrecedent,
+    JurisdictionWeight,
+)
 
 __all__ = [
     # Models
@@ -23,4 +28,8 @@ __all__ = [
     "FormattedCitation",
     # Formatter
     "CitationFormatter",
+    # Retriever
+    "PrecedentRetriever",
+    "RetrievedPrecedent",
+    "JurisdictionWeight",
 ]
