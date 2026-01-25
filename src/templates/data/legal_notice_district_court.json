@@ -1,0 +1,98 @@
+{
+  "metadata": {
+    "doc_type": "legal_notice",
+    "court_level": "district_court",
+    "version": "1.0.0",
+    "name": "District Court Standard Legal Notice",
+    "description": "Legal notice template for matters within District Court jurisdiction. Suitable for tenant disputes, recovery suits, and local civil matters."
+  },
+  "formatting": {
+    "paper_size": "A4",
+    "font": "Times New Roman",
+    "font_size": 12,
+    "line_spacing": 1.5,
+    "margin_left_right": "3cm",
+    "margin_top_bottom": "2cm",
+    "paper_quality": "75 GSM",
+    "double_sided": true
+  },
+  "required_fields": [
+    {
+      "field_name": "sender_name",
+      "field_type": "party",
+      "required": true,
+      "label": "Sender Name",
+      "description": "Full legal name of the person or entity sending the notice",
+      "example": "Shri Ram Prasad Verma"
+    },
+    {
+      "field_name": "sender_address",
+      "field_type": "text",
+      "required": true,
+      "label": "Sender Address",
+      "description": "Complete postal address of the sender for service of reply",
+      "example": "House No. 234, Mohalla Sadar, Bareilly - 243001"
+    },
+    {
+      "field_name": "recipient_name",
+      "field_type": "party",
+      "required": true,
+      "label": "Recipient Name",
+      "description": "Full legal name of the person or entity receiving the notice",
+      "example": "Shri Suresh Chand"
+    },
+    {
+      "field_name": "recipient_address",
+      "field_type": "text",
+      "required": true,
+      "label": "Recipient Address",
+      "description": "Complete postal address for service of the notice",
+      "example": "Shop No. 12, Main Market, Bareilly - 243001"
+    },
+    {
+      "field_name": "subject_matter",
+      "field_type": "text",
+      "required": true,
+      "label": "Subject Matter",
+      "description": "Brief description of the matter for which notice is being sent",
+      "example": "Recovery of Outstanding Loan Amount"
+    },
+    {
+      "field_name": "demand_details",
+      "field_type": "text",
+      "required": true,
+      "label": "Demand Details",
+      "description": "Specific demands, claims, or reliefs sought from the recipient",
+      "example": "Repayment of Rs. 2,50,000/- borrowed on 01.01.2023"
+    },
+    {
+      "field_name": "compliance_period",
+      "field_type": "text",
+      "required": true,
+      "label": "Compliance Period",
+      "description": "Time period within which the recipient must comply or respond",
+      "example": "15 days from receipt of this notice"
+    }
+  ],
+  "optional_fields": [
+    {
+      "field_name": "prior_correspondence",
+      "field_type": "text",
+      "required": false,
+      "label": "Prior Correspondence",
+      "description": "Reference to any earlier communications between parties",
+      "example": "Multiple verbal reminders given in person"
+    },
+    {
+      "field_name": "supporting_documents",
+      "field_type": "text",
+      "required": false,
+      "label": "Supporting Documents",
+      "description": "List of documents attached or referred to in the notice",
+      "example": "Promissory Note dated 01.01.2023"
+    }
+  ],
+  "template_content": "LEGAL NOTICE\n\nDate: _______________\n\nTo,\n{recipient_name}\n{recipient_address}\n\nSubject: {subject_matter}\n\nDear Sir/Madam,\n\nOn behalf of my client, {sender_name}, residing at {sender_address}, I hereby serve this Legal Notice upon you as under:\n\n1. FACTS:\n[STATE THE FACTS]\n\n2. DEMAND:\n{demand_details}\n\n3. You are required to comply with the above demand within {compliance_period}.\n\n4. Failing compliance, my client will be compelled to file appropriate legal proceedings against you in the competent court at your risk, cost, and consequences.\n\n5. Please treat this notice as final.\n\nAdvocate for Sender",
+  "created_at": "2026-01-25T07:14:00Z",
+  "updated_at": "2026-01-25T07:14:00Z"
+}

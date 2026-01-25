@@ -1,0 +1,106 @@
+{
+  "metadata": {
+    "doc_type": "bail_application",
+    "court_level": "district_court",
+    "version": "1.0.0",
+    "name": "District Court Bail Application",
+    "description": "Bail application template for filing before Sessions Court/District Court under Section 437/439 CrPC/BNSS. Uses standard District Court formatting with 12pt font."
+  },
+  "formatting": {
+    "paper_size": "A4",
+    "font": "Times New Roman",
+    "font_size": 12,
+    "line_spacing": 1.5,
+    "margin_left_right": "3cm",
+    "margin_top_bottom": "2cm",
+    "paper_quality": "75 GSM",
+    "double_sided": true
+  },
+  "required_fields": [
+    {
+      "field_name": "applicant_name",
+      "field_type": "party",
+      "required": true,
+      "label": "Applicant Name",
+      "description": "Full legal name of the accused/applicant seeking bail",
+      "example": "Shri Mohan Lal Sharma"
+    },
+    {
+      "field_name": "applicant_address",
+      "field_type": "text",
+      "required": true,
+      "label": "Applicant Address",
+      "description": "Complete residential address of the applicant",
+      "example": "Village Rampur, Tehsil Sadar, District Varanasi - 221001"
+    },
+    {
+      "field_name": "fir_number",
+      "field_type": "text",
+      "required": true,
+      "label": "FIR Number",
+      "description": "First Information Report number with year",
+      "example": "FIR No. 789/2024"
+    },
+    {
+      "field_name": "police_station",
+      "field_type": "text",
+      "required": true,
+      "label": "Police Station",
+      "description": "Name and district of the police station where FIR is registered",
+      "example": "Lanka Police Station, Varanasi"
+    },
+    {
+      "field_name": "sections_charged",
+      "field_type": "text",
+      "required": true,
+      "label": "Sections Charged",
+      "description": "Penal sections under which the accused is charged",
+      "example": "Sections 323, 504, 506 of BNS"
+    },
+    {
+      "field_name": "date_of_arrest",
+      "field_type": "date",
+      "required": true,
+      "label": "Date of Arrest",
+      "description": "Date when the applicant was taken into custody",
+      "example": "2024-03-10"
+    },
+    {
+      "field_name": "grounds_for_bail",
+      "field_type": "text",
+      "required": true,
+      "label": "Grounds for Bail",
+      "description": "Legal grounds and circumstances justifying the grant of bail",
+      "example": "The offence is bailable in nature. The applicant is the sole breadwinner of the family."
+    },
+    {
+      "field_name": "relief_sought",
+      "field_type": "relief",
+      "required": true,
+      "label": "Relief Sought",
+      "description": "Specific bail relief being requested from the Court",
+      "example": "Bail on personal bond with one surety"
+    }
+  ],
+  "optional_fields": [
+    {
+      "field_name": "surety_details",
+      "field_type": "text",
+      "required": false,
+      "label": "Surety Details",
+      "description": "Details of proposed surety including name, address, and occupation",
+      "example": "Shri Ram Prasad, neighbor of the applicant"
+    },
+    {
+      "field_name": "previous_bail_history",
+      "field_type": "text",
+      "required": false,
+      "label": "Previous Bail Applications",
+      "description": "Details of any prior bail applications filed and their outcomes",
+      "example": "No previous bail application filed"
+    }
+  ],
+  "template_content": "IN THE COURT OF SESSIONS JUDGE/ADDITIONAL SESSIONS JUDGE\n_______________\n\nCRIMINAL MISC. APPLICATION NO. _____ OF _____\n\nIN THE MATTER OF:\n\n{applicant_name}\nS/o, D/o, W/o _______________\nR/o {applicant_address}\n... Applicant\n\nVERSUS\n\nState of _______________\n... Opposite Party\n\nAPPLICATION FOR BAIL UNDER SECTION 437/439 Cr.P.C./BNSS\n\nRespectfully Showeth:\n\n1. That the applicant is in custody since {date_of_arrest} in Case {fir_number} registered at {police_station}.\n\n2. That the applicant has been booked under {sections_charged}.\n\n3. GROUNDS:\n{grounds_for_bail}\n\nPRAYER:\nIt is humbly prayed that this Hon'ble Court may be pleased to grant bail to the applicant:\n\n{relief_sought}\n\nApplicant through Counsel",
+  "created_at": "2026-01-25T07:14:00Z",
+  "updated_at": "2026-01-25T07:14:00Z"
+}

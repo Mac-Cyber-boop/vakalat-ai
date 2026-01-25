@@ -1,0 +1,106 @@
+{
+  "metadata": {
+    "doc_type": "bail_application",
+    "court_level": "supreme_court",
+    "version": "1.0.0",
+    "name": "Supreme Court Bail Application",
+    "description": "Bail application template for filing before the Supreme Court of India under Article 136 or Section 439 CrPC/BNSS. Follows Supreme Court Rules 2013 formatting standards."
+  },
+  "formatting": {
+    "paper_size": "A4",
+    "font": "Times New Roman",
+    "font_size": 14,
+    "line_spacing": 1.5,
+    "margin_left_right": "4cm",
+    "margin_top_bottom": "2cm",
+    "paper_quality": "75 GSM",
+    "double_sided": true
+  },
+  "required_fields": [
+    {
+      "field_name": "applicant_name",
+      "field_type": "party",
+      "required": true,
+      "label": "Applicant Name",
+      "description": "Full legal name of the accused/applicant seeking bail",
+      "example": "Shri Rajesh Kumar Singh"
+    },
+    {
+      "field_name": "applicant_address",
+      "field_type": "text",
+      "required": true,
+      "label": "Applicant Address",
+      "description": "Complete residential address of the applicant",
+      "example": "123, Vasant Vihar, New Delhi - 110057"
+    },
+    {
+      "field_name": "fir_number",
+      "field_type": "text",
+      "required": true,
+      "label": "FIR Number",
+      "description": "First Information Report number with year",
+      "example": "FIR No. 123/2024"
+    },
+    {
+      "field_name": "police_station",
+      "field_type": "text",
+      "required": true,
+      "label": "Police Station",
+      "description": "Name and district of the police station where FIR is registered",
+      "example": "Saket Police Station, South Delhi"
+    },
+    {
+      "field_name": "sections_charged",
+      "field_type": "text",
+      "required": true,
+      "label": "Sections Charged",
+      "description": "Penal sections under which the accused is charged",
+      "example": "Sections 302, 120B of BNS"
+    },
+    {
+      "field_name": "date_of_arrest",
+      "field_type": "date",
+      "required": true,
+      "label": "Date of Arrest",
+      "description": "Date when the applicant was taken into custody",
+      "example": "2024-01-15"
+    },
+    {
+      "field_name": "grounds_for_bail",
+      "field_type": "text",
+      "required": true,
+      "label": "Grounds for Bail",
+      "description": "Legal grounds and circumstances justifying the grant of bail",
+      "example": "The applicant has deep roots in society, is not a flight risk, and investigation is complete."
+    },
+    {
+      "field_name": "relief_sought",
+      "field_type": "relief",
+      "required": true,
+      "label": "Relief Sought",
+      "description": "Specific bail relief being requested from the Court",
+      "example": "Regular bail pending trial with conditions as deemed fit by this Hon'ble Court"
+    }
+  ],
+  "optional_fields": [
+    {
+      "field_name": "surety_details",
+      "field_type": "text",
+      "required": false,
+      "label": "Surety Details",
+      "description": "Details of proposed surety including name, address, and occupation",
+      "example": "Shri Anil Kumar, S/o Late Ram Kumar, residing at 45 Nehru Place, Delhi"
+    },
+    {
+      "field_name": "previous_bail_history",
+      "field_type": "text",
+      "required": false,
+      "label": "Previous Bail Applications",
+      "description": "Details of any prior bail applications filed and their outcomes",
+      "example": "Bail application rejected by Sessions Court on 01.02.2024"
+    }
+  ],
+  "template_content": "IN THE SUPREME COURT OF INDIA\nCRIMINAL APPELLATE JURISDICTION\n\nSPECIAL LEAVE PETITION (CRIMINAL) NO. _____ OF _____\n\nIN THE MATTER OF:\n\n{applicant_name}\n... Petitioner/Applicant\n\nVERSUS\n\nState of _______________\n... Respondent\n\nAPPLICATION FOR BAIL\n\nMost Respectfully Showeth:\n\n1. That the above-named petitioner is in custody since {date_of_arrest} in connection with {fir_number} registered at {police_station}.\n\n2. That the petitioner has been charged under {sections_charged}.\n\n3. GROUNDS FOR BAIL:\n{grounds_for_bail}\n\nPRAYER:\nIn view of the facts and circumstances stated above, it is most respectfully prayed that this Hon'ble Court may be pleased to:\n\n{relief_sought}\n\nAnd for this act of kindness, the petitioner shall forever pray.",
+  "created_at": "2026-01-25T07:14:00Z",
+  "updated_at": "2026-01-25T07:14:00Z"
+}

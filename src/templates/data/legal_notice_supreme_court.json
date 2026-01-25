@@ -1,0 +1,98 @@
+{
+  "metadata": {
+    "doc_type": "legal_notice",
+    "court_level": "supreme_court",
+    "version": "1.0.0",
+    "name": "Supreme Court Standard Legal Notice",
+    "description": "Legal notice template following Supreme Court formatting standards. Used for pre-litigation notices in matters that may escalate to the Supreme Court."
+  },
+  "formatting": {
+    "paper_size": "A4",
+    "font": "Times New Roman",
+    "font_size": 14,
+    "line_spacing": 1.5,
+    "margin_left_right": "4cm",
+    "margin_top_bottom": "2cm",
+    "paper_quality": "75 GSM",
+    "double_sided": true
+  },
+  "required_fields": [
+    {
+      "field_name": "sender_name",
+      "field_type": "party",
+      "required": true,
+      "label": "Sender Name",
+      "description": "Full legal name of the person or entity sending the notice",
+      "example": "M/s ABC Enterprises Pvt. Ltd."
+    },
+    {
+      "field_name": "sender_address",
+      "field_type": "text",
+      "required": true,
+      "label": "Sender Address",
+      "description": "Complete postal address of the sender for service of reply",
+      "example": "101, Corporate Tower, Connaught Place, New Delhi - 110001"
+    },
+    {
+      "field_name": "recipient_name",
+      "field_type": "party",
+      "required": true,
+      "label": "Recipient Name",
+      "description": "Full legal name of the person or entity receiving the notice",
+      "example": "M/s XYZ Corporation Ltd."
+    },
+    {
+      "field_name": "recipient_address",
+      "field_type": "text",
+      "required": true,
+      "label": "Recipient Address",
+      "description": "Complete postal address for service of the notice",
+      "example": "502, Business Park, Sector 44, Gurugram - 122003"
+    },
+    {
+      "field_name": "subject_matter",
+      "field_type": "text",
+      "required": true,
+      "label": "Subject Matter",
+      "description": "Brief description of the matter for which notice is being sent",
+      "example": "Breach of Contract and Recovery of Dues"
+    },
+    {
+      "field_name": "demand_details",
+      "field_type": "text",
+      "required": true,
+      "label": "Demand Details",
+      "description": "Specific demands, claims, or reliefs sought from the recipient",
+      "example": "Payment of Rs. 50,00,000/- with interest @ 18% p.a. from 01.01.2024"
+    },
+    {
+      "field_name": "compliance_period",
+      "field_type": "text",
+      "required": true,
+      "label": "Compliance Period",
+      "description": "Time period within which the recipient must comply or respond",
+      "example": "15 days from receipt of this notice"
+    }
+  ],
+  "optional_fields": [
+    {
+      "field_name": "prior_correspondence",
+      "field_type": "text",
+      "required": false,
+      "label": "Prior Correspondence",
+      "description": "Reference to any earlier communications between parties",
+      "example": "Letter dated 15.12.2023 and email dated 20.12.2023"
+    },
+    {
+      "field_name": "supporting_documents",
+      "field_type": "text",
+      "required": false,
+      "label": "Supporting Documents",
+      "description": "List of documents attached or referred to in the notice",
+      "example": "Copy of Agreement dated 01.06.2023, Invoices, Bank Statements"
+    }
+  ],
+  "template_content": "LEGAL NOTICE\n\nDate: _______________\n\nTo,\n{recipient_name}\n{recipient_address}\n\nSUBJECT: {subject_matter}\n\nUNDER INSTRUCTIONS AND ON BEHALF OF MY CLIENT:\n{sender_name}\n{sender_address}\n\nI do hereby serve upon you the following Legal Notice:\n\n1. That my client {sender_name} is _______________.\n\n2. That the facts and circumstances giving rise to this notice are:\n[DETAILED FACTS]\n\n3. DEMAND:\nMy client hereby calls upon you to:\n{demand_details}\n\n4. You are hereby called upon to comply with the above demand within {compliance_period}, failing which my client shall be constrained to initiate appropriate legal proceedings before the competent court/forum, including the Hon'ble Supreme Court of India, at your sole risk, cost, and consequences.\n\n5. A copy of this notice is being retained for record and evidence.\n\nAdvocate for the Sender",
+  "created_at": "2026-01-25T07:14:00Z",
+  "updated_at": "2026-01-25T07:14:00Z"
+}

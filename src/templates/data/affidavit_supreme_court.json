@@ -1,0 +1,82 @@
+{
+  "metadata": {
+    "doc_type": "affidavit",
+    "court_level": "supreme_court",
+    "version": "1.0.0",
+    "name": "Supreme Court Affidavit",
+    "description": "Affidavit template for filing before the Supreme Court of India. Follows Supreme Court Rules 2013 formatting standards with proper verification clause."
+  },
+  "formatting": {
+    "paper_size": "A4",
+    "font": "Times New Roman",
+    "font_size": 14,
+    "line_spacing": 1.5,
+    "margin_left_right": "4cm",
+    "margin_top_bottom": "2cm",
+    "paper_quality": "75 GSM",
+    "double_sided": true
+  },
+  "required_fields": [
+    {
+      "field_name": "deponent_name",
+      "field_type": "party",
+      "required": true,
+      "label": "Deponent Name",
+      "description": "Full legal name of the person making the affidavit",
+      "example": "Shri Vikram Singh Chauhan"
+    },
+    {
+      "field_name": "deponent_address",
+      "field_type": "text",
+      "required": true,
+      "label": "Deponent Address",
+      "description": "Complete residential address of the deponent",
+      "example": "A-12, Vasant Kunj, New Delhi - 110070"
+    },
+    {
+      "field_name": "deponent_occupation",
+      "field_type": "text",
+      "required": true,
+      "label": "Deponent Occupation",
+      "description": "Profession or occupation of the deponent",
+      "example": "Businessman"
+    },
+    {
+      "field_name": "statement_facts",
+      "field_type": "text",
+      "required": true,
+      "label": "Statement of Facts",
+      "description": "The facts and statements being affirmed under oath",
+      "example": "1. I am the petitioner in the above matter. 2. The facts stated in the petition are true to my knowledge."
+    },
+    {
+      "field_name": "verification_place",
+      "field_type": "text",
+      "required": true,
+      "label": "Verification Place",
+      "description": "Place where the affidavit is verified and sworn",
+      "example": "New Delhi"
+    }
+  ],
+  "optional_fields": [
+    {
+      "field_name": "case_reference",
+      "field_type": "text",
+      "required": false,
+      "label": "Case Reference",
+      "description": "Related case number if affidavit is filed in pending proceedings",
+      "example": "SLP (Crl.) No. 1234/2024"
+    },
+    {
+      "field_name": "exhibit_list",
+      "field_type": "text",
+      "required": false,
+      "label": "List of Exhibits",
+      "description": "List of documents attached as exhibits to the affidavit",
+      "example": "Annexure A - Copy of FIR, Annexure B - Medical Report"
+    }
+  ],
+  "template_content": "IN THE SUPREME COURT OF INDIA\n[CIVIL/CRIMINAL] [ORIGINAL/APPELLATE] JURISDICTION\n\n[CASE TYPE] NO. _____ OF _____\n\nIN THE MATTER OF:\n_______________\n... Petitioner(s)\n\nVersus\n\n_______________\n... Respondent(s)\n\nAFFIDAVIT\n\nI, {deponent_name}, aged about _____ years, {deponent_occupation}, resident of {deponent_address}, do hereby solemnly affirm and state as under:\n\n{statement_facts}\n\nVERIFICATION\n\nI, the above-named deponent, do hereby verify that the contents of this affidavit are true and correct to my knowledge and belief, no part of it is false and nothing material has been concealed therefrom.\n\nVerified at {verification_place} on this _____ day of _____, 2024.\n\nDEPONENT\n\nSOLEMNLY AFFIRMED BEFORE ME\n\nNOTARY PUBLIC / OATH COMMISSIONER",
+  "created_at": "2026-01-25T07:14:00Z",
+  "updated_at": "2026-01-25T07:14:00Z"
+}

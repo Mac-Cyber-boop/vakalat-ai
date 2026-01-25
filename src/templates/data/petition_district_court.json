@@ -1,0 +1,98 @@
+{
+  "metadata": {
+    "doc_type": "petition",
+    "court_level": "district_court",
+    "version": "1.0.0",
+    "name": "District Court Civil Petition",
+    "description": "Civil suit/petition template for filing before District Courts and Civil Courts. Suitable for civil suits, declaratory suits, and injunction matters."
+  },
+  "formatting": {
+    "paper_size": "A4",
+    "font": "Times New Roman",
+    "font_size": 12,
+    "line_spacing": 1.5,
+    "margin_left_right": "3cm",
+    "margin_top_bottom": "2cm",
+    "paper_quality": "75 GSM",
+    "double_sided": true
+  },
+  "required_fields": [
+    {
+      "field_name": "petitioner_name",
+      "field_type": "party",
+      "required": true,
+      "label": "Plaintiff/Petitioner Name",
+      "description": "Full legal name of the plaintiff or petitioner",
+      "example": "Shri Hari Prasad Sharma"
+    },
+    {
+      "field_name": "petitioner_address",
+      "field_type": "text",
+      "required": true,
+      "label": "Plaintiff/Petitioner Address",
+      "description": "Complete address of the plaintiff for service",
+      "example": "Mohalla Katra, Tehsil Sadar, District Agra - 282001"
+    },
+    {
+      "field_name": "respondent_name",
+      "field_type": "party",
+      "required": true,
+      "label": "Defendant Name",
+      "description": "Full legal name of the defendant",
+      "example": "Shri Govind Singh"
+    },
+    {
+      "field_name": "respondent_address",
+      "field_type": "text",
+      "required": true,
+      "label": "Defendant Address",
+      "description": "Complete address of the defendant for service of summons",
+      "example": "House No. 78, Shahganj, Agra - 282010"
+    },
+    {
+      "field_name": "cause_of_action",
+      "field_type": "text",
+      "required": true,
+      "label": "Cause of Action",
+      "description": "Facts constituting the cause of action and when it arose",
+      "example": "The defendant illegally encroached upon the plaintiff's land measuring 500 sq. yards on 01.06.2023 at Village Nagla, Agra."
+    },
+    {
+      "field_name": "relief_sought",
+      "field_type": "relief",
+      "required": true,
+      "label": "Relief Sought",
+      "description": "Specific reliefs and prayers being claimed in the suit",
+      "example": "a) Decree for possession; b) Permanent injunction; c) Mesne profits; d) Costs of the suit"
+    },
+    {
+      "field_name": "jurisdiction_ground",
+      "field_type": "text",
+      "required": true,
+      "label": "Jurisdiction Ground",
+      "description": "Basis for the court's territorial and pecuniary jurisdiction",
+      "example": "This Court has jurisdiction as the suit property is situated within its territorial limits and suit is valued at Rs. 5,00,000/-"
+    }
+  ],
+  "optional_fields": [
+    {
+      "field_name": "interim_relief",
+      "field_type": "text",
+      "required": false,
+      "label": "Interim Relief",
+      "description": "Any temporary injunction or interim relief sought",
+      "example": "Temporary injunction restraining the defendant from further construction on the suit property"
+    },
+    {
+      "field_name": "court_fee_details",
+      "field_type": "text",
+      "required": false,
+      "label": "Court Fee Details",
+      "description": "Details of court fee affixed as per valuation",
+      "example": "Court fee of Rs. 2,500/- affixed as per Section 7 of Court Fees Act"
+    }
+  ],
+  "template_content": "IN THE COURT OF CIVIL JUDGE/DISTRICT JUDGE\n_______________\n\nORIGINAL SUIT NO. _____ OF _____\n\n{petitioner_name}\nS/o, D/o, W/o _______________\nR/o {petitioner_address}\n... Plaintiff\n\nVERSUS\n\n{respondent_name}\nS/o _______________\nR/o {respondent_address}\n... Defendant\n\nSUIT FOR _______________\n\nVALUATION FOR:\nCourt Fee: Rs. _______________\nJurisdiction: Rs. _______________\n\nThe plaintiff above-named respectfully submits as under:\n\n1. PARTIES:\n[Description of parties]\n\n2. JURISDICTION:\n{jurisdiction_ground}\n\n3. FACTS:\n[Detailed facts giving rise to the suit]\n\n4. CAUSE OF ACTION:\n{cause_of_action}\n\n5. LIMITATION:\nThe suit is within limitation as the cause of action arose on _______________.\n\nPRAYER:\nIt is, therefore, most respectfully prayed that this Hon'ble Court may be pleased to:\n\n{relief_sought}\n\nPlaintiff through Counsel",
+  "created_at": "2026-01-25T07:14:00Z",
+  "updated_at": "2026-01-25T07:14:00Z"
+}

@@ -1,0 +1,98 @@
+{
+  "metadata": {
+    "doc_type": "petition",
+    "court_level": "supreme_court",
+    "version": "1.0.0",
+    "name": "Supreme Court Petition",
+    "description": "Petition template for filing before the Supreme Court of India under Article 32/136 of the Constitution. Follows Supreme Court Rules 2013 formatting standards."
+  },
+  "formatting": {
+    "paper_size": "A4",
+    "font": "Times New Roman",
+    "font_size": 14,
+    "line_spacing": 1.5,
+    "margin_left_right": "4cm",
+    "margin_top_bottom": "2cm",
+    "paper_quality": "75 GSM",
+    "double_sided": true
+  },
+  "required_fields": [
+    {
+      "field_name": "petitioner_name",
+      "field_type": "party",
+      "required": true,
+      "label": "Petitioner Name",
+      "description": "Full legal name of the petitioner filing the petition",
+      "example": "ABC Public Interest Foundation"
+    },
+    {
+      "field_name": "petitioner_address",
+      "field_type": "text",
+      "required": true,
+      "label": "Petitioner Address",
+      "description": "Complete address of the petitioner for service",
+      "example": "10, Janpath, New Delhi - 110001"
+    },
+    {
+      "field_name": "respondent_name",
+      "field_type": "party",
+      "required": true,
+      "label": "Respondent Name",
+      "description": "Full legal name of the respondent against whom petition is filed",
+      "example": "Union of India through Secretary, Ministry of Home Affairs"
+    },
+    {
+      "field_name": "respondent_address",
+      "field_type": "text",
+      "required": true,
+      "label": "Respondent Address",
+      "description": "Complete address of the respondent for service",
+      "example": "North Block, Central Secretariat, New Delhi - 110001"
+    },
+    {
+      "field_name": "cause_of_action",
+      "field_type": "text",
+      "required": true,
+      "label": "Cause of Action",
+      "description": "Facts giving rise to the petition and when the cause of action arose",
+      "example": "The impugned notification dated 01.01.2024 violates Article 14 and 21 of the Constitution. Cause of action arose on 01.01.2024 at New Delhi."
+    },
+    {
+      "field_name": "relief_sought",
+      "field_type": "relief",
+      "required": true,
+      "label": "Relief Sought",
+      "description": "Specific reliefs and prayers being sought from the Court",
+      "example": "a) Declare the impugned notification unconstitutional; b) Issue writ of mandamus; c) Grant costs"
+    },
+    {
+      "field_name": "jurisdiction_ground",
+      "field_type": "text",
+      "required": true,
+      "label": "Jurisdiction Ground",
+      "description": "Legal basis for the Supreme Court's jurisdiction",
+      "example": "Article 32 of the Constitution of India for enforcement of fundamental rights"
+    }
+  ],
+  "optional_fields": [
+    {
+      "field_name": "interim_relief",
+      "field_type": "text",
+      "required": false,
+      "label": "Interim Relief",
+      "description": "Any interim or ad-interim reliefs sought pending final disposal",
+      "example": "Stay of operation of the impugned notification pending final hearing"
+    },
+    {
+      "field_name": "court_fee_details",
+      "field_type": "text",
+      "required": false,
+      "label": "Court Fee Details",
+      "description": "Details of court fee stamps affixed on the petition",
+      "example": "Court fee of Rs. 500/- affixed"
+    }
+  ],
+  "template_content": "IN THE SUPREME COURT OF INDIA\n[CIVIL/CRIMINAL] [ORIGINAL/APPELLATE] JURISDICTION\n\n[WRIT PETITION (CIVIL)/SPECIAL LEAVE PETITION] NO. _____ OF _____\n\nIN THE MATTER OF:\n\n{petitioner_name}\n{petitioner_address}\n... Petitioner(s)\n\nVERSUS\n\n{respondent_name}\n{respondent_address}\n... Respondent(s)\n\nPETITION UNDER ARTICLE _____ OF THE CONSTITUTION OF INDIA\n\nTO,\nTHE HON'BLE CHIEF JUSTICE OF INDIA AND HIS COMPANION JUDGES OF THE SUPREME COURT OF INDIA\n\nTHE HUMBLE PETITION OF THE PETITIONER ABOVE-NAMED\n\nMOST RESPECTFULLY SHOWETH:\n\n1. PARTIES:\n[Description of parties]\n\n2. JURISDICTION:\n{jurisdiction_ground}\n\n3. FACTS:\n[Detailed facts]\n\n4. CAUSE OF ACTION:\n{cause_of_action}\n\n5. GROUNDS:\n[Legal grounds with numbered paragraphs]\n\n6. PRAYER:\nIn the facts and circumstances stated above, it is most respectfully prayed that this Hon'ble Court may graciously be pleased to:\n\n{relief_sought}\n\nAnd for this act of kindness, the petitioner shall forever pray.\n\nPETITIONER\nThrough Counsel",
+  "created_at": "2026-01-25T07:14:00Z",
+  "updated_at": "2026-01-25T07:14:00Z"
+}

@@ -1,0 +1,98 @@
+{
+  "metadata": {
+    "doc_type": "petition",
+    "court_level": "high_court",
+    "version": "1.0.0",
+    "name": "High Court Writ Petition",
+    "description": "Writ petition template for filing before High Courts under Article 226/227 of the Constitution. Suitable for challenging administrative actions and seeking constitutional remedies."
+  },
+  "formatting": {
+    "paper_size": "A4",
+    "font": "Times New Roman",
+    "font_size": 14,
+    "line_spacing": 1.5,
+    "margin_left_right": "3.5cm",
+    "margin_top_bottom": "2.5cm",
+    "paper_quality": "75 GSM",
+    "double_sided": true
+  },
+  "required_fields": [
+    {
+      "field_name": "petitioner_name",
+      "field_type": "party",
+      "required": true,
+      "label": "Petitioner Name",
+      "description": "Full legal name of the petitioner filing the writ",
+      "example": "Shri Sunil Kumar Mishra"
+    },
+    {
+      "field_name": "petitioner_address",
+      "field_type": "text",
+      "required": true,
+      "label": "Petitioner Address",
+      "description": "Complete address of the petitioner for service",
+      "example": "45, Gomti Nagar, Lucknow - 226010"
+    },
+    {
+      "field_name": "respondent_name",
+      "field_type": "party",
+      "required": true,
+      "label": "Respondent Name",
+      "description": "Full legal name of the respondent authority",
+      "example": "State of Uttar Pradesh through Principal Secretary, Home Department"
+    },
+    {
+      "field_name": "respondent_address",
+      "field_type": "text",
+      "required": true,
+      "label": "Respondent Address",
+      "description": "Complete address of the respondent for service",
+      "example": "Secretariat, Lucknow - 226001"
+    },
+    {
+      "field_name": "cause_of_action",
+      "field_type": "text",
+      "required": true,
+      "label": "Cause of Action",
+      "description": "Facts giving rise to the writ petition and when the cause arose",
+      "example": "The impugned order dated 15.12.2023 terminating the petitioner's services is illegal and violative of principles of natural justice."
+    },
+    {
+      "field_name": "relief_sought",
+      "field_type": "relief",
+      "required": true,
+      "label": "Relief Sought",
+      "description": "Specific writs and reliefs being sought from the Court",
+      "example": "a) Issue writ of certiorari quashing the impugned order; b) Issue writ of mandamus for reinstatement with back wages"
+    },
+    {
+      "field_name": "jurisdiction_ground",
+      "field_type": "text",
+      "required": true,
+      "label": "Jurisdiction Ground",
+      "description": "Legal basis for the High Court's writ jurisdiction",
+      "example": "Article 226 of the Constitution of India as the cause of action arose within the territorial jurisdiction of this Hon'ble Court"
+    }
+  ],
+  "optional_fields": [
+    {
+      "field_name": "interim_relief",
+      "field_type": "text",
+      "required": false,
+      "label": "Interim Relief",
+      "description": "Any interim stay or relief sought pending final disposal",
+      "example": "Stay of the impugned order and continuation in service pending disposal of the writ petition"
+    },
+    {
+      "field_name": "court_fee_details",
+      "field_type": "text",
+      "required": false,
+      "label": "Court Fee Details",
+      "description": "Details of court fee stamps affixed on the petition",
+      "example": "Court fee of Rs. 300/- as per Schedule"
+    }
+  ],
+  "template_content": "IN THE HIGH COURT OF _______________\nAT _______________\n\n[CIVIL/SERVICE/CRIMINAL] WRIT JURISDICTION\n\nWRIT PETITION NO. _____ OF _____\n\nIN THE MATTER OF:\n\n{petitioner_name}\n{petitioner_address}\n... Petitioner\n\nVERSUS\n\n{respondent_name}\n{respondent_address}\n... Respondent(s)\n\nWRIT PETITION UNDER ARTICLE 226 OF THE CONSTITUTION OF INDIA\n\nTO,\nTHE HON'BLE CHIEF JUSTICE AND OTHER JUDGES OF THE HIGH COURT\n\nTHE PETITION OF THE PETITIONER ABOVE-NAMED\n\nMOST RESPECTFULLY SHOWETH:\n\n1. PARTIES AND THEIR DESCRIPTION:\n[Description of parties and their addresses]\n\n2. JURISDICTION:\n{jurisdiction_ground}\n\n3. FACTS OF THE CASE:\n[Chronological narration of facts]\n\n4. CAUSE OF ACTION:\n{cause_of_action}\n\n5. GROUNDS:\n[Legal grounds]\n\n6. PRAYER:\nIn the premises aforesaid, it is most respectfully prayed that this Hon'ble Court may graciously be pleased to:\n\n{relief_sought}\n\nAND FOR THIS ACT OF KINDNESS THE PETITIONER SHALL EVER PRAY.\n\nPETITIONER\nThrough Counsel",
+  "created_at": "2026-01-25T07:14:00Z",
+  "updated_at": "2026-01-25T07:14:00Z"
+}
