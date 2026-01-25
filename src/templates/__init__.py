@@ -12,6 +12,7 @@ from src.templates.schemas import (
     TemplateField,
     LegalTemplate,
 )
+from src.templates.storage import TemplateRepository
 
 __all__ = [
     # Enums
@@ -24,4 +25,6 @@ __all__ = [
     "TemplateField",
     # Main template model
     "LegalTemplate",
+    # Repository
+    "TemplateRepository",
 ]
