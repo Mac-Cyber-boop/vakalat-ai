@@ -95,7 +95,14 @@ Plans:
 
 **Research Flags:** None - builds on existing Pinecone retrieval.
 
-**Plans:** (created by /gsd:plan-phase)
+**Plans:** 5 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — Citation data models and formatter (SCC, AIR, statute formats)
+- [ ] 03-02-PLAN.md — Precedent retriever with jurisdiction ranking
+- [ ] 03-03-PLAN.md — Citation recommender orchestrator (retrieval + verification + formatting)
+- [ ] 03-04-PLAN.md — API endpoints for citation recommendation
+- [ ] 03-05-PLAN.md — Streamlit UI with verification badges
 
 ---
 
@@ -183,7 +190,7 @@ Plans:
 |-------|------|--------------|--------|
 | 1 | Trust Foundation | TRUST-01, TRUST-02, TRUST-03, TRUST-04, TRUST-05 | Complete (5/5 plans) |
 | 2 | Template Storage | TMPL-01, TMPL-02 | In Progress (1/2 plans complete) |
-| 3 | Citation Engine | CITE-01, CITE-02, CITE-03, CITE-04, CITE-05, CITE-06 | Pending |
+| 3 | Citation Engine | CITE-01, CITE-02, CITE-03, CITE-04, CITE-05, CITE-06 | Planned (0/5 plans complete) |
 | 4 | Document Generation | DOC-01, DOC-02, DOC-03, DOC-04, DOC-07 | Pending |
 | 5 | Template Management | TMPL-03, TMPL-04, TMPL-05, TMPL-06, TMPL-07 | Pending |
 | 6 | Production Integration | DOC-05, DOC-06, PROD-01, PROD-02, PROD-03 | Pending |
@@ -218,4 +225,4 @@ Phase 2 (Template Storage) -----------------------------------------------+-----
 
 ---
 *Roadmap created: 2026-01-22*
-*Updated: 2026-01-25 - 02-01 complete (template schemas)*
+*Updated: 2026-01-25 - Phase 3 planned (5 plans in 3 waves)*
