@@ -2,12 +2,12 @@
 
 ## Current Position
 
-**Phase:** 2 of 6 - Template Storage (COMPLETE)
-**Plan:** 2 of 2 complete
-**Status:** Phase complete
-**Progress:** [##############------] 7/11 plans (~64%)
+**Phase:** 3 of 6 - Citation Engine
+**Plan:** 1 of 5 complete
+**Status:** In progress
+**Progress:** [################----] 8/11 plans (~73%)
 
-**Last activity:** 2026-01-25 - Completed 02-02-PLAN.md (Template Data and API)
+**Last activity:** 2026-01-25 - Completed 03-01-PLAN.md (Citation Models and Formatter)
 
 ## Project Reference
 
@@ -16,20 +16,18 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 **Core value:** Trustworthy legal document drafting that saves lawyers hours of work
 **Current focus:** Milestone v1.0 - Professional Document Drafting
 
-## Phase 2 Context (COMPLETE)
+## Phase 3 Context (IN PROGRESS)
 
-**Goal:** Template storage layer with court-specific formatting and validation
+**Goal:** Citation engine for proper legal citation formatting and retrieval
 
 **Requirements:**
-- TMPL-01: Template schema with document type validation [DONE - 02-01, 02-02]
-- TMPL-02: Court-level formatting requirements [DONE - 02-01, 02-02]
+- CITE-02: Statute citation formatting [Partial - 03-01]
+- CITE-03: Case citation formatting [Partial - 03-01]
 
 **Success Criteria:**
-1. Template schema validates document types and court levels [DONE]
-2. FormattingRequirements contain Supreme Court Rules 2013 defaults [DONE]
-3. TemplateRepository can load/list/save templates from JSON files [DONE]
-4. 12 default templates created (4 doc types x 3 court levels) [DONE - 02-02]
-5. API endpoints for listing and retrieving templates [DONE - 02-02]
+1. Citation models validate SCC, AIR, statute formats [DONE - 03-01]
+2. CitationFormatter produces standard Indian legal citation strings [DONE - 03-01]
+3. VerificationBadge integrates with verification system [DONE - 03-01]
 
 ## Accumulated Context
 
@@ -56,6 +54,8 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 | Required field counts by doc type | Bail (8), Legal notice (7), Affidavit (5), Petition (7) | 02-02 |
 | Template summaries in list endpoint | Efficiency - don't return full templates for listing | 02-02 |
 | Enum validation with helpful errors | 400 response includes list of valid options | 02-02 |
+| Use "vs" per Indian legal convention | Not "v." or "versus" for case citations | 03-01 |
+| Unicode icons for badges | Checkmark, warning, refresh icons are portable across platforms | 03-01 |
 
 ### Technical Decisions
 | Decision | Details | Plan |
@@ -71,6 +71,9 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 | Pydantic v2 field_validator | Used for snake_case and field_type validation in TemplateField | 02-01 |
 | Template filename convention | {doc_type}_{court_level}.json for predictable file paths | 02-01 |
 | Court-specific formatting | SC: 14pt/4cm, HC: 14pt/3.5cm, DC: 12pt/3cm margins | 02-02 |
+| Pydantic computed_field | html_output computed lazily for FormattedCitation | 03-01 |
+| CitationFormatter as static utility | No state, pure functions for formatting | 03-01 |
+| HIGH_COURT_ABBREVIATIONS dict | 25+ court codes with multiple alias formats | 03-01 |
 
 ### Blockers
 (None)
@@ -88,11 +91,13 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 - **Phase 2 complete**: Template storage layer with schemas, repository, and API
   - Plan 02-01: Template schemas with Pydantic models and TemplateRepository
   - Plan 02-02: 12 default templates and /templates/list, /templates/get endpoints
+- **Phase 3 in progress**: Citation engine
+  - Plan 03-01: Citation models and formatter (SCC, AIR, statute formats)
 
 ### What's Next
-1. Begin Phase 3: Core Drafting integration
-2. Integrate templates with document generation pipeline
-3. Connect verification layer with drafting workflow
+1. Continue Phase 3: Citation retrieval and verification badge integration
+2. Complete citation engine plans (03-02 through 03-05)
+3. Then Phase 4: Core drafting integration
 
 ### Open Questions
 - External legal database API availability (IndianKanoon, SCC Online, Manupatra)
@@ -105,8 +110,11 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 - `src/templates/storage.py` - TemplateRepository for JSON file CRUD
 - `src/templates/__init__.py` - Public exports for templates module
 - `src/templates/data/*.json` - 12 default template files
+- `src/citations/models.py` - Citation data models (CaseCitation, StatuteCitation, etc.)
+- `src/citations/formatter.py` - CitationFormatter with SCC, AIR, statute formats
+- `src/citations/__init__.py` - Citation module exports
 - `api.py` - Updated with verification and template integrations
 
 ---
 *State initialized: 2026-01-22*
-*Last updated: 2026-01-25 - Completed 02-02-PLAN.md (Phase 2 complete)*
+*Last updated: 2026-01-25 - Completed 03-01-PLAN.md*
