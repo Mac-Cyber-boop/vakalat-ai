@@ -2,12 +2,12 @@
 
 ## Current Position
 
-**Phase:** 1 of 6 - Trust Foundation
-**Plan:** 5 of 5 complete
-**Status:** Phase complete
-**Progress:** [##########] 1/6 phases (Phase 01 complete)
+**Phase:** 2 of 6 - Template Storage
+**Plan:** 1 of 2 complete
+**Status:** In progress
+**Progress:** [############--------] 6/11 plans (~55%)
 
-**Last activity:** 2026-01-24 - Completed 01-05-PLAN.md (Outdated Code Detection)
+**Last activity:** 2026-01-25 - Completed 02-01-PLAN.md (Template Schemas)
 
 ## Project Reference
 
@@ -16,25 +16,18 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 **Core value:** Trustworthy legal document drafting that saves lawyers hours of work
 **Current focus:** Milestone v1.0 - Professional Document Drafting
 
-## Phase 1 Context
+## Phase 2 Context
 
-**Goal:** System can verify legal citations and map legal codes before any document generation
+**Goal:** Template storage layer with court-specific formatting and validation
 
 **Requirements:**
-- TRUST-01: Verify case citations against database [DONE - 01-02]
-- TRUST-02: Block unverified citations [DONE - 01-04]
-- TRUST-03: Map IPC->BNS, CrPC->BNSS, Evidence Act->BSA [DONE - 01-01]
-- TRUST-04: Verify section numbers exist and not repealed [DONE - 01-03]
-- TRUST-05: Flag outdated codes, suggest current equivalents [DONE - 01-05]
+- TMPL-01: Template schema with document type validation [IN PROGRESS - 02-01]
+- TMPL-02: Court-level formatting requirements [DONE - 02-01]
 
 **Success Criteria:**
-1. Citation verification returns status within 2 seconds [DONE - 01-02]
-2. IPC-to-BNS mapping returns equivalent section with confidence [DONE - 01-01]
-3. Statute citations confirmed as existing and not repealed [DONE - 01-03]
-4. Unverified citations blocked (fail-safe) [DONE - 01-04]
-5. All verification attempts logged for audit [DONE - 01-02, 01-03, 01-05]
-
-**Phase 1 COMPLETE** - All trust foundation requirements satisfied.
+1. Template schema validates document types and court levels [DONE - 02-01]
+2. FormattingRequirements contain Supreme Court Rules 2013 defaults [DONE - 02-01]
+3. TemplateRepository can load/list/save templates from JSON files [DONE - 02-01]
 
 ## Accumulated Context
 
@@ -56,6 +49,8 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 | OUTDATED passes through CitationGate | Old code citations still valid for pre-2024 cases, not blocked | 01-04 |
 | Regex patterns for both section orderings | Captures "Section 302, IPC" and "IPC Section 302" variants | 01-05 |
 | Additive response fields | New fields don't break existing API clients | 01-05 |
+| JSON file storage for templates | Version control transparency, human readable, no database overhead | 02-01 |
+| Repository pattern for template CRUD | Abstraction layer for future storage backend changes | 02-01 |
 
 ### Technical Decisions
 | Decision | Details | Plan |
@@ -68,6 +63,8 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 | Multiple regex patterns for citation extraction | Case: vs format, SCC, AIR; Statute: Section N, Act formats | 01-04 |
 | Response metadata for verification | citations_verified and citations_blocked fields in /draft response | 01-04 |
 | HTML warning box styling | Yellow background with amber border for outdated code notices | 01-05 |
+| Pydantic v2 field_validator | Used for snake_case and field_type validation in TemplateField | 02-01 |
+| Template filename convention | {doc_type}_{court_level}.json for predictable file paths | 02-01 |
 
 ### Blockers
 (None)
@@ -81,33 +78,26 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 - Requirements defined: 22 v1 requirements across TRUST, DOC, CITE, TMPL, PROD categories
 - Research completed: Template-first architecture, citation verification critical path
 - Roadmap created: 6 phases with 100% requirement coverage
-- **Plan 01-01 complete**: LegalCodeMapper with 283 section mappings (IPC->BNS, CrPC->BNSS, IEA->BSA)
-- **Plan 01-02 complete**: Audit logging with structlog, CitationVerifier for case citations
-- **Plan 01-03 complete**: SectionValidator for Pinecone-based section existence verification
-- **Plan 01-04 complete**: CitationGate for filtering unverified citations in draft output
-- **Plan 01-05 complete**: OutdatedCodeDetector, /verify-citation and /map-code endpoints
+- **Phase 1 complete**: All 5 plans executed successfully
+- **Plan 02-01 complete**: Template schemas with Pydantic models and TemplateRepository
 
 ### What's Next
-1. Begin Phase 2: Core Drafting
-2. Create bail application template with verification hooks
-3. Implement template engine with citation injection
+1. Execute 02-02-PLAN.md: Create template JSON files for bail application
+2. Continue Phase 2: Template storage layer
+3. Begin Phase 3: Core Drafting integration
 
 ### Open Questions
 - External legal database API availability (IndianKanoon, SCC Online, Manupatra)
-- ~~IPC-to-BNS mapping completeness in existing Pinecone database~~ (Resolved: Created comprehensive local mappings)
 - WeasyPrint Windows compatibility (Phase 6 concern)
 
 ### Key Artifacts Created
-- `src/verification/models.py` - Pydantic models for verification
-- `src/verification/code_mapper.py` - LegalCodeMapper class
+- `src/verification/` - Full verification module with 8 files
 - `src/data/mappings/*.json` - 283 section mappings across 3 code pairs
-- `src/verification/audit.py` - Audit logging with structlog
-- `src/verification/citation_verifier.py` - Case citation verification
-- `src/verification/section_validator.py` - Section existence validation with old code detection
-- `src/verification/citation_gate.py` - Citation filtering and sanitization
-- `src/verification/outdated_detector.py` - Outdated legal code detection
+- `src/templates/schemas.py` - Pydantic models for template validation
+- `src/templates/storage.py` - TemplateRepository for JSON file CRUD
+- `src/templates/__init__.py` - Public exports for templates module
 - `api.py` - Updated with all verification integrations
 
 ---
 *State initialized: 2026-01-22*
-*Last updated: 2026-01-24 - Phase 1 Trust Foundation complete*
+*Last updated: 2026-01-25 - Completed 02-01-PLAN.md*

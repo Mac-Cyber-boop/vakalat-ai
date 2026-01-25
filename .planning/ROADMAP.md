@@ -39,10 +39,10 @@ Research confirmed the critical insight: "current AI tools hallucinate fake case
 
 Plans:
 - [x] 01-01-PLAN.md — Legal code mapping foundation (LegalCodeMapper with IPC->BNS, CrPC->BNSS, IEA->BSA)
-- [ ] 01-02-PLAN.md — Citation verifier and audit logging (CitationVerifier + structlog infrastructure)
-- [ ] 01-03-PLAN.md — Section validator (verify sections exist in actual law, repeal status)
-- [ ] 01-04-PLAN.md — Citation gate and API integration (block unverified citations in draft endpoint)
-- [ ] 01-05-PLAN.md — Outdated code detection and full integration (complete trust foundation)
+- [x] 01-02-PLAN.md — Citation verifier and audit logging (CitationVerifier + structlog infrastructure)
+- [x] 01-03-PLAN.md — Section validator (verify sections exist in actual law, repeal status)
+- [x] 01-04-PLAN.md — Citation gate and API integration (block unverified citations in draft endpoint)
+- [x] 01-05-PLAN.md — Outdated code detection and full integration (complete trust foundation)
 
 ---
 
@@ -67,7 +67,7 @@ Plans:
 **Plans:** 2 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Template schemas and repository (Pydantic models + TemplateRepository class)
+- [x] 02-01-PLAN.md — Template schemas and repository (Pydantic models + TemplateRepository class)
 - [ ] 02-02-PLAN.md — Template data and API integration (12 default templates + FastAPI endpoints)
 
 ---
@@ -181,8 +181,8 @@ Plans:
 
 | Phase | Name | Requirements | Status |
 |-------|------|--------------|--------|
-| 1 | Trust Foundation | TRUST-01, TRUST-02, TRUST-03, TRUST-04, TRUST-05 | In Progress (1/5 plans complete) |
-| 2 | Template Storage | TMPL-01, TMPL-02 | Planned (2 plans ready) |
+| 1 | Trust Foundation | TRUST-01, TRUST-02, TRUST-03, TRUST-04, TRUST-05 | Complete (5/5 plans) |
+| 2 | Template Storage | TMPL-01, TMPL-02 | In Progress (1/2 plans complete) |
 | 3 | Citation Engine | CITE-01, CITE-02, CITE-03, CITE-04, CITE-05, CITE-06 | Pending |
 | 4 | Document Generation | DOC-01, DOC-02, DOC-03, DOC-04, DOC-07 | Pending |
 | 5 | Template Management | TMPL-03, TMPL-04, TMPL-05, TMPL-06, TMPL-07 | Pending |
@@ -218,4 +218,4 @@ Phase 2 (Template Storage) -----------------------------------------------+-----
 
 ---
 *Roadmap created: 2026-01-22*
-*Updated: 2026-01-24 - Phase 2 plans created*
+*Updated: 2026-01-25 - 02-01 complete (template schemas)*
