@@ -3,11 +3,11 @@
 ## Current Position
 
 **Phase:** 3 of 6 - Citation Engine
-**Plan:** 1 of 5 complete
+**Plan:** 2 of 5 complete
 **Status:** In progress
-**Progress:** [################----] 8/11 plans (~73%)
+**Progress:** [#################---] 9/11 plans (~82%)
 
-**Last activity:** 2026-01-25 - Completed 03-01-PLAN.md (Citation Models and Formatter)
+**Last activity:** 2026-01-25 - Completed 03-02-PLAN.md (Precedent Retriever)
 
 ## Project Reference
 
@@ -23,11 +23,14 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 **Requirements:**
 - CITE-02: Statute citation formatting [Partial - 03-01]
 - CITE-03: Case citation formatting [Partial - 03-01]
+- CITE-01: Suggest relevant case law [DONE - 03-02]
+- CITE-06: Prioritize filing court jurisdiction [DONE - 03-02]
 
 **Success Criteria:**
 1. Citation models validate SCC, AIR, statute formats [DONE - 03-01]
 2. CitationFormatter produces standard Indian legal citation strings [DONE - 03-01]
 3. VerificationBadge integrates with verification system [DONE - 03-01]
+4. PrecedentRetriever with jurisdiction-aware ranking [DONE - 03-02]
 
 ## Accumulated Context
 
@@ -56,6 +59,9 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 | Enum validation with helpful errors | 400 response includes list of valid options | 02-02 |
 | Use "vs" per Indian legal convention | Not "v." or "versus" for case citations | 03-01 |
 | Unicode icons for badges | Checkmark, warning, refresh icons are portable across platforms | 03-01 |
+| 50/30/20 weighting for final score | Semantic (50%) + jurisdiction (30%) + recency (20%) | 03-02 |
+| Over-fetch 2x then re-rank | Retrieve double results for quality re-ranking | 03-02 |
+| Supreme Court = 1.0, Same HC = 0.9 | Jurisdiction weights reflect binding authority | 03-02 |
 
 ### Technical Decisions
 | Decision | Details | Plan |
@@ -74,6 +80,8 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 | Pydantic computed_field | html_output computed lazily for FormattedCitation | 03-01 |
 | CitationFormatter as static utility | No state, pure functions for formatting | 03-01 |
 | HIGH_COURT_ABBREVIATIONS dict | 25+ court codes with multiple alias formats | 03-01 |
+| Defensive metadata extraction | Try multiple field names for court/year since Pinecone metadata varies | 03-02 |
+| COURT_NORMALIZATIONS dict | 50+ court name variants to canonical IDs | 03-02 |
 
 ### Blockers
 (None)
@@ -93,11 +101,11 @@ See: .planning/PROJECT.md (updated 2026-01-22)
   - Plan 02-02: 12 default templates and /templates/list, /templates/get endpoints
 - **Phase 3 in progress**: Citation engine
   - Plan 03-01: Citation models and formatter (SCC, AIR, statute formats)
+  - Plan 03-02: Precedent retriever with jurisdiction-aware ranking
 
 ### What's Next
-1. Continue Phase 3: Citation retrieval and verification badge integration
-2. Complete citation engine plans (03-02 through 03-05)
-3. Then Phase 4: Core drafting integration
+1. Continue Phase 3: Complete remaining citation engine plans (03-03 through 03-05)
+2. Then Phase 4: Core drafting integration
 
 ### Open Questions
 - External legal database API availability (IndianKanoon, SCC Online, Manupatra)
@@ -113,8 +121,9 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 - `src/citations/models.py` - Citation data models (CaseCitation, StatuteCitation, etc.)
 - `src/citations/formatter.py` - CitationFormatter with SCC, AIR, statute formats
 - `src/citations/__init__.py` - Citation module exports
+- `src/citations/retriever.py` - PrecedentRetriever with jurisdiction-aware ranking
 - `api.py` - Updated with verification and template integrations
 
 ---
 *State initialized: 2026-01-22*
-*Last updated: 2026-01-25 - Completed 03-01-PLAN.md*
+*Last updated: 2026-01-25 - Completed 03-02-PLAN.md (Precedent Retriever)*
