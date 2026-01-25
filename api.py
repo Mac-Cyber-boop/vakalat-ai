@@ -27,6 +27,14 @@ from src.verification import (
 )
 from src.verification.audit import configure_audit_logging
 
+# Template storage imports
+from src.templates import (
+    TemplateRepository,
+    DocumentType,
+    CourtLevel,
+    LegalTemplate,
+)
+
 # 1. SETUP & SECRET LOADING
 load_dotenv() # Loads .env for local testing
 
@@ -93,6 +101,9 @@ if vector_db:
 # Configure audit logging for verification events
 configure_audit_logging()
 
+# Template infrastructure
+template_repo = TemplateRepository()
+
 # 4. BEHAVIORAL GATES
 BEHAVIORAL_GATES = """
 1. **The Four Corners Rule:** You must rely *exclusively* on the RETRIEVED CONTEXT.
@@ -137,6 +148,16 @@ class VerifyCitationRequest(BaseModel):
 class MapCodeRequest(BaseModel):
     old_code: str = Field(description="Old code name (IPC, CrPC, Evidence Act)")
     section: str = Field(description="Section number")
+
+class ListTemplatesRequest(BaseModel):
+    doc_type: Optional[str] = Field(
+        default=None,
+        description="Filter by document type: bail_application, legal_notice, affidavit, petition"
+    )
+
+class GetTemplateRequest(BaseModel):
+    doc_type: str = Field(description="Document type to retrieve")
+    court_level: str = Field(description="Court level: supreme_court, high_court, district_court")
 
 # 6. PROMPTS
 PLANNER_PROMPT = ChatPromptTemplate.from_template("""
@@ -304,3 +325,81 @@ async def map_code(req: MapCodeRequest):
     """
     result = code_mapper.map_section(req.old_code, req.section)
     return result.model_dump()
+
+# 9. TEMPLATE ENDPOINTS
+
+@app.post("/templates/list")
+async def list_templates(req: ListTemplatesRequest):
+    """
+    List available legal document templates.
+
+    Optionally filter by document type. Returns template summaries
+    including doc_type, court_level, name, version, and description.
+    """
+    # Convert string to DocumentType enum if provided
+    doc_type_filter = None
+    if req.doc_type:
+        try:
+            doc_type_filter = DocumentType(req.doc_type)
+        except ValueError:
+            valid_types = [dt.value for dt in DocumentType]
+            raise HTTPException(
+                400,
+                f"Invalid doc_type '{req.doc_type}'. Valid types: {valid_types}"
+            )
+
+    templates = template_repo.list_templates(doc_type_filter)
+
+    # Return summaries, not full templates
+    summaries = [
+        {
+            "doc_type": t.metadata.doc_type.value,
+            "court_level": t.metadata.court_level.value,
+            "name": t.metadata.name,
+            "version": t.metadata.version,
+            "description": t.metadata.description,
+        }
+        for t in templates
+    ]
+
+    return {
+        "count": len(summaries),
+        "templates": summaries
+    }
+
+@app.post("/templates/get")
+async def get_template(req: GetTemplateRequest):
+    """
+    Retrieve a specific legal document template.
+
+    Returns the full template including metadata, formatting requirements,
+    required and optional fields, and template content.
+    """
+    # Convert strings to enums
+    try:
+        doc_type = DocumentType(req.doc_type)
+    except ValueError:
+        valid_types = [dt.value for dt in DocumentType]
+        raise HTTPException(
+            400,
+            f"Invalid doc_type '{req.doc_type}'. Valid types: {valid_types}"
+        )
+
+    try:
+        court_level = CourtLevel(req.court_level)
+    except ValueError:
+        valid_levels = [cl.value for cl in CourtLevel]
+        raise HTTPException(
+            400,
+            f"Invalid court_level '{req.court_level}'. Valid levels: {valid_levels}"
+        )
+
+    template = template_repo.get_template(doc_type, court_level)
+
+    if template is None:
+        raise HTTPException(
+            404,
+            f"Template not found for {req.doc_type} at {req.court_level}"
+        )
+
+    return template.model_dump()
