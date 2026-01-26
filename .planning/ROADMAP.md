@@ -131,11 +131,11 @@ Plans:
 **Plans:** 5 plans
 
 Plans:
-- [ ] 04-01-PLAN.md — Fact collection models (Pydantic models for structured input - DOC-03)
-- [ ] 04-02-PLAN.md — Legal tone prompts (System prompts for formal language - DOC-02, DOC-07)
-- [ ] 04-03-PLAN.md — DocumentGenerator (Template filling + citation integration - DOC-01)
-- [ ] 04-04-PLAN.md — DocumentReviser (Iterative editing with edit trick - DOC-04)
-- [ ] 04-05-PLAN.md — API integration (/generate and /revise endpoints)
+- [x] 04-01-PLAN.md — Fact collection models (Pydantic models for structured input - DOC-03)
+- [x] 04-02-PLAN.md — Legal tone prompts (System prompts for formal language - DOC-02, DOC-07)
+- [x] 04-03-PLAN.md — DocumentGenerator (Template filling + citation integration - DOC-01)
+- [x] 04-04-PLAN.md — DocumentReviser (Iterative editing with edit trick - DOC-04)
+- [x] 04-05-PLAN.md — API integration (/generate and /revise endpoints)
 
 ---
 
@@ -198,7 +198,7 @@ Plans:
 | 1 | Trust Foundation | TRUST-01, TRUST-02, TRUST-03, TRUST-04, TRUST-05 | Complete (5/5 plans) |
 | 2 | Template Storage | TMPL-01, TMPL-02 | Complete (2/2 plans) |
 | 3 | Citation Engine | CITE-01, CITE-02, CITE-03, CITE-04, CITE-05, CITE-06 | Complete (5/5 plans) |
-| 4 | Document Generation | DOC-01, DOC-02, DOC-03, DOC-04, DOC-07 | Planned (5 plans in 4 waves) |
+| 4 | Document Generation | DOC-01, DOC-02, DOC-03, DOC-04, DOC-07 | Complete (5/5 plans) |
 | 5 | Template Management | TMPL-03, TMPL-04, TMPL-05, TMPL-06, TMPL-07 | Pending |
 | 6 | Production Integration | DOC-05, DOC-06, PROD-01, PROD-02, PROD-03 | Pending |
 
@@ -232,4 +232,4 @@ Phase 2 (Template Storage) -----------------------------------------------+-----
 
 ---
 *Roadmap created: 2026-01-22*
-*Updated: 2026-01-26 - Phase 4 planned (5 plans in 4 waves)*
+*Updated: 2026-01-26 - Phase 4 complete (5 plans executed)*
