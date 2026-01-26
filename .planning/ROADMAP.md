@@ -68,7 +68,7 @@ Plans:
 
 Plans:
 - [x] 02-01-PLAN.md — Template schemas and repository (Pydantic models + TemplateRepository class)
-- [ ] 02-02-PLAN.md — Template data and API integration (12 default templates + FastAPI endpoints)
+- [x] 02-02-PLAN.md — Template data and API integration (12 default templates + FastAPI endpoints)
 
 ---
 
@@ -98,11 +98,11 @@ Plans:
 **Plans:** 5 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — Citation data models and formatter (SCC, AIR, statute formats)
-- [ ] 03-02-PLAN.md — Precedent retriever with jurisdiction ranking
-- [ ] 03-03-PLAN.md — Citation recommender orchestrator (retrieval + verification + formatting)
-- [ ] 03-04-PLAN.md — API endpoints for citation recommendation
-- [ ] 03-05-PLAN.md — Streamlit UI with verification badges
+- [x] 03-01-PLAN.md — Citation data models and formatter (SCC, AIR, statute formats)
+- [x] 03-02-PLAN.md — Precedent retriever with jurisdiction ranking
+- [x] 03-03-PLAN.md — Citation recommender orchestrator (retrieval + verification + formatting)
+- [x] 03-04-PLAN.md — API endpoints for citation recommendation
+- [x] 03-05-PLAN.md — Streamlit UI with verification badges
 
 ---
 
@@ -128,7 +128,14 @@ Plans:
 
 **Research Flags:** LLM prompt engineering for legal tone may need iteration during implementation.
 
-**Plans:** (created by /gsd:plan-phase)
+**Plans:** 5 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — Fact collection models (Pydantic models for structured input - DOC-03)
+- [ ] 04-02-PLAN.md — Legal tone prompts (System prompts for formal language - DOC-02, DOC-07)
+- [ ] 04-03-PLAN.md — DocumentGenerator (Template filling + citation integration - DOC-01)
+- [ ] 04-04-PLAN.md — DocumentReviser (Iterative editing with edit trick - DOC-04)
+- [ ] 04-05-PLAN.md — API integration (/generate and /revise endpoints)
 
 ---
 
@@ -189,9 +196,9 @@ Plans:
 | Phase | Name | Requirements | Status |
 |-------|------|--------------|--------|
 | 1 | Trust Foundation | TRUST-01, TRUST-02, TRUST-03, TRUST-04, TRUST-05 | Complete (5/5 plans) |
-| 2 | Template Storage | TMPL-01, TMPL-02 | In Progress (1/2 plans complete) |
-| 3 | Citation Engine | CITE-01, CITE-02, CITE-03, CITE-04, CITE-05, CITE-06 | Planned (0/5 plans complete) |
-| 4 | Document Generation | DOC-01, DOC-02, DOC-03, DOC-04, DOC-07 | Pending |
+| 2 | Template Storage | TMPL-01, TMPL-02 | Complete (2/2 plans) |
+| 3 | Citation Engine | CITE-01, CITE-02, CITE-03, CITE-04, CITE-05, CITE-06 | Complete (5/5 plans) |
+| 4 | Document Generation | DOC-01, DOC-02, DOC-03, DOC-04, DOC-07 | Planned (5 plans in 4 waves) |
 | 5 | Template Management | TMPL-03, TMPL-04, TMPL-05, TMPL-06, TMPL-07 | Pending |
 | 6 | Production Integration | DOC-05, DOC-06, PROD-01, PROD-02, PROD-03 | Pending |
 
@@ -225,4 +232,4 @@ Phase 2 (Template Storage) -----------------------------------------------+-----
 
 ---
 *Roadmap created: 2026-01-22*
-*Updated: 2026-01-25 - Phase 3 planned (5 plans in 3 waves)*
+*Updated: 2026-01-26 - Phase 4 planned (5 plans in 4 waves)*
