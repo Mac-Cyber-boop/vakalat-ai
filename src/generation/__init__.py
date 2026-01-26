@@ -11,10 +11,22 @@ from src.generation.models import (
     AffidavitFacts,
     PetitionFacts,
 )
+from src.generation.prompts import (
+    BASE_LEGAL_TONE_PROMPT,
+    COURT_SPECIFIC_PROMPTS,
+    FIELD_GENERATION_PROMPTS,
+    get_generation_prompt,
+)
 
 __all__ = [
+    # Fact collection models
     "BailApplicationFacts",
     "LegalNoticeFacts",
     "AffidavitFacts",
     "PetitionFacts",
+    # System prompts
+    "BASE_LEGAL_TONE_PROMPT",
+    "COURT_SPECIFIC_PROMPTS",
+    "FIELD_GENERATION_PROMPTS",
+    "get_generation_prompt",
 ]
