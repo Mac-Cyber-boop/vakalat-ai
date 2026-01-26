@@ -2,12 +2,12 @@
 
 ## Current Position
 
-**Phase:** 3 of 6 - Citation Engine
-**Plan:** 2 of 5 complete
-**Status:** In progress
-**Progress:** [#################---] 9/11 plans (~82%)
+**Phase:** 3 of 6 - Citation Engine (COMPLETE)
+**Plan:** 5 of 5 complete
+**Status:** Phase complete
+**Progress:** [####################] 12/12 plans (100%)
 
-**Last activity:** 2026-01-25 - Completed 03-02-PLAN.md (Precedent Retriever)
+**Last activity:** 2026-01-26 - Completed 03-05-PLAN.md (Citation Verification UI)
 
 ## Project Reference
 
@@ -16,21 +16,25 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 **Core value:** Trustworthy legal document drafting that saves lawyers hours of work
 **Current focus:** Milestone v1.0 - Professional Document Drafting
 
-## Phase 3 Context (IN PROGRESS)
+## Phase 3 Context (COMPLETE)
 
 **Goal:** Citation engine for proper legal citation formatting and retrieval
 
 **Requirements:**
-- CITE-02: Statute citation formatting [Partial - 03-01]
-- CITE-03: Case citation formatting [Partial - 03-01]
-- CITE-01: Suggest relevant case law [DONE - 03-02]
+- CITE-02: Statute citation formatting [DONE - 03-04]
+- CITE-03: Case citation formatting [DONE - 03-01]
+- CITE-01: Suggest relevant case law [DONE - 03-04]
 - CITE-06: Prioritize filing court jurisdiction [DONE - 03-02]
+- CITE-04: Verification badges [DONE - 03-05]
 
 **Success Criteria:**
 1. Citation models validate SCC, AIR, statute formats [DONE - 03-01]
 2. CitationFormatter produces standard Indian legal citation strings [DONE - 03-01]
 3. VerificationBadge integrates with verification system [DONE - 03-01]
 4. PrecedentRetriever with jurisdiction-aware ranking [DONE - 03-02]
+5. /citations/recommend API endpoint [DONE - 03-04]
+6. /citations/format-statute API endpoint [DONE - 03-04]
+7. Streamlit UI shows verification badges [DONE - 03-05]
 
 ## Accumulated Context
 
@@ -62,6 +66,11 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 | 50/30/20 weighting for final score | Semantic (50%) + jurisdiction (30%) + recency (20%) | 03-02 |
 | Over-fetch 2x then re-rank | Retrieve double results for quality re-ranking | 03-02 |
 | Supreme Court = 1.0, Same HC = 0.9 | Jurisdiction weights reflect binding authority | 03-02 |
+| top_k validation (1-10) | Prevent excessive queries while allowing reasonable results | 03-04 |
+| Default filing_court = supreme_court | Supreme Court precedents are universally authoritative | 03-04 |
+| Dark theme for precedent cards | Matches existing Streamlit app theme (#1E293B) | 03-05 |
+| Expander for precedents | Keeps main response clean, user can expand if interested | 03-05 |
+| Graceful degradation on import errors | App works even if citation modules unavailable | 03-05 |
 
 ### Technical Decisions
 | Decision | Details | Plan |
@@ -99,13 +108,17 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 - **Phase 2 complete**: Template storage layer with schemas, repository, and API
   - Plan 02-01: Template schemas with Pydantic models and TemplateRepository
   - Plan 02-02: 12 default templates and /templates/list, /templates/get endpoints
-- **Phase 3 in progress**: Citation engine
+- **Phase 3 complete**: Citation engine
   - Plan 03-01: Citation models and formatter (SCC, AIR, statute formats)
   - Plan 03-02: Precedent retriever with jurisdiction-aware ranking
+  - Plan 03-03: Citation recommender orchestrator
+  - Plan 03-04: Citation API endpoints (/citations/recommend, /citations/format-statute)
+  - Plan 03-05: Citation verification UI in Streamlit
 
 ### What's Next
-1. Continue Phase 3: Complete remaining citation engine plans (03-03 through 03-05)
-2. Then Phase 4: Core drafting integration
+1. Begin Phase 4: Core drafting integration
+2. Then Phase 5: Document generation
+3. Then Phase 6: Production readiness
 
 ### Open Questions
 - External legal database API availability (IndianKanoon, SCC Online, Manupatra)
@@ -122,8 +135,10 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 - `src/citations/formatter.py` - CitationFormatter with SCC, AIR, statute formats
 - `src/citations/__init__.py` - Citation module exports
 - `src/citations/retriever.py` - PrecedentRetriever with jurisdiction-aware ranking
-- `api.py` - Updated with verification and template integrations
+- `src/citations/recommender.py` - CitationRecommender orchestrator
+- `api.py` - Updated with verification, template, and citation API integrations
+- `main.py` - Updated with citation badge CSS and precedent display
 
 ---
 *State initialized: 2026-01-22*
-*Last updated: 2026-01-25 - Completed 03-02-PLAN.md (Precedent Retriever)*
+*Last updated: 2026-01-26 - Completed 03-05-PLAN.md (Citation Verification UI)*
