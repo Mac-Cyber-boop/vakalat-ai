@@ -17,6 +17,10 @@ from src.generation.prompts import (
     FIELD_GENERATION_PROMPTS,
     get_generation_prompt,
 )
+from src.generation.generator import (
+    DocumentGenerator,
+    GeneratedDocument,
+)
 
 __all__ = [
     # Fact collection models
@@ -29,4 +33,7 @@ __all__ = [
     "COURT_SPECIFIC_PROMPTS",
     "FIELD_GENERATION_PROMPTS",
     "get_generation_prompt",
+    # Document generator
+    "DocumentGenerator",
+    "GeneratedDocument",
 ]
