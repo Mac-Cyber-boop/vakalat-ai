@@ -3,11 +3,11 @@
 ## Current Position
 
 **Phase:** 4 of 6 - Document Generation (IN PROGRESS)
-**Plan:** 1 of 4 complete
+**Plan:** 2 of 4 complete
 **Status:** In progress
-**Progress:** [█████████████░░░░░░░] 13/16 plans (81%)
+**Progress:** [██████████████░░░░░░] 14/16 plans (88%)
 
-**Last activity:** 2026-01-26 - Completed 04-01-PLAN.md (Fact Collection Models)
+**Last activity:** 2026-01-26 - Completed 04-02-PLAN.md (Legal Tone System Prompts)
 
 ## Project Reference
 
@@ -72,6 +72,9 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 | Expander for precedents | Keeps main response clean, user can expand if interested | 03-05 |
 | Graceful degradation on import errors | App works even if citation modules unavailable | 03-05 |
 | Field names mirror template required_fields exactly | 1:1 mapping between fact models and template schemas | 04-01 |
+| BASE_LEGAL_TONE_PROMPT enforces Hon'ble Court, passive voice | Formal legal register requirements per DOC-02 | 04-02 |
+| COURT_SPECIFIC_PROMPTS differentiate by court level | Article 136/142 for SC, 226/227 for HC per Indian practice | 04-02 |
+| get_generation_prompt combines base + court + field + citations | Builder pattern for flexible prompt composition | 04-02 |
 
 ### Technical Decisions
 | Decision | Details | Plan |
@@ -92,6 +95,8 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 | HIGH_COURT_ABBREVIATIONS dict | 25+ court codes with multiple alias formats | 03-01 |
 | Defensive metadata extraction | Try multiple field names for court/year since Pinecone metadata varies | 03-02 |
 | COURT_NORMALIZATIONS dict | 50+ court name variants to canonical IDs | 03-02 |
+| System prompt composition pattern | Base + court-specific + field-specific + citation integration | 04-02 |
+| Triple-quoted strings for prompts | Multi-line formatting for system prompt readability | 04-02 |
 
 ### Blockers
 (None)
@@ -117,9 +122,10 @@ See: .planning/PROJECT.md (updated 2026-01-22)
   - Plan 03-05: Citation verification UI in Streamlit
 - **Phase 4 in progress**: Document generation
   - Plan 04-01: Fact collection models (BailApplicationFacts, LegalNoticeFacts, AffidavitFacts, PetitionFacts)
+  - Plan 04-02: Legal tone system prompts (BASE_LEGAL_TONE_PROMPT, COURT_SPECIFIC_PROMPTS, get_generation_prompt)
 
 ### What's Next
-1. Complete Phase 4: Document generation (3 plans remaining)
+1. Complete Phase 4: Document generation (2 plans remaining)
 2. Then Phase 5: Production readiness
 3. Then Phase 6: Deployment
 
@@ -143,7 +149,8 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 - `main.py` - Updated with citation badge CSS and precedent display
 - `src/generation/models.py` - Pydantic fact collection models for document generation
 - `src/generation/__init__.py` - Generation module exports
+- `src/generation/prompts.py` - System prompts for formal legal language generation
 
 ---
 *State initialized: 2026-01-22*
-*Last updated: 2026-01-26 - Completed 04-01-PLAN.md (Fact Collection Models)*
+*Last updated: 2026-01-26 - Completed 04-02-PLAN.md (Legal Tone System Prompts)*
