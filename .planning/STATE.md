@@ -2,12 +2,12 @@
 
 ## Current Position
 
-**Phase:** 3 of 6 - Citation Engine (COMPLETE)
-**Plan:** 5 of 5 complete
-**Status:** Phase complete
-**Progress:** [####################] 12/12 plans (100%)
+**Phase:** 4 of 6 - Document Generation (IN PROGRESS)
+**Plan:** 1 of 4 complete
+**Status:** In progress
+**Progress:** [█████████████░░░░░░░] 13/16 plans (81%)
 
-**Last activity:** 2026-01-26 - Completed 03-05-PLAN.md (Citation Verification UI)
+**Last activity:** 2026-01-26 - Completed 04-01-PLAN.md (Fact Collection Models)
 
 ## Project Reference
 
@@ -71,6 +71,7 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 | Dark theme for precedent cards | Matches existing Streamlit app theme (#1E293B) | 03-05 |
 | Expander for precedents | Keeps main response clean, user can expand if interested | 03-05 |
 | Graceful degradation on import errors | App works even if citation modules unavailable | 03-05 |
+| Field names mirror template required_fields exactly | 1:1 mapping between fact models and template schemas | 04-01 |
 
 ### Technical Decisions
 | Decision | Details | Plan |
@@ -114,11 +115,13 @@ See: .planning/PROJECT.md (updated 2026-01-22)
   - Plan 03-03: Citation recommender orchestrator
   - Plan 03-04: Citation API endpoints (/citations/recommend, /citations/format-statute)
   - Plan 03-05: Citation verification UI in Streamlit
+- **Phase 4 in progress**: Document generation
+  - Plan 04-01: Fact collection models (BailApplicationFacts, LegalNoticeFacts, AffidavitFacts, PetitionFacts)
 
 ### What's Next
-1. Begin Phase 4: Core drafting integration
-2. Then Phase 5: Document generation
-3. Then Phase 6: Production readiness
+1. Complete Phase 4: Document generation (3 plans remaining)
+2. Then Phase 5: Production readiness
+3. Then Phase 6: Deployment
 
 ### Open Questions
 - External legal database API availability (IndianKanoon, SCC Online, Manupatra)
@@ -138,7 +141,9 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 - `src/citations/recommender.py` - CitationRecommender orchestrator
 - `api.py` - Updated with verification, template, and citation API integrations
 - `main.py` - Updated with citation badge CSS and precedent display
+- `src/generation/models.py` - Pydantic fact collection models for document generation
+- `src/generation/__init__.py` - Generation module exports
 
 ---
 *State initialized: 2026-01-22*
-*Last updated: 2026-01-26 - Completed 03-05-PLAN.md (Citation Verification UI)*
+*Last updated: 2026-01-26 - Completed 04-01-PLAN.md (Fact Collection Models)*
