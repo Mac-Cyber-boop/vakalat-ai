@@ -21,6 +21,11 @@ from src.generation.generator import (
     DocumentGenerator,
     GeneratedDocument,
 )
+from src.generation.reviser import (
+    DocumentReviser,
+    DocumentEdit,
+    RevisionResult,
+)
 
 __all__ = [
     # Fact collection models
@@ -36,4 +41,8 @@ __all__ = [
     # Document generator
     "DocumentGenerator",
     "GeneratedDocument",
+    # Document reviser
+    "DocumentReviser",
+    "DocumentEdit",
+    "RevisionResult",
 ]
