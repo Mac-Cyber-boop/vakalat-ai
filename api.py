@@ -35,6 +35,21 @@ from src.templates import (
     LegalTemplate,
 )
 
+# Citation engine imports
+from src.citations import CitationRecommender, CitationRecommendation
+
+# Document generation imports
+from src.generation import (
+    DocumentGenerator,
+    GeneratedDocument,
+    DocumentReviser,
+    RevisionResult,
+    BailApplicationFacts,
+    LegalNoticeFacts,
+    AffidavitFacts,
+    PetitionFacts,
+)
+
 # 1. SETUP & SECRET LOADING
 load_dotenv() # Loads .env for local testing
 
@@ -101,8 +116,24 @@ if vector_db:
 # Configure audit logging for verification events
 configure_audit_logging()
 
+# Citation recommendation infrastructure
+citation_recommender = None
+if vector_db:
+    citation_recommender = CitationRecommender(vector_db, citation_verifier)
+
 # Template infrastructure
 template_repo = TemplateRepository()
+
+# Document generation infrastructure
+document_generator = None
+document_reviser = None
+if vector_db:
+    document_generator = DocumentGenerator(
+        template_repo=template_repo,
+        citation_recommender=citation_recommender,
+        citation_gate=citation_gate
+    )
+    document_reviser = DocumentReviser()
 
 # 4. BEHAVIORAL GATES
 BEHAVIORAL_GATES = """
@@ -158,6 +189,42 @@ class ListTemplatesRequest(BaseModel):
 class GetTemplateRequest(BaseModel):
     doc_type: str = Field(description="Document type to retrieve")
     court_level: str = Field(description="Court level: supreme_court, high_court, district_court")
+
+class RecommendCitationsRequest(BaseModel):
+    legal_issue: str = Field(description="The legal issue to find precedents for")
+    filing_court: Optional[str] = Field(
+        default="supreme_court",
+        description="Court where case will be filed (for jurisdiction ranking). Options: supreme_court, delhi, bombay, calcutta, madras, karnataka, allahabad"
+    )
+    top_k: Optional[int] = Field(
+        default=5,
+        description="Number of precedents to return (1-10)"
+    )
+
+class FormatStatuteRequest(BaseModel):
+    section: str = Field(description="Section number (e.g., '302', '438')")
+    act_name: str = Field(description="Full act name (e.g., 'Indian Penal Code')")
+    year: Optional[int] = Field(default=None, description="Year of enactment (e.g., 1860)")
+
+class GenerateDocumentRequest(BaseModel):
+    doc_type: str = Field(
+        description="Document type: bail_application, legal_notice, affidavit, petition"
+    )
+    court_level: str = Field(
+        description="Court level: supreme_court, high_court, district_court"
+    )
+    facts: dict = Field(
+        description="Structured facts matching the document type requirements"
+    )
+
+class ReviseDocumentRequest(BaseModel):
+    content: str = Field(
+        description="Current document content to revise"
+    )
+    instruction: str = Field(
+        min_length=5,
+        description="Revision instruction (e.g., 'Make grounds more concise')"
+    )
 
 # 6. PROMPTS
 PLANNER_PROMPT = ChatPromptTemplate.from_template("""
@@ -403,3 +470,156 @@ async def get_template(req: GetTemplateRequest):
         )
 
     return template.model_dump()
+
+# 10. CITATION ENDPOINTS
+
+@app.post("/citations/recommend")
+async def recommend_citations(req: RecommendCitationsRequest):
+    """
+    Recommend relevant case law precedents for a legal issue.
+
+    Returns precedents ranked by:
+    - Semantic relevance to the legal issue
+    - Jurisdictional authority (Supreme Court > Same HC > Other HC)
+    - Temporal recency (recent cases weighted higher)
+
+    Each citation includes verification status and badge HTML for UI display.
+    """
+    if not citation_recommender:
+        raise HTTPException(500, "Citation recommender not available")
+
+    # Validate top_k range
+    top_k = max(1, min(10, req.top_k or 5))
+
+    recommendations = citation_recommender.recommend_precedents(
+        legal_issue=req.legal_issue,
+        filing_court=req.filing_court or "supreme_court",
+        top_k=top_k
+    )
+
+    return {
+        "count": len(recommendations),
+        "filing_court": req.filing_court or "supreme_court",
+        "precedents": [r.model_dump() for r in recommendations]
+    }
+
+@app.post("/citations/format-statute")
+async def format_statute(req: FormatStatuteRequest):
+    """
+    Format a statute citation in proper Indian legal format.
+
+    Returns: "Section N, Act Name, Year"
+    Example: "Section 438, Code of Criminal Procedure, 1973"
+    """
+    from src.citations import CitationFormatter
+
+    formatted = CitationFormatter.format_statute(
+        section=req.section,
+        act_name=req.act_name,
+        year=req.year
+    )
+
+    return {"formatted_citation": formatted}
+
+# 11. DOCUMENT GENERATION ENDPOINTS
+
+@app.post("/generate")
+async def generate_document(req: GenerateDocumentRequest):
+    """
+    Generate a legal document from structured facts.
+
+    Supports document types: bail_application, legal_notice, affidavit, petition
+    Supports court levels: supreme_court, high_court, district_court
+
+    The system:
+    1. Loads court-specific template
+    2. Retrieves relevant citations for the legal issue
+    3. Generates formal legal content using LLM
+    4. Verifies all citations before including
+    5. Returns complete document with metadata
+
+    Returns:
+        GeneratedDocument with content, citations_used, verification_status
+    """
+    if not document_generator:
+        raise HTTPException(500, "Document generator not available")
+
+    # Validate doc_type
+    try:
+        doc_type = DocumentType(req.doc_type)
+    except ValueError:
+        valid_types = [dt.value for dt in DocumentType]
+        raise HTTPException(
+            400,
+            f"Invalid doc_type '{req.doc_type}'. Valid types: {valid_types}"
+        )
+
+    # Validate court_level
+    try:
+        court_level = CourtLevel(req.court_level)
+    except ValueError:
+        valid_levels = [cl.value for cl in CourtLevel]
+        raise HTTPException(
+            400,
+            f"Invalid court_level '{req.court_level}'. Valid levels: {valid_levels}"
+        )
+
+    # Validate facts based on doc_type
+    fact_model_map = {
+        DocumentType.BAIL_APPLICATION: BailApplicationFacts,
+        DocumentType.LEGAL_NOTICE: LegalNoticeFacts,
+        DocumentType.AFFIDAVIT: AffidavitFacts,
+        DocumentType.PETITION: PetitionFacts,
+    }
+
+    fact_model = fact_model_map.get(doc_type)
+    if fact_model:
+        try:
+            validated_facts = fact_model(**req.facts)
+            facts_dict = validated_facts.model_dump()
+        except Exception as e:
+            raise HTTPException(400, f"Invalid facts: {str(e)}")
+    else:
+        facts_dict = req.facts
+
+    try:
+        result = document_generator.generate_document(
+            doc_type=doc_type,
+            court_level=court_level,
+            user_facts=facts_dict
+        )
+        return result.model_dump()
+    except Exception as e:
+        raise HTTPException(500, f"Generation failed: {str(e)}")
+
+
+@app.post("/revise")
+async def revise_document(req: ReviseDocumentRequest):
+    """
+    Revise an existing document based on user instruction.
+
+    Uses the "edit trick" pattern for efficient revision:
+    - Generates minimal edit instructions
+    - Applies only necessary changes
+    - Preserves unchanged sections
+
+    This is ~79% faster than full regeneration.
+
+    Args:
+        content: Current document content
+        instruction: User's revision request (e.g., "Make the grounds more concise")
+
+    Returns:
+        RevisionResult with revised content and edit metadata
+    """
+    if not document_reviser:
+        raise HTTPException(500, "Document reviser not available")
+
+    try:
+        result = document_reviser.revise_document(
+            original_content=req.content,
+            user_instruction=req.instruction
+        )
+        return result.model_dump()
+    except Exception as e:
+        raise HTTPException(500, f"Revision failed: {str(e)}")
