@@ -3,11 +3,11 @@
 ## Current Position
 
 **Phase:** 5 of 6 - Template Management (IN PROGRESS)
-**Plan:** 3 of 5 complete
+**Plan:** 4 of 5 complete
 **Status:** In progress
-**Progress:** [████████████████████] 20/22 plans (91%)
+**Progress:** [████████████████████] 21/22 plans (95%)
 
-**Last activity:** 2026-01-27 - Completed 05-03-PLAN.md (Template Lifecycle Management)
+**Last activity:** 2026-01-27 - Completed 05-04-PLAN.md (Template Preview Generation)
 
 ## Project Reference
 
@@ -29,6 +29,7 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 - 05-01: Template schema extension (status, changelog, semver) [DONE]
 - 05-02: Upload validation and versioning utilities [DONE]
 - 05-03: Template lifecycle management (status transitions, usability gating) [DONE]
+- 05-04: Template preview generation (FieldPreview, TemplatePreview, filtering) [DONE]
 
 ## Accumulated Context
 
@@ -79,6 +80,9 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 | UsabilityStatus enum separate from TemplateStatus | Clear separation between template status and usability check result | 05-03 |
 | UsabilityResult with can_use flag | Boolean flag makes conditional checks simple | 05-03 |
 | Descriptive messages for deprecated/archived | User-facing messages explain what's happening and suggest action | 05-03 |
+| Preview excludes template_content | Keeps preview lightweight for quick template selection | 05-04 |
+| Field counts in preview | required_field_count and optional_field_count for quick overview | 05-04 |
+| Font info in preview | Font and font_size included for UI display without loading full template | 05-04 |
 
 ### Technical Decisions
 | Decision | Details | Plan |
@@ -107,6 +111,8 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 | Validation pipeline stages | File size -> JSON syntax -> schema -> version in sequence | 05-02 |
 | Result objects for lifecycle | StatusChangeResult, UsabilityResult for structured outcomes | 05-03 |
 | Usability gating pattern | WARNING for deprecated, BLOCKED for archived templates | 05-03 |
+| Preview model pattern | TemplatePreview as lightweight projection of LegalTemplate | 05-04 |
+| _helper prefix for internal functions | _field_to_preview for module-internal conversion | 05-04 |
 
 ### Blockers
 (None)
@@ -140,10 +146,10 @@ See: .planning/PROJECT.md (updated 2026-01-22)
   - Plan 05-01: Template schema extension (TemplateStatus, ChangelogEntry, ALLOWED_TRANSITIONS)
   - Plan 05-02: Upload validation and versioning utilities (versioning.py, upload.py)
   - Plan 05-03: Template lifecycle management (lifecycle.py with status transitions)
+  - Plan 05-04: Template preview generation (preview.py with FieldPreview, TemplatePreview)
 
 ### What's Next
-1. Continue Phase 5: Template management (2 plans remaining)
-   - 05-04: Template management API endpoints
+1. Continue Phase 5: Template management (1 plan remaining)
    - 05-05: Template admin UI
 2. Then Phase 6: Production readiness
 
@@ -173,7 +179,8 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 - `src/templates/versioning.py` - Semver version comparison and changelog utilities
 - `src/templates/upload.py` - Upload validation pipeline and processing
 - `src/templates/lifecycle.py` - Template lifecycle status transitions and usability gating
+- `src/templates/preview.py` - Template preview generation with field metadata extraction
 
 ---
 *State initialized: 2026-01-22*
-*Last updated: 2026-01-27 - Completed 05-03-PLAN.md (Template Lifecycle Management)*
+*Last updated: 2026-01-27 - Completed 05-04-PLAN.md (Template Preview Generation)*
