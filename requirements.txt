@@ -1,7 +1,7 @@
 fastapi
 uvicorn
 python-dotenv
-pinecone-client
+pinecone
 langchain
 langchain-openai
 langchain-pinecone
@@ -10,3 +10,9 @@ pymupdf
 pydantic>=2.0
 structlog
 cachetools
+jinja2
+openai
+streamlit
+fpdf2
+python-multipart
+semver
