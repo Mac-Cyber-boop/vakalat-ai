@@ -243,6 +243,37 @@ class ReviseDocumentRequest(BaseModel):
         description="Revision instruction (e.g., 'Make grounds more concise')"
     )
 
+class TemplateHistoryRequest(BaseModel):
+    doc_type: str = Field(
+        description="Document type: bail_application, legal_notice, affidavit, petition"
+    )
+    court_level: str = Field(
+        description="Court level: supreme_court, high_court, district_court"
+    )
+
+class TemplateStatusChangeRequest(BaseModel):
+    doc_type: str = Field(
+        description="Document type: bail_application, legal_notice, affidavit, petition"
+    )
+    court_level: str = Field(
+        description="Court level: supreme_court, high_court, district_court"
+    )
+    new_status: str = Field(
+        description="Target status: active, deprecated, archived"
+    )
+    reason: str = Field(
+        min_length=5,
+        description="Reason for status change (recorded in changelog)"
+    )
+
+class TemplatePreviewRequest(BaseModel):
+    doc_type: str = Field(
+        description="Document type: bail_application, legal_notice, affidavit, petition"
+    )
+    court_level: str = Field(
+        description="Court level: supreme_court, high_court, district_court"
+    )
+
 # 6. PROMPTS
 PLANNER_PROMPT = ChatPromptTemplate.from_template("""
 You are a Legal Search Strategist. Query: "{question}". Generate 3 search queries. Return JSON: {{ "queries": ["q1", "q2", "q3"] }}
