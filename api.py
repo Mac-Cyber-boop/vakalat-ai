@@ -671,3 +671,260 @@ async def revise_document(req: ReviseDocumentRequest):
         return result.model_dump()
     except Exception as e:
         raise HTTPException(500, f"Revision failed: {str(e)}")
+
+
+# 12. TEMPLATE MANAGEMENT ENDPOINTS
+
+@app.post("/templates/upload")
+async def upload_template(file: UploadFile = File(...)):
+    """
+    Upload and validate a custom template.
+
+    Accepts a JSON file containing a LegalTemplate schema.
+    Validates:
+    1. File size (max 500KB)
+    2. JSON syntax
+    3. Schema against LegalTemplate model
+    4. Version higher than existing (if updating)
+
+    For updates, include a 'change_description' query parameter.
+
+    Returns:
+        - success: Whether upload succeeded
+        - is_update: Whether this was an update to existing template
+        - old_version/new_version: Version change if updating
+        - errors: Validation errors if failed
+    """
+    # Read file content
+    try:
+        content = await file.read()
+        content_str = content.decode('utf-8')
+    except UnicodeDecodeError:
+        raise HTTPException(400, "File must be valid UTF-8 encoded JSON")
+
+    # Check file size
+    if len(content) > MAX_TEMPLATE_SIZE_BYTES:
+        raise HTTPException(
+            400,
+            f"File too large: {len(content):,} bytes (max: {MAX_TEMPLATE_SIZE_BYTES:,} bytes)"
+        )
+
+    # Process upload
+    result = process_template_upload(
+        content=content_str,
+        repository=template_repo,
+        change_description=None,  # Could be passed as query param
+        author="api_upload"
+    )
+
+    if not result.success:
+        raise HTTPException(400, {"errors": result.errors})
+
+    return {
+        "success": result.success,
+        "is_update": result.is_update,
+        "old_version": result.old_version,
+        "new_version": result.new_version,
+        "template_name": result.template.metadata.name if result.template else None,
+        "doc_type": result.template.metadata.doc_type.value if result.template else None,
+        "court_level": result.template.metadata.court_level.value if result.template else None,
+    }
+
+
+@app.post("/templates/history")
+async def get_template_history(req: TemplateHistoryRequest):
+    """
+    Get version history with changelog for a template.
+
+    Returns the template's changelog entries showing all version changes,
+    status transitions, and the authors who made them.
+
+    Returns:
+        - doc_type, court_level: Template identifier
+        - current_version: Current template version
+        - changelog: List of changelog entries with version, date, changes, author
+    """
+    # Validate doc_type
+    try:
+        doc_type = DocumentType(req.doc_type)
+    except ValueError:
+        valid_types = [dt.value for dt in DocumentType]
+        raise HTTPException(
+            400,
+            f"Invalid doc_type '{req.doc_type}'. Valid types: {valid_types}"
+        )
+
+    # Validate court_level
+    try:
+        court_level = CourtLevel(req.court_level)
+    except ValueError:
+        valid_levels = [cl.value for cl in CourtLevel]
+        raise HTTPException(
+            400,
+            f"Invalid court_level '{req.court_level}'. Valid levels: {valid_levels}"
+        )
+
+    # Get template
+    template = template_repo.get_template(doc_type, court_level)
+    if template is None:
+        raise HTTPException(
+            404,
+            f"Template not found for {req.doc_type} at {req.court_level}"
+        )
+
+    return {
+        "doc_type": req.doc_type,
+        "court_level": req.court_level,
+        "current_version": template.metadata.version,
+        "status": template.status.value,
+        "changelog": [
+            {
+                "version": entry.version,
+                "date": entry.date,
+                "changes": entry.changes,
+                "author": entry.author,
+            }
+            for entry in template.changelog
+        ]
+    }
+
+
+@app.post("/templates/status")
+async def change_status(req: TemplateStatusChangeRequest):
+    """
+    Change template lifecycle status.
+
+    Valid transitions:
+    - active -> deprecated (template shows warning but remains usable)
+    - active -> archived (direct decommission)
+    - deprecated -> archived (final retirement)
+    - archived -> (none) - terminal state, cannot be changed
+
+    The status change is recorded in the template's changelog.
+
+    Returns:
+        - success: Whether status change succeeded
+        - previous_status: Status before change
+        - new_status: Status after change
+        - error: Error message if failed
+    """
+    # Validate doc_type
+    try:
+        doc_type = DocumentType(req.doc_type)
+    except ValueError:
+        valid_types = [dt.value for dt in DocumentType]
+        raise HTTPException(
+            400,
+            f"Invalid doc_type '{req.doc_type}'. Valid types: {valid_types}"
+        )
+
+    # Validate court_level
+    try:
+        court_level = CourtLevel(req.court_level)
+    except ValueError:
+        valid_levels = [cl.value for cl in CourtLevel]
+        raise HTTPException(
+            400,
+            f"Invalid court_level '{req.court_level}'. Valid levels: {valid_levels}"
+        )
+
+    # Validate new_status
+    try:
+        target_status = TemplateStatus(req.new_status)
+    except ValueError:
+        valid_statuses = [s.value for s in TemplateStatus]
+        raise HTTPException(
+            400,
+            f"Invalid new_status '{req.new_status}'. Valid statuses: {valid_statuses}"
+        )
+
+    # Perform status change
+    result = change_template_status(
+        doc_type=doc_type,
+        court_level=court_level,
+        target_status=target_status,
+        reason=req.reason,
+        author="api_user",
+        repository=template_repo,
+    )
+
+    if not result.success:
+        raise HTTPException(400, result.error)
+
+    return {
+        "success": result.success,
+        "previous_status": result.previous_status.value if result.previous_status else None,
+        "new_status": result.new_status.value if result.new_status else None,
+    }
+
+
+@app.post("/templates/preview")
+async def preview_template(req: TemplatePreviewRequest):
+    """
+    Preview template showing required fields without full content.
+
+    Returns a lightweight preview including:
+    - Template metadata (name, version, description)
+    - Template status (active/deprecated/archived)
+    - Required field count and details
+    - Optional field count and details
+    - Font and font size for display
+
+    If template is deprecated, includes a warning message.
+
+    Returns:
+        - preview: TemplatePreview object
+        - warning: Deprecation warning if applicable
+    """
+    # Validate doc_type
+    try:
+        doc_type = DocumentType(req.doc_type)
+    except ValueError:
+        valid_types = [dt.value for dt in DocumentType]
+        raise HTTPException(
+            400,
+            f"Invalid doc_type '{req.doc_type}'. Valid types: {valid_types}"
+        )
+
+    # Validate court_level
+    try:
+        court_level = CourtLevel(req.court_level)
+    except ValueError:
+        valid_levels = [cl.value for cl in CourtLevel]
+        raise HTTPException(
+            400,
+            f"Invalid court_level '{req.court_level}'. Valid levels: {valid_levels}"
+        )
+
+    # Get preview
+    preview = get_template_preview(
+        doc_type=doc_type,
+        court_level=court_level,
+        repository=template_repo,
+    )
+
+    if preview is None:
+        raise HTTPException(
+            404,
+            f"Template not found for {req.doc_type} at {req.court_level}"
+        )
+
+    # Check usability for warning
+    usability = is_template_usable(
+        doc_type=doc_type,
+        court_level=court_level,
+        repository=template_repo,
+    )
+
+    response = {"preview": preview.model_dump()}
+
+    # Add warning if deprecated
+    if usability.message and preview.status == TemplateStatus.DEPRECATED:
+        response["warning"] = usability.message
+
+    # Block if archived
+    if preview.status == TemplateStatus.ARCHIVED:
+        response["blocked"] = True
+        response["blocked_message"] = usability.message
+
+    return response
