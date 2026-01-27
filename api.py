@@ -3,11 +3,11 @@
 # Features: Agentic Search + Verifier + Access Control
 # NO HARDCODED SECRETS.
 
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, Request, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, List
 import os
 from dotenv import load_dotenv
 from pinecone import Pinecone
@@ -33,6 +33,23 @@ from src.templates import (
     DocumentType,
     CourtLevel,
     LegalTemplate,
+    TemplateStatus,
+    ChangelogEntry,
+    # Upload validation
+    process_template_upload,
+    validate_template_upload,
+    UploadValidationResult,
+    UploadProcessResult,
+    MAX_TEMPLATE_SIZE_BYTES,
+    # Lifecycle management
+    change_template_status,
+    get_template_status,
+    is_template_usable,
+    StatusChangeResult,
+    UsabilityResult,
+    # Preview generation
+    get_template_preview,
+    TemplatePreview,
 )
 
 # Citation engine imports
