@@ -46,6 +46,13 @@ from src.templates.lifecycle import (
     UsabilityResult,
     UsabilityStatus,
 )
+from src.templates.preview import (
+    FieldPreview,
+    TemplatePreview,
+    generate_preview,
+    get_template_preview,
+    list_template_previews,
+)
 
 __all__ = [
     # Enums
@@ -91,4 +98,10 @@ __all__ = [
     "StatusChangeResult",
     "UsabilityResult",
     "UsabilityStatus",
+    # Preview generation
+    "FieldPreview",
+    "TemplatePreview",
+    "generate_preview",
+    "get_template_preview",
+    "list_template_previews",
 ]
