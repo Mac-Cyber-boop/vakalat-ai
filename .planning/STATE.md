@@ -3,11 +3,11 @@
 ## Current Position
 
 **Phase:** 5 of 6 - Template Management (IN PROGRESS)
-**Plan:** 2 of 5 complete
+**Plan:** 3 of 5 complete
 **Status:** In progress
-**Progress:** [███████████████████░] 19/22 plans (86%)
+**Progress:** [████████████████████] 20/22 plans (91%)
 
-**Last activity:** 2026-01-27 - Completed 05-02-PLAN.md (Upload Validation and Versioning)
+**Last activity:** 2026-01-27 - Completed 05-03-PLAN.md (Template Lifecycle Management)
 
 ## Project Reference
 
@@ -28,6 +28,7 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 **Completed Plans:**
 - 05-01: Template schema extension (status, changelog, semver) [DONE]
 - 05-02: Upload validation and versioning utilities [DONE]
+- 05-03: Template lifecycle management (status transitions, usability gating) [DONE]
 
 ## Accumulated Context
 
@@ -75,6 +76,9 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 | Result objects for outcomes | UploadValidationResult/UploadProcessResult provide structured results | 05-02 |
 | Change description required for updates | Updates must include change_description for changelog | 05-02 |
 | 500KB max template size | MAX_TEMPLATE_SIZE_BYTES prevents oversized uploads | 05-02 |
+| UsabilityStatus enum separate from TemplateStatus | Clear separation between template status and usability check result | 05-03 |
+| UsabilityResult with can_use flag | Boolean flag makes conditional checks simple | 05-03 |
+| Descriptive messages for deprecated/archived | User-facing messages explain what's happening and suggest action | 05-03 |
 
 ### Technical Decisions
 | Decision | Details | Plan |
@@ -101,6 +105,8 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 | Semver validation via field_validator | ChangelogEntry.version validated at parse time | 05-01 |
 | Semver library for version comparison | compare_versions, bump_version use python-semver | 05-02 |
 | Validation pipeline stages | File size -> JSON syntax -> schema -> version in sequence | 05-02 |
+| Result objects for lifecycle | StatusChangeResult, UsabilityResult for structured outcomes | 05-03 |
+| Usability gating pattern | WARNING for deprecated, BLOCKED for archived templates | 05-03 |
 
 ### Blockers
 (None)
@@ -133,11 +139,11 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 - **Phase 5 in progress**: Template management
   - Plan 05-01: Template schema extension (TemplateStatus, ChangelogEntry, ALLOWED_TRANSITIONS)
   - Plan 05-02: Upload validation and versioning utilities (versioning.py, upload.py)
+  - Plan 05-03: Template lifecycle management (lifecycle.py with status transitions)
 
 ### What's Next
-1. Continue Phase 5: Template management (3 plans remaining)
-   - 05-03: Template management API endpoints
-   - 05-04: Lifecycle transition endpoint
+1. Continue Phase 5: Template management (2 plans remaining)
+   - 05-04: Template management API endpoints
    - 05-05: Template admin UI
 2. Then Phase 6: Production readiness
 
@@ -166,7 +172,8 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 - `src/generation/reviser.py` - DocumentReviser for iterative refinement
 - `src/templates/versioning.py` - Semver version comparison and changelog utilities
 - `src/templates/upload.py` - Upload validation pipeline and processing
+- `src/templates/lifecycle.py` - Template lifecycle status transitions and usability gating
 
 ---
 *State initialized: 2026-01-22*
-*Last updated: 2026-01-27 - Completed 05-02-PLAN.md (Upload Validation and Versioning)*
+*Last updated: 2026-01-27 - Completed 05-03-PLAN.md (Template Lifecycle Management)*
