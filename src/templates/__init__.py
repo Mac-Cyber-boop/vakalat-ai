@@ -1,7 +1,7 @@
 """
 Templates module for Vakalat AI.
 
-Provides legal document template storage and validation functionality.
+Provides legal document template storage, validation, and versioning functionality.
 """
 
 from src.templates.schemas import (
@@ -16,6 +16,26 @@ from src.templates.schemas import (
     LegalTemplate,
 )
 from src.templates.storage import TemplateRepository
+from src.templates.versioning import (
+    compare_versions,
+    is_version_higher,
+    bump_version,
+    create_changelog_entry,
+    validate_version_upgrade,
+    get_version_parts,
+    format_version_diff,
+)
+from src.templates.upload import (
+    validate_file_size,
+    validate_json_syntax,
+    validate_template_schema,
+    validate_template_upload,
+    validate_template_json,
+    process_template_upload,
+    UploadValidationResult,
+    UploadProcessResult,
+    MAX_TEMPLATE_SIZE_BYTES,
+)
 
 __all__ = [
     # Enums
@@ -34,4 +54,22 @@ __all__ = [
     "LegalTemplate",
     # Repository
     "TemplateRepository",
+    # Versioning utilities
+    "compare_versions",
+    "is_version_higher",
+    "bump_version",
+    "create_changelog_entry",
+    "validate_version_upgrade",
+    "get_version_parts",
+    "format_version_diff",
+    # Upload validation
+    "validate_file_size",
+    "validate_json_syntax",
+    "validate_template_schema",
+    "validate_template_upload",
+    "validate_template_json",
+    "process_template_upload",
+    "UploadValidationResult",
+    "UploadProcessResult",
+    "MAX_TEMPLATE_SIZE_BYTES",
 ]
