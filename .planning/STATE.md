@@ -2,12 +2,12 @@
 
 ## Current Position
 
-**Phase:** 5 of 6 - Template Management (IN PROGRESS)
-**Plan:** 4 of 5 complete
-**Status:** In progress
-**Progress:** [████████████████████] 21/22 plans (95%)
+**Phase:** 5 of 6 - Template Management (COMPLETE)
+**Plan:** 5 of 5 complete
+**Status:** Phase complete
+**Progress:** [██████████████████████] 22/22 plans (100%)
 
-**Last activity:** 2026-01-27 - Completed 05-04-PLAN.md (Template Preview Generation)
+**Last activity:** 2026-01-27 - Completed 05-05-PLAN.md (Template Management API Endpoints)
 
 ## Project Reference
 
@@ -16,20 +16,21 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 **Core value:** Trustworthy legal document drafting that saves lawyers hours of work
 **Current focus:** Milestone v1.0 - Professional Document Drafting
 
-## Phase 5 Context (IN PROGRESS)
+## Phase 5 Context (COMPLETE)
 
 **Goal:** Template management - upload, versioning, and lifecycle control
 
 **Requirements:**
-- TMPL-01: Upload new template versions [IN PROGRESS]
-- TMPL-02: Template lifecycle management [IN PROGRESS]
-- TMPL-03: Template versioning [IN PROGRESS]
+- TMPL-01: Upload new template versions [DONE]
+- TMPL-02: Template lifecycle management [DONE]
+- TMPL-03: Template versioning [DONE]
 
 **Completed Plans:**
 - 05-01: Template schema extension (status, changelog, semver) [DONE]
 - 05-02: Upload validation and versioning utilities [DONE]
 - 05-03: Template lifecycle management (status transitions, usability gating) [DONE]
 - 05-04: Template preview generation (FieldPreview, TemplatePreview, filtering) [DONE]
+- 05-05: Template management API endpoints [DONE]
 
 ## Accumulated Context
 
@@ -83,6 +84,10 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 | Preview excludes template_content | Keeps preview lightweight for quick template selection | 05-04 |
 | Field counts in preview | required_field_count and optional_field_count for quick overview | 05-04 |
 | Font info in preview | Font and font_size included for UI display without loading full template | 05-04 |
+| API-uploaded templates authored by 'api_upload' | Distinguishes API uploads from system/manual uploads | 05-05 |
+| Status change attributed to 'api_user' | Audit trail for API-initiated lifecycle changes | 05-05 |
+| Preview response includes deprecation warning | Users informed when template may be archived soon | 05-05 |
+| Archived templates return blocked=true | Clear blocking for archived templates in preview response | 05-05 |
 
 ### Technical Decisions
 | Decision | Details | Plan |
@@ -113,6 +118,8 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 | Usability gating pattern | WARNING for deprecated, BLOCKED for archived templates | 05-03 |
 | Preview model pattern | TemplatePreview as lightweight projection of LegalTemplate | 05-04 |
 | _helper prefix for internal functions | _field_to_preview for module-internal conversion | 05-04 |
+| File upload pattern | read -> decode -> validate -> process for template uploads | 05-05 |
+| Conditional response fields | warning/blocked fields added only when applicable | 05-05 |
 
 ### Blockers
 (None)
@@ -142,16 +149,15 @@ See: .planning/PROJECT.md (updated 2026-01-22)
   - Plan 04-03: Document drafter with template + facts + prompts
   - Plan 04-04: Document reviser for iterative refinement
   - Plan 04-05: Document generation API endpoints
-- **Phase 5 in progress**: Template management
+- **Phase 5 complete**: Template management
   - Plan 05-01: Template schema extension (TemplateStatus, ChangelogEntry, ALLOWED_TRANSITIONS)
   - Plan 05-02: Upload validation and versioning utilities (versioning.py, upload.py)
   - Plan 05-03: Template lifecycle management (lifecycle.py with status transitions)
   - Plan 05-04: Template preview generation (preview.py with FieldPreview, TemplatePreview)
+  - Plan 05-05: Template management API endpoints (/templates/upload, /history, /status, /preview)
 
 ### What's Next
-1. Continue Phase 5: Template management (1 plan remaining)
-   - 05-05: Template admin UI
-2. Then Phase 6: Production readiness
+1. Phase 6: Production readiness
 
 ### Open Questions
 - External legal database API availability (IndianKanoon, SCC Online, Manupatra)
@@ -169,7 +175,7 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 - `src/citations/__init__.py` - Citation module exports
 - `src/citations/retriever.py` - PrecedentRetriever with jurisdiction-aware ranking
 - `src/citations/recommender.py` - CitationRecommender orchestrator
-- `api.py` - Updated with verification, template, citation, and generation API integrations
+- `api.py` - Updated with verification, template, citation, generation, and template management APIs
 - `main.py` - Updated with citation badge CSS and precedent display
 - `src/generation/models.py` - Pydantic fact collection models for document generation
 - `src/generation/__init__.py` - Generation module exports
@@ -183,4 +189,4 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 
 ---
 *State initialized: 2026-01-22*
-*Last updated: 2026-01-27 - Completed 05-04-PLAN.md (Template Preview Generation)*
+*Last updated: 2026-01-27 - Completed 05-05-PLAN.md (Template Management API Endpoints)*
