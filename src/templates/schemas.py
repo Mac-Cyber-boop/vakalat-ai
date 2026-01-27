@@ -12,10 +12,11 @@ Formatting defaults are based on Supreme Court Rules 2013.
 """
 
 from enum import Enum
-from typing import List, Optional
+from typing import List, Optional, Set, Dict
 from datetime import datetime
 from pydantic import BaseModel, Field, field_validator
 import re
+import semver
 
 
 class DocumentType(str, Enum):
@@ -31,6 +32,23 @@ class CourtLevel(str, Enum):
     SUPREME_COURT = "supreme_court"
     HIGH_COURT = "high_court"
     DISTRICT_COURT = "district_court"
+
+
+class TemplateStatus(str, Enum):
+    """Template lifecycle status."""
+    ACTIVE = "active"
+    DEPRECATED = "deprecated"
+    ARCHIVED = "archived"
+
+
+# Valid lifecycle transitions
+# active -> deprecated -> archived (cannot go backwards)
+# active -> archived directly allowed
+ALLOWED_TRANSITIONS: Dict[TemplateStatus, Set[TemplateStatus]] = {
+    TemplateStatus.ACTIVE: {TemplateStatus.DEPRECATED, TemplateStatus.ARCHIVED},
+    TemplateStatus.DEPRECATED: {TemplateStatus.ARCHIVED},
+    TemplateStatus.ARCHIVED: set(),  # Terminal state
+}
 
 
 class TemplateMetadata(BaseModel):
@@ -156,6 +174,24 @@ class TemplateField(BaseModel):
         return v
 
 
+class ChangelogEntry(BaseModel):
+    """Entry in template version changelog."""
+    version: str = Field(description="Semantic version for this entry")
+    date: str = Field(description="ISO timestamp when change was made")
+    changes: List[str] = Field(description="List of changes in this version")
+    author: str = Field(default="system", description="Who made the change")
+
+    @field_validator('version')
+    @classmethod
+    def validate_semver(cls, v: str) -> str:
+        """Ensure version is valid semantic version."""
+        try:
+            semver.Version.parse(v)
+        except ValueError:
+            raise ValueError(f"Invalid semantic version: {v}. Use format like '1.0.0'")
+        return v
+
+
 class LegalTemplate(BaseModel):
     """
     Complete legal document template with metadata, formatting, and fields.
@@ -179,6 +215,14 @@ class LegalTemplate(BaseModel):
     optional_fields: List[TemplateField] = Field(
         default_factory=list,
         description="Fields that may optionally be provided"
+    )
+    status: TemplateStatus = Field(
+        default=TemplateStatus.ACTIVE,
+        description="Template lifecycle status (active/deprecated/archived)"
+    )
+    changelog: List[ChangelogEntry] = Field(
+        default_factory=list,
+        description="Version history with changelog entries"
     )
     template_content: str = Field(
         default="",
