@@ -2,12 +2,12 @@
 
 ## Current Position
 
-**Phase:** 4 of 6 - Document Generation (IN PROGRESS)
-**Plan:** 2 of 4 complete
+**Phase:** 5 of 6 - Template Management (IN PROGRESS)
+**Plan:** 1 of 5 complete
 **Status:** In progress
-**Progress:** [██████████████░░░░░░] 14/16 plans (88%)
+**Progress:** [██████████████████░░] 18/22 plans (82%)
 
-**Last activity:** 2026-01-26 - Completed 04-02-PLAN.md (Legal Tone System Prompts)
+**Last activity:** 2026-01-27 - Completed 05-01-PLAN.md (Template Schema Extension)
 
 ## Project Reference
 
@@ -16,25 +16,17 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 **Core value:** Trustworthy legal document drafting that saves lawyers hours of work
 **Current focus:** Milestone v1.0 - Professional Document Drafting
 
-## Phase 3 Context (COMPLETE)
+## Phase 5 Context (IN PROGRESS)
 
-**Goal:** Citation engine for proper legal citation formatting and retrieval
+**Goal:** Template management - upload, versioning, and lifecycle control
 
 **Requirements:**
-- CITE-02: Statute citation formatting [DONE - 03-04]
-- CITE-03: Case citation formatting [DONE - 03-01]
-- CITE-01: Suggest relevant case law [DONE - 03-04]
-- CITE-06: Prioritize filing court jurisdiction [DONE - 03-02]
-- CITE-04: Verification badges [DONE - 03-05]
+- TMPL-01: Upload new template versions [IN PROGRESS]
+- TMPL-02: Template lifecycle management [IN PROGRESS]
+- TMPL-03: Template versioning [IN PROGRESS]
 
-**Success Criteria:**
-1. Citation models validate SCC, AIR, statute formats [DONE - 03-01]
-2. CitationFormatter produces standard Indian legal citation strings [DONE - 03-01]
-3. VerificationBadge integrates with verification system [DONE - 03-01]
-4. PrecedentRetriever with jurisdiction-aware ranking [DONE - 03-02]
-5. /citations/recommend API endpoint [DONE - 03-04]
-6. /citations/format-statute API endpoint [DONE - 03-04]
-7. Streamlit UI shows verification badges [DONE - 03-05]
+**Completed Plans:**
+- 05-01: Template schema extension (status, changelog, semver) [DONE]
 
 ## Accumulated Context
 
@@ -75,6 +67,9 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 | BASE_LEGAL_TONE_PROMPT enforces Hon'ble Court, passive voice | Formal legal register requirements per DOC-02 | 04-02 |
 | COURT_SPECIFIC_PROMPTS differentiate by court level | Article 136/142 for SC, 226/227 for HC per Indian practice | 04-02 |
 | get_generation_prompt combines base + court + field + citations | Builder pattern for flexible prompt composition | 04-02 |
+| Lifecycle state machine | Templates progress active -> deprecated -> archived, cannot go backwards | 05-01 |
+| Direct archival allowed | Active templates can skip deprecated for immediate decommission | 05-01 |
+| Backward compatible defaults | Existing templates load with status=ACTIVE, changelog=[] | 05-01 |
 
 ### Technical Decisions
 | Decision | Details | Plan |
@@ -97,6 +92,8 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 | COURT_NORMALIZATIONS dict | 50+ court name variants to canonical IDs | 03-02 |
 | System prompt composition pattern | Base + court-specific + field-specific + citation integration | 04-02 |
 | Triple-quoted strings for prompts | Multi-line formatting for system prompt readability | 04-02 |
+| ALLOWED_TRANSITIONS dict pattern | State -> set of valid next states for lifecycle | 05-01 |
+| Semver validation via field_validator | ChangelogEntry.version validated at parse time | 05-01 |
 
 ### Blockers
 (None)
@@ -120,14 +117,22 @@ See: .planning/PROJECT.md (updated 2026-01-22)
   - Plan 03-03: Citation recommender orchestrator
   - Plan 03-04: Citation API endpoints (/citations/recommend, /citations/format-statute)
   - Plan 03-05: Citation verification UI in Streamlit
-- **Phase 4 in progress**: Document generation
+- **Phase 4 complete**: Document generation
   - Plan 04-01: Fact collection models (BailApplicationFacts, LegalNoticeFacts, AffidavitFacts, PetitionFacts)
   - Plan 04-02: Legal tone system prompts (BASE_LEGAL_TONE_PROMPT, COURT_SPECIFIC_PROMPTS, get_generation_prompt)
+  - Plan 04-03: Document drafter with template + facts + prompts
+  - Plan 04-04: Document reviser for iterative refinement
+  - Plan 04-05: Document generation API endpoints
+- **Phase 5 in progress**: Template management
+  - Plan 05-01: Template schema extension (TemplateStatus, ChangelogEntry, ALLOWED_TRANSITIONS)
 
 ### What's Next
-1. Complete Phase 4: Document generation (2 plans remaining)
-2. Then Phase 5: Production readiness
-3. Then Phase 6: Deployment
+1. Continue Phase 5: Template management (4 plans remaining)
+   - 05-02: Upload endpoint with validation
+   - 05-03: Version bump endpoint
+   - 05-04: Lifecycle transition endpoint
+   - 05-05: Template admin UI
+2. Then Phase 6: Production readiness
 
 ### Open Questions
 - External legal database API availability (IndianKanoon, SCC Online, Manupatra)
@@ -136,7 +141,7 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 ### Key Artifacts Created
 - `src/verification/` - Full verification module with 8 files
 - `src/data/mappings/*.json` - 283 section mappings across 3 code pairs
-- `src/templates/schemas.py` - Pydantic models for template validation
+- `src/templates/schemas.py` - Pydantic models for template validation (extended with lifecycle)
 - `src/templates/storage.py` - TemplateRepository for JSON file CRUD
 - `src/templates/__init__.py` - Public exports for templates module
 - `src/templates/data/*.json` - 12 default template files
@@ -145,12 +150,14 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 - `src/citations/__init__.py` - Citation module exports
 - `src/citations/retriever.py` - PrecedentRetriever with jurisdiction-aware ranking
 - `src/citations/recommender.py` - CitationRecommender orchestrator
-- `api.py` - Updated with verification, template, and citation API integrations
+- `api.py` - Updated with verification, template, citation, and generation API integrations
 - `main.py` - Updated with citation badge CSS and precedent display
 - `src/generation/models.py` - Pydantic fact collection models for document generation
 - `src/generation/__init__.py` - Generation module exports
 - `src/generation/prompts.py` - System prompts for formal legal language generation
+- `src/generation/drafter.py` - DocumentDrafter for template-based generation
+- `src/generation/reviser.py` - DocumentReviser for iterative refinement
 
 ---
 *State initialized: 2026-01-22*
-*Last updated: 2026-01-26 - Completed 04-02-PLAN.md (Legal Tone System Prompts)*
+*Last updated: 2026-01-27 - Completed 05-01-PLAN.md (Template Schema Extension)*
