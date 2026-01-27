@@ -36,6 +36,16 @@ from src.templates.upload import (
     UploadProcessResult,
     MAX_TEMPLATE_SIZE_BYTES,
 )
+from src.templates.lifecycle import (
+    validate_status_transition,
+    change_template_status,
+    get_template_status,
+    is_template_usable,
+    get_templates_by_status,
+    StatusChangeResult,
+    UsabilityResult,
+    UsabilityStatus,
+)
 
 __all__ = [
     # Enums
@@ -72,4 +82,13 @@ __all__ = [
     "UploadValidationResult",
     "UploadProcessResult",
     "MAX_TEMPLATE_SIZE_BYTES",
+    # Lifecycle management
+    "validate_status_transition",
+    "change_template_status",
+    "get_template_status",
+    "is_template_usable",
+    "get_templates_by_status",
+    "StatusChangeResult",
+    "UsabilityResult",
+    "UsabilityStatus",
 ]
