@@ -3,11 +3,11 @@
 ## Current Position
 
 **Phase:** 5 of 6 - Template Management (IN PROGRESS)
-**Plan:** 1 of 5 complete
+**Plan:** 2 of 5 complete
 **Status:** In progress
-**Progress:** [██████████████████░░] 18/22 plans (82%)
+**Progress:** [███████████████████░] 19/22 plans (86%)
 
-**Last activity:** 2026-01-27 - Completed 05-01-PLAN.md (Template Schema Extension)
+**Last activity:** 2026-01-27 - Completed 05-02-PLAN.md (Upload Validation and Versioning)
 
 ## Project Reference
 
@@ -27,6 +27,7 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 
 **Completed Plans:**
 - 05-01: Template schema extension (status, changelog, semver) [DONE]
+- 05-02: Upload validation and versioning utilities [DONE]
 
 ## Accumulated Context
 
@@ -70,6 +71,10 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 | Lifecycle state machine | Templates progress active -> deprecated -> archived, cannot go backwards | 05-01 |
 | Direct archival allowed | Active templates can skip deprecated for immediate decommission | 05-01 |
 | Backward compatible defaults | Existing templates load with status=ACTIVE, changelog=[] | 05-01 |
+| Validation pipeline pattern | Early returns on validation failure for clear error messages | 05-02 |
+| Result objects for outcomes | UploadValidationResult/UploadProcessResult provide structured results | 05-02 |
+| Change description required for updates | Updates must include change_description for changelog | 05-02 |
+| 500KB max template size | MAX_TEMPLATE_SIZE_BYTES prevents oversized uploads | 05-02 |
 
 ### Technical Decisions
 | Decision | Details | Plan |
@@ -94,6 +99,8 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 | Triple-quoted strings for prompts | Multi-line formatting for system prompt readability | 04-02 |
 | ALLOWED_TRANSITIONS dict pattern | State -> set of valid next states for lifecycle | 05-01 |
 | Semver validation via field_validator | ChangelogEntry.version validated at parse time | 05-01 |
+| Semver library for version comparison | compare_versions, bump_version use python-semver | 05-02 |
+| Validation pipeline stages | File size -> JSON syntax -> schema -> version in sequence | 05-02 |
 
 ### Blockers
 (None)
@@ -125,11 +132,11 @@ See: .planning/PROJECT.md (updated 2026-01-22)
   - Plan 04-05: Document generation API endpoints
 - **Phase 5 in progress**: Template management
   - Plan 05-01: Template schema extension (TemplateStatus, ChangelogEntry, ALLOWED_TRANSITIONS)
+  - Plan 05-02: Upload validation and versioning utilities (versioning.py, upload.py)
 
 ### What's Next
-1. Continue Phase 5: Template management (4 plans remaining)
-   - 05-02: Upload endpoint with validation
-   - 05-03: Version bump endpoint
+1. Continue Phase 5: Template management (3 plans remaining)
+   - 05-03: Template management API endpoints
    - 05-04: Lifecycle transition endpoint
    - 05-05: Template admin UI
 2. Then Phase 6: Production readiness
@@ -157,7 +164,9 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 - `src/generation/prompts.py` - System prompts for formal legal language generation
 - `src/generation/drafter.py` - DocumentDrafter for template-based generation
 - `src/generation/reviser.py` - DocumentReviser for iterative refinement
+- `src/templates/versioning.py` - Semver version comparison and changelog utilities
+- `src/templates/upload.py` - Upload validation pipeline and processing
 
 ---
 *State initialized: 2026-01-22*
-*Last updated: 2026-01-27 - Completed 05-01-PLAN.md (Template Schema Extension)*
+*Last updated: 2026-01-27 - Completed 05-02-PLAN.md (Upload Validation and Versioning)*
