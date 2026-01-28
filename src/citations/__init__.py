@@ -18,6 +18,10 @@ from src.citations.retriever import (
     RetrievedPrecedent,
     JurisdictionWeight,
 )
+from src.citations.recommender import (
+    CitationRecommender,
+    CitationRecommendation,
+)
 
 __all__ = [
     # Models
@@ -32,4 +36,7 @@ __all__ = [
     "PrecedentRetriever",
     "RetrievedPrecedent",
     "JurisdictionWeight",
+    # Recommender
+    "CitationRecommender",
+    "CitationRecommendation",
 ]

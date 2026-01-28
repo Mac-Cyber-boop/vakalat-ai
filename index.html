@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vakalat AI | Premium Legal Intelligence</title>
+    <meta name="description"
+        content="AI-powered legal assistant for Indian lawyers. Research precedents, draft documents, verify citations.">
+
+    <script>
+        // SECURITY GATE
+        const AUTH_CODE = localStorage.getItem('vakalat_token');
+        if (!AUTH_CODE) {
+            const code = prompt("🔐 VAKALAT AI ENTERPRISE\n\nEnter Access Code:");
+            if (code) {
+                localStorage.setItem('vakalat_token', code);
+                location.reload();
+            } else {
+                document.body.innerHTML = "<div style='display:flex;height:100vh;align-items:center;justify-content:center;background:#0a0a0a;color:#dc2626;font-family:system-ui'><h1>⛔ ACCESS DENIED</h1></div>";
+                throw new Error("Access Denied");
+            }
+        }
+
+        // GLOBAL API HEADER INJECTOR
+        const originalFetch = window.fetch;
+        window.fetch = function () {
+            let [resource, config] = arguments;
+            if (!config) config = {};
+            if (!config.headers) config.headers = {};
+            config.headers['x-access-token'] = localStorage.getItem('vakalat_token');
+            return originalFetch(resource, config);
+        };
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            /* Premium Color Palette */
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-tertiary: #1a1a1a;
+            --bg-card: linear-gradient(135deg, #141414 0%, #0d0d0d 100%);
+
+            --accent-gold: #c9a962;
+            --accent-gold-light: #e4d4a5;
+            --accent-gold-dark: #a08040;
+
+            --text-primary: #ffffff;
+            --text-secondary: #a3a3a3;
+            --text-muted: #525252;
+
+            --border-subtle: rgba(255, 255, 255, 0.06);
+            --border-accent: rgba(201, 169, 98, 0.3);
+
+            --glass-bg: rgba(20, 20, 20, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.08);
+
+            /* Typography */
+            --font-display: 'Cormorant Garamond', Georgia, serif;
+            --font-body: 'Inter', system-ui, sans-serif;
+
+            /* Shadows */
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.6);
+            --shadow-gold: 0 4px 24px rgba(201, 169, 98, 0.15);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Animated Background */
+        .bg-gradient {
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(201, 169, 98, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse 60% 40% at 100% 100%, rgba(201, 169, 98, 0.05) 0%, transparent 40%),
+                var(--bg-primary);
+            z-index: -1;
+        }
+
+        /* Grid Pattern Overlay */
+        .bg-pattern {
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 60px 60px;
+            z-index: -1;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 48px;
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-subtle);
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-dark) 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 20px;
+            color: var(--bg-primary);
+        }
+
+        .logo-text {
+            font-family: var(--font-display);
+            font-size: 26px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        .logo-text span {
+            color: var(--accent-gold);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-link {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-link.active {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 2px;
+            background: var(--accent-gold);
+            border-radius: 1px;
+        }
+
+        .nav-status {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .avatar-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            border: 2px solid var(--border-subtle);
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .avatar-btn:hover {
+            border-color: var(--accent-gold);
+        }
+
+        .avatar-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding-top: 72px;
+            min-height: 100vh;
+        }
+
+        .view-section {
+            display: none;
+            min-height: calc(100vh - 72px);
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        /* Research View */
+        .research-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 80px 24px 200px;
+        }
+
+        .hero-section {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(201, 169, 98, 0.1);
+            border: 1px solid var(--border-accent);
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 32px;
+        }
+
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: clamp(48px, 8vw, 72px);
+            font-weight: 600;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            margin-bottom: 24px;
+        }
+
+        .hero-title .highlight {
+            background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-light) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        /* Chat Container */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        .chat-message {
+            display: flex;
+            gap: 16px;
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chat-message.user {
+            justify-content: flex-end;
+        }
+
+        .message-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-dark) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--bg-primary);
+            flex-shrink: 0;
+        }
+
+        .message-content {
+            max-width: 700px;
+        }
+
+        .message-content.user-content {
+            background: linear-gradient(135deg, #1f1f1f 0%, #171717 100%);
+            border: 1px solid var(--border-subtle);
+            padding: 20px 28px;
+            border-radius: 20px 20px 4px 20px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .message-badge {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .message-badge.verified {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .message-badge.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .message-title {
+            font-family: var(--font-display);
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .message-body {
+            font-size: 16px;
+            line-height: 1.8;
+            color: var(--text-secondary);
+        }
+
+        .message-body strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .message-authorities {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .authority-tag {
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        /* Input Bar */
+        .input-container {
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 800px;
+            padding: 0 24px;
+            z-index: 50;
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            transition: all 0.3s ease;
+        }
+
+        .input-wrapper:focus-within {
+            border-color: var(--border-accent);
+            box-shadow: var(--shadow-lg), var(--shadow-gold);
+        }
+
+        .query-input {
+            flex: 1;
+            padding: 16px 20px;
+            background: transparent;
+            border: none;
+            font-size: 16px;
+            color: var(--text-primary);
+            outline: none;
+        }
+
+        .query-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .submit-btn {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-dark) 100%);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--bg-primary);
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: scale(0.95);
+            box-shadow: var(--shadow-gold);
+        }
+
+        .submit-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Draft View */
+        .draft-container {
+            display: flex;
+            height: calc(100vh - 72px);
+        }
+
+        .draft-sidebar {
+            width: 420px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-subtle);
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            margin-bottom: 40px;
+        }
+
+        .sidebar-title {
+            font-family: var(--font-display);
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .sidebar-desc {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .form-group {
+            margin-bottom: 28px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 16px 20px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            font-size: 15px;
+            color: var(--text-primary);
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-select:focus,
+        .form-textarea:focus {
+            border-color: var(--border-accent);
+            box-shadow: 0 0 0 3px rgba(201, 169, 98, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 200px;
+            resize: vertical;
+            line-height: 1.7;
+        }
+
+        .primary-btn {
+            width: 100%;
+            padding: 18px 32px;
+            background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-dark) 100%);
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--bg-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-gold);
+        }
+
+        .draft-preview {
+            flex: 1;
+            background: #0d0d0d;
+            padding: 60px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .preview-bg {
+            position: absolute;
+            inset: 0;
+            background-image:
+                radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.03) 1px, transparent 0);
+            background-size: 24px 24px;
+        }
+
+        .document-paper {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+            background: #ffffff;
+            min-height: 1000px;
+            border-radius: 4px;
+            box-shadow: var(--shadow-lg);
+            padding: 80px;
+            color: #1a1a1a;
+        }
+
+        .document-content {
+            font-size: 15px;
+            line-height: 1.9;
+        }
+
+        .document-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 800px;
+            color: #a3a3a3;
+        }
+
+        .document-placeholder svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 24px;
+            opacity: 0.3;
+        }
+
+        .document-placeholder span {
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        /* Profile View */
+        .profile-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 72px);
+            padding: 60px 24px;
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            max-width: 1100px;
+            width: 100%;
+        }
+
+        .profile-card {
+            background: linear-gradient(135deg, #141414 0%, #0a0a0a 100%);
+            border: 1px solid var(--border-subtle);
+            border-radius: 24px;
+            padding: 48px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            background: linear-gradient(180deg, rgba(201, 169, 98, 0.08) 0%, transparent 100%);
+        }
+
+        .profile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 48px;
+            position: relative;
+        }
+
+        .profile-logo {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-dark) 100%);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 24px;
+            color: var(--bg-primary);
+        }
+
+        .profile-tier {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-dark) 100%);
+            border-radius: 100px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--bg-primary);
+        }
+
+        .profile-info {
+            position: relative;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 20px;
+            border: 3px solid var(--border-subtle);
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-name {
+            font-family: var(--font-display);
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .profile-role {
+            font-size: 13px;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 40px;
+            margin-top: 48px;
+            padding-top: 32px;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .stat-item {
+            text-align: left;
+        }
+
+        .stat-value {
+            font-family: var(--font-display);
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .stat-value.success {
+            color: #22c55e;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .role-options {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .role-title {
+            font-family: var(--font-display);
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 32px;
+        }
+
+        .role-btn {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 24px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .role-btn:hover {
+            border-color: var(--border-accent);
+            background: rgba(201, 169, 98, 0.05);
+        }
+
+        .role-icon {
+            width: 52px;
+            height: 52px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-gold);
+            transition: all 0.3s ease;
+        }
+
+        .role-btn:hover .role-icon {
+            background: var(--accent-gold);
+            color: var(--bg-primary);
+        }
+
+        .role-info h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .role-info p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* Loading States */
+        .loading-spinner {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border-subtle);
+            border-top-color: var(--accent-gold);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--bg-secondary) 50%, var(--bg-tertiary) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 8px;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .navbar {
+                padding: 0 24px;
+            }
+
+            .draft-sidebar {
+                width: 360px;
+                padding: 32px;
+            }
+
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                height: 64px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .main-content {
+                padding-top: 64px;
+            }
+
+            .draft-container {
+                flex-direction: column;
+            }
+
+            .draft-sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--border-subtle);
+            }
+
+            .hero-title {
+                font-size: 40px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-gradient"></div>
+    <div class="bg-pattern"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo">
+            <div class="logo-icon">V</div>
+            <div class="logo-text">Vakalat<span>AI</span></div>
+        </div>
+
+        <div class="nav-links">
+            <button class="nav-link active" onclick="setView('research')" id="btn-research">Research</button>
+            <button class="nav-link" onclick="setView('draft')" id="btn-draft">Draft</button>
+            <button class="nav-link" onclick="setView('review')" id="btn-review">Analyze</button>
+        </div>
+
+        <div class="nav-status">
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                <span>Online</span>
+            </div>
+            <button class="avatar-btn" onclick="setView('profile')" id="btn-profile">
+                <img src="https://ui-avatars.com/api/?name=Mukul+Sharma&background=1a1a1a&color=c9a962&bold=true"
+                    alt="Profile">
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <!-- Research View -->
+        <section id="view-research" class="view-section active">
+            <div class="research-container">
+                <div class="hero-section" id="empty-state">
+                    <div class="hero-badge">
+                        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        AI-Powered Legal Intelligence
+                    </div>
+                    <h1 class="hero-title">
+                        Research with<br><span class="highlight">Confidence</span>
+                    </h1>
+                    <p class="hero-subtitle">
+                        Query verified Supreme Court & High Court precedents.
+                        Get accurate legal insights backed by authentic citations.
+                    </p>
+                </div>
+
+                <div id="chat-container" class="chat-container"></div>
+            </div>
+
+            <div class="input-container">
+                <div class="input-wrapper">
+                    <input type="text" id="query-input" class="query-input" placeholder="Ask a legal question..."
+                        onkeypress="if(event.key === 'Enter') runQuery()">
+                    <button class="submit-btn" onclick="runQuery()">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Draft View -->
+        <section id="view-draft" class="view-section">
+            <div class="draft-container">
+                <div class="draft-sidebar">
+                    <div class="sidebar-header">
+                        <h2 class="sidebar-title">Document Drafting</h2>
+                        <p class="sidebar-desc">Generate professional legal documents with AI assistance.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Document Type</label>
+                        <select id="doc-type" class="form-select">
+                            <option value="Legal Notice">Legal Notice</option>
+                            <option value="Writ Petition">Writ Petition</option>
+                            <option value="Bail Application">Bail Application</option>
+                            <option value="Affidavit">Affidavit</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Case Facts & Details</label>
+                        <textarea id="facts" class="form-textarea"
+                            placeholder="Describe the facts of your case, relevant dates, parties involved, and specific requirements..."></textarea>
+                    </div>
+
+                    <button class="primary-btn" onclick="runDraft()">Generate Document</button>
+                </div>
+
+                <div class="draft-preview">
+                    <div class="preview-bg"></div>
+                    <div class="document-paper">
+                        <div id="draft-output" class="document-content">
+                            <div class="document-placeholder">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                <span>Document Preview</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Review View -->
+        <section id="view-review" class="view-section">
+            <div class="draft-container">
+                <div class="draft-sidebar">
+                    <div class="sidebar-header">
+                        <h2 class="sidebar-title">Document Analyzer</h2>
+                        <p class="sidebar-desc">Audit legal documents and identify risks, loopholes, and weaknesses.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Document Text</label>
+                        <textarea id="review-text" class="form-textarea" style="min-height: 320px;"
+                            placeholder="Paste the legal document, contract clause, or agreement text here for analysis..."></textarea>
+                    </div>
+
+                    <button class="primary-btn" onclick="runReview()">Analyze Document</button>
+                </div>
+
+                <div class="draft-preview">
+                    <div class="preview-bg"></div>
+                    <div class="document-paper">
+                        <div id="review-output" class="document-content">
+                            <div class="document-placeholder">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                                </svg>
+                                <span>Analysis Results</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Profile View -->
+        <section id="view-profile" class="view-section">
+            <div class="profile-container">
+                <div class="profile-grid">
+                    <div class="profile-card">
+                        <div class="profile-header">
+                            <div class="profile-logo">V</div>
+                            <div class="profile-tier">Premium Partner</div>
+                        </div>
+
+                        <div class="profile-info">
+                            <div class="profile-avatar">
+                                <img src="https://ui-avatars.com/api/?name=Mukul+Sharma&background=1a1a1a&color=c9a962&size=200&bold=true"
+                                    alt="Profile">
+                            </div>
+                            <h2 class="profile-name">Mukul Sharma</h2>
+                            <p class="profile-role" id="role-title">Senior Advocate • Supreme Court</p>
+                        </div>
+
+                        <div class="profile-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">92K</div>
+                                <div class="stat-label">Citations</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">4.9</div>
+                                <div class="stat-label">Reputation</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value success">Active</div>
+                                <div class="stat-label">License</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="role-options">
+                        <h3 class="role-title">Select Workspace</h3>
+
+                        <button class="role-btn" onclick="setRole('Advocate')">
+                            <div class="role-icon">
+                                <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+                                </svg>
+                            </div>
+                            <div class="role-info">
+                                <h4>Senior Advocate</h4>
+                                <p>Drafting & Litigation Mode</p>
+                            </div>
+                        </button>
+
+                        <button class="role-btn" onclick="setRole('Judge')">
+                            <div class="role-icon">
+                                <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                </svg>
+                            </div>
+                            <div class="role-info">
+                                <h4>Judicial Officer</h4>
+                                <p>Neutral Analysis Mode</p>
+                            </div>
+                        </button>
+
+                        <button class="role-btn" onclick="setRole('Associate')">
+                            <div class="role-icon">
+                                <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                            </div>
+                            <div class="role-info">
+                                <h4>Legal Associate</h4>
+                                <p>Research & Summarization</p>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // Change to your production URL when deploying
+        const API_URL = "https://vakalat-ai-ydde.onrender.com";
+
+        function setView(v) {
+            // Update sections
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById('view-' + v).classList.add('active');
+
+            // Update nav links
+            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+            const btn = document.getElementById('btn-' + v);
+            if (btn && btn.classList.contains('nav-link')) {
+                btn.classList.add('active');
+            }
+        }
+
+        function setRole(role) {
+            const titles = {
+                'Advocate': 'Senior Advocate • Supreme Court',
+                'Judge': "Hon'ble Justice • High Court",
+                'Associate': 'Senior Associate • Litigation'
+            };
+            document.getElementById('role-title').innerText = titles[role];
+        }
+
+        async function runQuery() {
+            const input = document.getElementById('query-input');
+            const container = document.getElementById('chat-container');
+            const empty = document.getElementById('empty-state');
+            const q = input.value.trim();
+            if (!q) return;
+
+            if (empty) empty.style.display = 'none';
+            input.value = '';
+
+            // Add user message
+            container.innerHTML += `
+                <div class="chat-message user">
+                    <div class="message-content user-content">${q}</div>
+                </div>
+            `;
+            container.scrollTop = container.scrollHeight;
+
+            // Add loading state
+            const loadId = 'load-' + Date.now();
+            container.innerHTML += `
+                <div id="${loadId}" class="chat-message">
+                    <div class="message-avatar">V</div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <div class="loading-spinner"></div>
+                            <span style="font-size: 13px; color: var(--text-muted);">Analyzing precedents...</span>
+                        </div>
+                        <div class="skeleton" style="height: 20px; width: 80%; margin-bottom: 12px;"></div>
+                        <div class="skeleton" style="height: 20px; width: 60%;"></div>
+                    </div>
+                </div>
+            `;
+            container.scrollTop = container.scrollHeight;
+
+            try {
+                const res = await fetch(`${API_URL}/research`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question: q })
+                });
+                const data = await res.json();
+                document.getElementById(loadId).remove();
+
+                const isFail = data.direct_answer === "Information Not Found";
+                const authHTML = data.authorities && data.authorities.length
+                    ? `<div class="message-authorities">${data.authorities.map(a =>
+                        `<span class="authority-tag">${a}</span>`).join('')}</div>`
+                    : '';
+
+                container.innerHTML += `
+                    <div class="chat-message">
+                        <div class="message-avatar">V</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-badge ${isFail ? 'error' : 'verified'}">${isFail ? 'No Data' : 'Verified'}</span>
+                            </div>
+                            <h3 class="message-title">${data.direct_answer}</h3>
+                            <div class="message-body">${data.analysis}</div>
+                            ${authHTML}
+                        </div>
+                    </div>
+                `;
+            } catch (e) {
+                document.getElementById(loadId).innerHTML = `
+                    <div class="message-avatar">V</div>
+                    <div class="message-content">
+                        <span class="message-badge error">Offline</span>
+                        <p style="margin-top: 12px; color: var(--text-muted);">Unable to connect to server.</p>
+                    </div>
+                `;
+            }
+            container.scrollTop = container.scrollHeight;
+        }
+
+        async function runDraft() {
+            const out = document.getElementById('draft-output');
+            out.innerHTML = `
+                <div class="document-placeholder">
+                    <div class="loading-spinner" style="width: 32px; height: 32px; margin-bottom: 24px;"></div>
+                    <span>Generating Document...</span>
+                </div>
+            `;
+
+            try {
+                const res = await fetch(`${API_URL}/draft`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        doc_type: document.getElementById('doc-type').value,
+                        details: document.getElementById('facts').value
+                    })
+                });
+                const data = await res.json();
+                out.innerHTML = data.draft;
+            } catch (e) {
+                out.innerHTML = `<div style="color: #ef4444; text-align: center; padding: 60px;">Failed to generate document. Please try again.</div>`;
+            }
+        }
+
+        async function runReview() {
+            const out = document.getElementById('review-output');
+            out.innerHTML = `
+                <div class="document-placeholder">
+                    <div class="loading-spinner" style="width: 32px; height: 32px; margin-bottom: 24px;"></div>
+                    <span>Analyzing Document...</span>
+                </div>
+            `;
+
+            try {
+                const res = await fetch(`${API_URL}/analyze`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ doc_text: document.getElementById('review-text').value })
+                });
+                const data = await res.json();
+                out.innerHTML = data.analysis;
+            } catch (e) {
+                out.innerHTML = `<div style="color: #ef4444; text-align: center; padding: 60px;">Failed to analyze document. Please try again.</div>`;
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -16,3 +16,4 @@ streamlit
 fpdf2
 python-multipart
 semver
+python-docx

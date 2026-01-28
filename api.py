@@ -16,6 +16,7 @@ from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import JsonOutputParser, StrOutputParser
 from datetime import date
+import time
 
 # Citation verification imports
 from src.verification import (
@@ -928,3 +929,272 @@ async def preview_template(req: TemplatePreviewRequest):
         response["blocked_message"] = usability.message
 
     return response
+
+
+# 13. PRODUCTION DRAFTING ENDPOINT
+
+# Import export module
+from src.export import PDFExporter, DocxExporter, ExportFormat
+import structlog
+
+# Initialize exporters
+pdf_exporter = PDFExporter()
+docx_exporter = DocxExporter()
+
+# Configure structlog for error logging
+logger = structlog.get_logger("vakalat_api")
+
+
+class DraftProRequest(BaseModel):
+    """Request model for professional document drafting with export."""
+    doc_type: str = Field(
+        description="Document type: bail_application, legal_notice, affidavit, petition"
+    )
+    court_level: str = Field(
+        description="Court level: supreme_court, high_court, district_court"
+    )
+    facts: dict = Field(
+        description="Structured facts matching the document type requirements"
+    )
+    export_format: Optional[str] = Field(
+        default=None,
+        description="Export format: 'pdf', 'docx', or None for text only"
+    )
+
+
+class DraftProResponse(BaseModel):
+    """Response model for professional document drafting."""
+    content: str = Field(description="Generated document text content")
+    doc_type: str = Field(description="Document type generated")
+    court_level: str = Field(description="Court level used")
+    citations_verified: List[str] = Field(
+        default_factory=list,
+        description="List of verified citations used"
+    )
+    verification_status: str = Field(
+        description="Citation verification outcome: 'verified' or 'sanitized'"
+    )
+    export_data: Optional[str] = Field(
+        default=None,
+        description="Base64-encoded PDF/DOCX if export_format specified"
+    )
+    export_filename: Optional[str] = Field(
+        default=None,
+        description="Suggested filename for exported document"
+    )
+    export_format: Optional[str] = Field(
+        default=None,
+        description="Format of exported document"
+    )
+
+
+class ErrorResponse(BaseModel):
+    """Structured error response."""
+    error: str = Field(description="Error type")
+    message: str = Field(description="Detailed error message")
+    field: Optional[str] = Field(default=None, description="Field causing error if applicable")
+
+
+@app.post("/draft-pro", response_model=DraftProResponse)
+async def draft_pro(req: DraftProRequest):
+    """
+    Professional document drafting with optional PDF/DOCX export.
+    
+    This unified endpoint combines:
+    1. Template retrieval based on doc_type and court_level
+    2. Citation recommendation from Pinecone
+    3. Document generation with formal legal language
+    4. Citation verification to prevent hallucinations
+    5. Optional export to PDF or DOCX with court-standard formatting
+    
+    Args:
+        doc_type: Document type (bail_application, legal_notice, affidavit, petition)
+        court_level: Court level (supreme_court, high_court, district_court)
+        facts: Structured facts matching document type requirements
+        export_format: Optional 'pdf', 'docx', or None for text only
+    
+    Returns:
+        DraftProResponse with generated content and optional export bytes
+    
+    Raises:
+        400: Invalid doc_type, court_level, facts, or export_format
+        500: Generation or export failed
+    """
+    request_id = date.today().strftime("%Y%m%d") + str(int(time.time()))
+    
+    try:
+        # Validate document generator is available
+        if not document_generator:
+            logger.error("Document generator unavailable", request_id=request_id)
+            raise HTTPException(500, "Document generation service unavailable")
+        
+        # Validate doc_type
+        try:
+            doc_type = DocumentType(req.doc_type)
+        except ValueError:
+            valid_types = [dt.value for dt in DocumentType]
+            logger.warning(
+                "Invalid doc_type",
+                request_id=request_id,
+                doc_type=req.doc_type,
+                valid_types=valid_types
+            )
+            raise HTTPException(
+                400,
+                {"error": "validation_error", "message": f"Invalid doc_type '{req.doc_type}'", "field": "doc_type", "valid_options": valid_types}
+            )
+        
+        # Validate court_level
+        try:
+            court_level = CourtLevel(req.court_level)
+        except ValueError:
+            valid_levels = [cl.value for cl in CourtLevel]
+            logger.warning(
+                "Invalid court_level",
+                request_id=request_id,
+                court_level=req.court_level,
+                valid_levels=valid_levels
+            )
+            raise HTTPException(
+                400,
+                {"error": "validation_error", "message": f"Invalid court_level '{req.court_level}'", "field": "court_level", "valid_options": valid_levels}
+            )
+        
+        # Validate export_format if provided
+        if req.export_format:
+            if req.export_format.lower() not in ["pdf", "docx"]:
+                logger.warning(
+                    "Invalid export_format",
+                    request_id=request_id,
+                    export_format=req.export_format
+                )
+                raise HTTPException(
+                    400,
+                    {"error": "validation_error", "message": f"Invalid export_format '{req.export_format}'", "field": "export_format", "valid_options": ["pdf", "docx"]}
+                )
+        
+        # Validate facts based on doc_type
+        fact_model_map = {
+            DocumentType.BAIL_APPLICATION: BailApplicationFacts,
+            DocumentType.LEGAL_NOTICE: LegalNoticeFacts,
+            DocumentType.AFFIDAVIT: AffidavitFacts,
+            DocumentType.PETITION: PetitionFacts,
+        }
+        
+        fact_model = fact_model_map.get(doc_type)
+        if fact_model:
+            try:
+                validated_facts = fact_model(**req.facts)
+                facts_dict = validated_facts.model_dump()
+            except Exception as e:
+                logger.warning(
+                    "Invalid facts",
+                    request_id=request_id,
+                    doc_type=req.doc_type,
+                    error=str(e)
+                )
+                raise HTTPException(
+                    400,
+                    {"error": "validation_error", "message": f"Invalid facts: {str(e)}", "field": "facts"}
+                )
+        else:
+            facts_dict = req.facts
+        
+        # Generate document
+        logger.info(
+            "Generating document",
+            request_id=request_id,
+            doc_type=req.doc_type,
+            court_level=req.court_level
+        )
+        
+        try:
+            generated = document_generator.generate_document(
+                doc_type=doc_type,
+                court_level=court_level,
+                user_facts=facts_dict
+            )
+        except ValueError as e:
+            logger.error(
+                "Document generation failed",
+                request_id=request_id,
+                error=str(e)
+            )
+            raise HTTPException(400, {"error": "generation_error", "message": str(e)})
+        except Exception as e:
+            logger.error(
+                "Document generation failed unexpectedly",
+                request_id=request_id,
+                error=str(e),
+                exc_info=True
+            )
+            raise HTTPException(500, {"error": "generation_error", "message": "Document generation failed"})
+        
+        # Build response
+        response_data = {
+            "content": generated.content,
+            "doc_type": generated.doc_type,
+            "court_level": generated.court_level,
+            "citations_verified": generated.citations_used,
+            "verification_status": generated.verification_status,
+            "export_data": None,
+            "export_filename": None,
+            "export_format": None,
+        }
+        
+        # Handle export if requested
+        if req.export_format:
+            export_format_lower = req.export_format.lower()
+            
+            try:
+                # Get formatting from template
+                template = template_repo.get_template(doc_type, court_level)
+                formatting = template.formatting if template else None
+                
+                if export_format_lower == "pdf":
+                    logger.info("Exporting to PDF", request_id=request_id)
+                    export_result = pdf_exporter.export(generated, formatting)
+                else:  # docx
+                    logger.info("Exporting to DOCX", request_id=request_id)
+                    export_result = docx_exporter.export(generated, formatting)
+                
+                response_data["export_data"] = export_result.to_base64()
+                response_data["export_filename"] = export_result.filename
+                response_data["export_format"] = export_result.format.value
+                
+                logger.info(
+                    "Export successful",
+                    request_id=request_id,
+                    format=export_format_lower,
+                    filename=export_result.filename
+                )
+                
+            except Exception as e:
+                logger.error(
+                    "Export failed",
+                    request_id=request_id,
+                    format=export_format_lower,
+                    error=str(e),
+                    exc_info=True
+                )
+                raise HTTPException(500, {"error": "export_error", "message": f"Export to {export_format_lower.upper()} failed"})
+        
+        logger.info(
+            "Draft-pro request completed",
+            request_id=request_id,
+            doc_type=req.doc_type,
+            exported=bool(req.export_format)
+        )
+        
+        return DraftProResponse(**response_data)
+        
+    except HTTPException:
+        raise  # Re-raise HTTP exceptions as-is
+    except Exception as e:
+        logger.error(
+            "Unexpected error in draft-pro",
+            request_id=request_id,
+            error=str(e),
+            exc_info=True
+        )
+        raise HTTPException(500, {"error": "internal_error", "message": "An unexpected error occurred"})
