@@ -1,0 +1,82 @@
+{
+  "metadata": {
+    "doc_type": "affidavit",
+    "court_level": "district_court",
+    "version": "1.0.0",
+    "name": "District Court Affidavit",
+    "description": "Affidavit template for filing before District Courts, Civil Courts, and Magistrate Courts. Uses standard District Court formatting."
+  },
+  "formatting": {
+    "paper_size": "A4",
+    "font": "Times New Roman",
+    "font_size": 12,
+    "line_spacing": 1.5,
+    "margin_left_right": "3cm",
+    "margin_top_bottom": "2cm",
+    "paper_quality": "75 GSM",
+    "double_sided": true
+  },
+  "required_fields": [
+    {
+      "field_name": "deponent_name",
+      "field_type": "party",
+      "required": true,
+      "label": "Deponent Name",
+      "description": "Full legal name of the person making the affidavit",
+      "example": "Shri Ramesh Kumar"
+    },
+    {
+      "field_name": "deponent_address",
+      "field_type": "text",
+      "required": true,
+      "label": "Deponent Address",
+      "description": "Complete residential address of the deponent",
+      "example": "Village Ramnagar, Post Sadar, District Gorakhpur - 273001"
+    },
+    {
+      "field_name": "deponent_occupation",
+      "field_type": "text",
+      "required": true,
+      "label": "Deponent Occupation",
+      "description": "Profession or occupation of the deponent",
+      "example": "Agriculturist"
+    },
+    {
+      "field_name": "statement_facts",
+      "field_type": "text",
+      "required": true,
+      "label": "Statement of Facts",
+      "description": "The facts and statements being affirmed under oath",
+      "example": "1. I am the plaintiff in the above suit. 2. The disputed property belongs to me as per revenue records."
+    },
+    {
+      "field_name": "verification_place",
+      "field_type": "text",
+      "required": true,
+      "label": "Verification Place",
+      "description": "Place where the affidavit is verified and sworn",
+      "example": "Gorakhpur"
+    }
+  ],
+  "optional_fields": [
+    {
+      "field_name": "case_reference",
+      "field_type": "text",
+      "required": false,
+      "label": "Case Reference",
+      "description": "Related case number if affidavit is filed in pending proceedings",
+      "example": "O.S. No. 123/2024"
+    },
+    {
+      "field_name": "exhibit_list",
+      "field_type": "text",
+      "required": false,
+      "label": "List of Exhibits",
+      "description": "List of documents attached as exhibits to the affidavit",
+      "example": "Document No. 1 - Sale Deed, Document No. 2 - Khatauni"
+    }
+  ],
+  "template_content": "IN THE COURT OF _______________\nAT _______________\n\nCASE NO. _____ OF _____\n\nIN THE MATTER OF:\n_______________\n... Plaintiff/Applicant\n\nVersus\n\n_______________\n... Defendant/Opposite Party\n\nAFFIDAVIT\n\nI, {deponent_name}, S/o, D/o, W/o _______________,\naged about _____ years, {deponent_occupation},\nresident of {deponent_address},\ndo hereby solemnly state on oath as under:\n\n{statement_facts}\n\nVERIFICATION\n\nI, the deponent above-named, do hereby verify that the contents of this affidavit are true to my knowledge and belief.\n\nVerified at {verification_place} on _______________.\n\nDEPONENT\n\nBefore me,\nNOTARY / OATH COMMISSIONER",
+  "created_at": "2026-01-25T07:14:00Z",
+  "updated_at": "2026-01-25T07:14:00Z"
+}

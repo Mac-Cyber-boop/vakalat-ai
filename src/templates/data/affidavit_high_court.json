@@ -1,0 +1,82 @@
+{
+  "metadata": {
+    "doc_type": "affidavit",
+    "court_level": "high_court",
+    "version": "1.0.0",
+    "name": "High Court Affidavit",
+    "description": "Affidavit template for filing before High Courts in India. Follows High Court formatting standards with proper verification clause."
+  },
+  "formatting": {
+    "paper_size": "A4",
+    "font": "Times New Roman",
+    "font_size": 14,
+    "line_spacing": 1.5,
+    "margin_left_right": "3.5cm",
+    "margin_top_bottom": "2.5cm",
+    "paper_quality": "75 GSM",
+    "double_sided": true
+  },
+  "required_fields": [
+    {
+      "field_name": "deponent_name",
+      "field_type": "party",
+      "required": true,
+      "label": "Deponent Name",
+      "description": "Full legal name of the person making the affidavit",
+      "example": "Smt. Meera Kumari"
+    },
+    {
+      "field_name": "deponent_address",
+      "field_type": "text",
+      "required": true,
+      "label": "Deponent Address",
+      "description": "Complete residential address of the deponent",
+      "example": "56, Hazratganj, Lucknow - 226001"
+    },
+    {
+      "field_name": "deponent_occupation",
+      "field_type": "text",
+      "required": true,
+      "label": "Deponent Occupation",
+      "description": "Profession or occupation of the deponent",
+      "example": "Government Servant"
+    },
+    {
+      "field_name": "statement_facts",
+      "field_type": "text",
+      "required": true,
+      "label": "Statement of Facts",
+      "description": "The facts and statements being affirmed under oath",
+      "example": "1. I am the petitioner in the above writ petition. 2. I state that the impugned order is illegal and arbitrary."
+    },
+    {
+      "field_name": "verification_place",
+      "field_type": "text",
+      "required": true,
+      "label": "Verification Place",
+      "description": "Place where the affidavit is verified and sworn",
+      "example": "Lucknow"
+    }
+  ],
+  "optional_fields": [
+    {
+      "field_name": "case_reference",
+      "field_type": "text",
+      "required": false,
+      "label": "Case Reference",
+      "description": "Related case number if affidavit is filed in pending proceedings",
+      "example": "Writ Petition No. 5678/2024"
+    },
+    {
+      "field_name": "exhibit_list",
+      "field_type": "text",
+      "required": false,
+      "label": "List of Exhibits",
+      "description": "List of documents attached as exhibits to the affidavit",
+      "example": "Annexure-1: Impugned Order, Annexure-2: Service Record"
+    }
+  ],
+  "template_content": "IN THE HIGH COURT OF _______________\nAT _______________\n\n[CIVIL/CRIMINAL] [WRIT/MISC.] [PETITION/APPLICATION] NO. _____ OF _____\n\nIN THE MATTER OF:\n_______________\n... Petitioner(s)/Applicant(s)\n\nVersus\n\n_______________\n... Respondent(s)/Opposite Party(ies)\n\nAFFIDAVIT\n\nI, {deponent_name}, aged about _____ years, {deponent_occupation}, residing at {deponent_address}, do hereby solemnly affirm and declare as under:\n\n{statement_facts}\n\nVERIFICATION\n\nI, the above-named deponent, do hereby verify that the contents of the above affidavit are true and correct to my personal knowledge and belief and nothing material has been concealed or suppressed therefrom.\n\nVerified at {verification_place} on this _____ day of _____, 2024.\n\nDEPONENT\n\nBefore me,\nNOTARY / OATH COMMISSIONER",
+  "created_at": "2026-01-25T07:14:00Z",
+  "updated_at": "2026-01-25T07:14:00Z"
+}

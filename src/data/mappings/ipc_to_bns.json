@@ -1,0 +1,652 @@
+{
+  "_metadata": {
+    "source": "Indian Penal Code, 1860",
+    "target": "Bharatiya Nyaya Sanhita, 2023",
+    "effective_date": "2024-07-01",
+    "version": "1.0"
+  },
+  "34": {
+    "new_code": "BNS",
+    "new_section": "3(5)",
+    "confidence": 1.0,
+    "notes": "Common intention - Acts done by several persons in furtherance of common intention",
+    "status": "active"
+  },
+  "107": {
+    "new_code": "BNS",
+    "new_section": "45",
+    "confidence": 1.0,
+    "notes": "Abetment of a thing",
+    "status": "active"
+  },
+  "108": {
+    "new_code": "BNS",
+    "new_section": "46",
+    "confidence": 1.0,
+    "notes": "Abettor",
+    "status": "active"
+  },
+  "109": {
+    "new_code": "BNS",
+    "new_section": "48",
+    "confidence": 1.0,
+    "notes": "Punishment of abetment if act abetted is committed",
+    "status": "active"
+  },
+  "120B": {
+    "new_code": "BNS",
+    "new_section": "61",
+    "confidence": 1.0,
+    "notes": "Criminal conspiracy",
+    "status": "active"
+  },
+  "141": {
+    "new_code": "BNS",
+    "new_section": "189",
+    "confidence": 1.0,
+    "notes": "Unlawful assembly",
+    "status": "active"
+  },
+  "144": {
+    "new_code": "BNS",
+    "new_section": "191",
+    "confidence": 1.0,
+    "notes": "Joining unlawful assembly armed with deadly weapon",
+    "status": "active"
+  },
+  "147": {
+    "new_code": "BNS",
+    "new_section": "189",
+    "confidence": 1.0,
+    "notes": "Rioting",
+    "status": "active"
+  },
+  "148": {
+    "new_code": "BNS",
+    "new_section": "190",
+    "confidence": 1.0,
+    "notes": "Rioting armed with deadly weapon",
+    "status": "active"
+  },
+  "149": {
+    "new_code": "BNS",
+    "new_section": "190",
+    "confidence": 1.0,
+    "notes": "Every member of unlawful assembly guilty of offence committed in prosecution of common object",
+    "status": "active"
+  },
+  "153A": {
+    "new_code": "BNS",
+    "new_section": "196",
+    "confidence": 1.0,
+    "notes": "Promoting enmity between different groups on grounds of religion, race, place of birth, residence, language",
+    "status": "active"
+  },
+  "182": {
+    "new_code": "BNS",
+    "new_section": "211",
+    "confidence": 1.0,
+    "notes": "False information to public servant with intent to cause him to use his lawful power to injury of another",
+    "status": "active"
+  },
+  "193": {
+    "new_code": "BNS",
+    "new_section": "229",
+    "confidence": 1.0,
+    "notes": "Punishment for false evidence",
+    "status": "active"
+  },
+  "195A": {
+    "new_code": "BNS",
+    "new_section": "231",
+    "confidence": 1.0,
+    "notes": "Threatening any person to give false evidence",
+    "status": "active"
+  },
+  "211": {
+    "new_code": "BNS",
+    "new_section": "248",
+    "confidence": 1.0,
+    "notes": "False charge of offence made with intent to injure",
+    "status": "active"
+  },
+  "294": {
+    "new_code": "BNS",
+    "new_section": "296",
+    "confidence": 1.0,
+    "notes": "Obscene acts and songs",
+    "status": "active"
+  },
+  "295A": {
+    "new_code": "BNS",
+    "new_section": "299",
+    "confidence": 1.0,
+    "notes": "Deliberate and malicious acts intended to outrage religious feelings",
+    "status": "active"
+  },
+  "299": {
+    "new_code": "BNS",
+    "new_section": "100",
+    "confidence": 1.0,
+    "notes": "Culpable homicide",
+    "status": "active"
+  },
+  "300": {
+    "new_code": "BNS",
+    "new_section": "101",
+    "confidence": 1.0,
+    "notes": "Murder",
+    "status": "active"
+  },
+  "302": {
+    "new_code": "BNS",
+    "new_section": "103",
+    "confidence": 1.0,
+    "notes": "Punishment for murder",
+    "status": "active"
+  },
+  "304": {
+    "new_code": "BNS",
+    "new_section": "105",
+    "confidence": 1.0,
+    "notes": "Punishment for culpable homicide not amounting to murder",
+    "status": "active"
+  },
+  "304A": {
+    "new_code": "BNS",
+    "new_section": "106",
+    "confidence": 1.0,
+    "notes": "Death caused by negligence",
+    "status": "active"
+  },
+  "304B": {
+    "new_code": "BNS",
+    "new_section": "80",
+    "confidence": 1.0,
+    "notes": "Dowry death",
+    "status": "active"
+  },
+  "306": {
+    "new_code": "BNS",
+    "new_section": "108",
+    "confidence": 1.0,
+    "notes": "Abetment of suicide",
+    "status": "active"
+  },
+  "307": {
+    "new_code": "BNS",
+    "new_section": "109",
+    "confidence": 1.0,
+    "notes": "Attempt to murder",
+    "status": "active"
+  },
+  "308": {
+    "new_code": "BNS",
+    "new_section": "110",
+    "confidence": 1.0,
+    "notes": "Attempt to commit culpable homicide",
+    "status": "active"
+  },
+  "312": {
+    "new_code": "BNS",
+    "new_section": "88",
+    "confidence": 1.0,
+    "notes": "Causing miscarriage",
+    "status": "active"
+  },
+  "319": {
+    "new_code": "BNS",
+    "new_section": "114",
+    "confidence": 1.0,
+    "notes": "Hurt",
+    "status": "active"
+  },
+  "320": {
+    "new_code": "BNS",
+    "new_section": "114",
+    "confidence": 1.0,
+    "notes": "Grievous hurt",
+    "status": "active"
+  },
+  "323": {
+    "new_code": "BNS",
+    "new_section": "115",
+    "confidence": 1.0,
+    "notes": "Voluntarily causing hurt",
+    "status": "active"
+  },
+  "324": {
+    "new_code": "BNS",
+    "new_section": "118",
+    "confidence": 1.0,
+    "notes": "Voluntarily causing hurt by dangerous weapons or means",
+    "status": "active"
+  },
+  "325": {
+    "new_code": "BNS",
+    "new_section": "117",
+    "confidence": 1.0,
+    "notes": "Voluntarily causing grievous hurt",
+    "status": "active"
+  },
+  "326": {
+    "new_code": "BNS",
+    "new_section": "118",
+    "confidence": 1.0,
+    "notes": "Voluntarily causing grievous hurt by dangerous weapons",
+    "status": "active"
+  },
+  "326A": {
+    "new_code": "BNS",
+    "new_section": "124",
+    "confidence": 1.0,
+    "notes": "Voluntarily causing grievous hurt by use of acid",
+    "status": "active"
+  },
+  "336": {
+    "new_code": "BNS",
+    "new_section": "125",
+    "confidence": 1.0,
+    "notes": "Act endangering life or personal safety of others",
+    "status": "active"
+  },
+  "354": {
+    "new_code": "BNS",
+    "new_section": "74",
+    "confidence": 1.0,
+    "notes": "Assault or criminal force to woman with intent to outrage her modesty",
+    "status": "active"
+  },
+  "354A": {
+    "new_code": "BNS",
+    "new_section": "75",
+    "confidence": 1.0,
+    "notes": "Sexual harassment",
+    "status": "active"
+  },
+  "354B": {
+    "new_code": "BNS",
+    "new_section": "76",
+    "confidence": 1.0,
+    "notes": "Assault or use of criminal force with intent to disrobe",
+    "status": "active"
+  },
+  "354C": {
+    "new_code": "BNS",
+    "new_section": "77",
+    "confidence": 1.0,
+    "notes": "Voyeurism",
+    "status": "active"
+  },
+  "354D": {
+    "new_code": "BNS",
+    "new_section": "78",
+    "confidence": 1.0,
+    "notes": "Stalking",
+    "status": "active"
+  },
+  "359": {
+    "new_code": "BNS",
+    "new_section": "137",
+    "confidence": 1.0,
+    "notes": "Kidnapping",
+    "status": "active"
+  },
+  "363": {
+    "new_code": "BNS",
+    "new_section": "137",
+    "confidence": 1.0,
+    "notes": "Punishment for kidnapping",
+    "status": "active"
+  },
+  "363A": {
+    "new_code": "BNS",
+    "new_section": "141",
+    "confidence": 1.0,
+    "notes": "Kidnapping or maiming a minor for purposes of begging",
+    "status": "active"
+  },
+  "364": {
+    "new_code": "BNS",
+    "new_section": "138",
+    "confidence": 1.0,
+    "notes": "Kidnapping or abducting in order to murder",
+    "status": "active"
+  },
+  "364A": {
+    "new_code": "BNS",
+    "new_section": "140",
+    "confidence": 1.0,
+    "notes": "Kidnapping for ransom",
+    "status": "active"
+  },
+  "366": {
+    "new_code": "BNS",
+    "new_section": "139",
+    "confidence": 1.0,
+    "notes": "Kidnapping, abducting or inducing woman to compel her marriage",
+    "status": "active"
+  },
+  "370": {
+    "new_code": "BNS",
+    "new_section": "143",
+    "confidence": 1.0,
+    "notes": "Trafficking of person",
+    "status": "active"
+  },
+  "376": {
+    "new_code": "BNS",
+    "new_section": "63-69",
+    "confidence": 0.9,
+    "notes": "Rape - provisions split into multiple sections (63 definition, 64 punishment, 65 punishment for certain cases, 66 on specific persons, 67 repeated offenders, 68 gang rape, 69 punishment for rape on minor)",
+    "status": "active"
+  },
+  "376A": {
+    "new_code": "BNS",
+    "new_section": "66",
+    "confidence": 1.0,
+    "notes": "Punishment for causing death or resulting in persistent vegetative state of victim",
+    "status": "active"
+  },
+  "376AB": {
+    "new_code": "BNS",
+    "new_section": "65",
+    "confidence": 1.0,
+    "notes": "Rape on woman under twelve years of age",
+    "status": "active"
+  },
+  "376B": {
+    "new_code": "BNS",
+    "new_section": "67",
+    "confidence": 1.0,
+    "notes": "Sexual intercourse by husband upon his wife during separation",
+    "status": "active"
+  },
+  "376C": {
+    "new_code": "BNS",
+    "new_section": "68",
+    "confidence": 1.0,
+    "notes": "Sexual intercourse by person in authority",
+    "status": "active"
+  },
+  "376D": {
+    "new_code": "BNS",
+    "new_section": "70",
+    "confidence": 1.0,
+    "notes": "Gang rape",
+    "status": "active"
+  },
+  "376DA": {
+    "new_code": "BNS",
+    "new_section": "70",
+    "confidence": 1.0,
+    "notes": "Gang rape on woman under sixteen years",
+    "status": "active"
+  },
+  "376DB": {
+    "new_code": "BNS",
+    "new_section": "70",
+    "confidence": 1.0,
+    "notes": "Gang rape on woman under twelve years",
+    "status": "active"
+  },
+  "377": {
+    "new_code": "BNS",
+    "new_section": null,
+    "confidence": 1.0,
+    "notes": "Decriminalized by Supreme Court in Navtej Singh Johar (2018). Section 377 only applicable for non-consensual acts which are now covered under general sexual assault provisions",
+    "status": "repealed"
+  },
+  "378": {
+    "new_code": "BNS",
+    "new_section": "303",
+    "confidence": 1.0,
+    "notes": "Theft",
+    "status": "active"
+  },
+  "379": {
+    "new_code": "BNS",
+    "new_section": "303",
+    "confidence": 1.0,
+    "notes": "Punishment for theft",
+    "status": "active"
+  },
+  "380": {
+    "new_code": "BNS",
+    "new_section": "305",
+    "confidence": 1.0,
+    "notes": "Theft in dwelling house",
+    "status": "active"
+  },
+  "381": {
+    "new_code": "BNS",
+    "new_section": "306",
+    "confidence": 1.0,
+    "notes": "Theft by clerk or servant",
+    "status": "active"
+  },
+  "382": {
+    "new_code": "BNS",
+    "new_section": "304",
+    "confidence": 1.0,
+    "notes": "Theft after preparation made for causing death, hurt or restraint",
+    "status": "active"
+  },
+  "383": {
+    "new_code": "BNS",
+    "new_section": "308",
+    "confidence": 1.0,
+    "notes": "Extortion",
+    "status": "active"
+  },
+  "384": {
+    "new_code": "BNS",
+    "new_section": "308",
+    "confidence": 1.0,
+    "notes": "Punishment for extortion",
+    "status": "active"
+  },
+  "390": {
+    "new_code": "BNS",
+    "new_section": "309",
+    "confidence": 1.0,
+    "notes": "Robbery",
+    "status": "active"
+  },
+  "391": {
+    "new_code": "BNS",
+    "new_section": "310",
+    "confidence": 1.0,
+    "notes": "Dacoity",
+    "status": "active"
+  },
+  "392": {
+    "new_code": "BNS",
+    "new_section": "309",
+    "confidence": 1.0,
+    "notes": "Punishment for robbery",
+    "status": "active"
+  },
+  "395": {
+    "new_code": "BNS",
+    "new_section": "310",
+    "confidence": 1.0,
+    "notes": "Punishment for dacoity",
+    "status": "active"
+  },
+  "396": {
+    "new_code": "BNS",
+    "new_section": "310",
+    "confidence": 1.0,
+    "notes": "Dacoity with murder",
+    "status": "active"
+  },
+  "397": {
+    "new_code": "BNS",
+    "new_section": "311",
+    "confidence": 1.0,
+    "notes": "Robbery or dacoity with attempt to cause death or grievous hurt",
+    "status": "active"
+  },
+  "399": {
+    "new_code": "BNS",
+    "new_section": "312",
+    "confidence": 1.0,
+    "notes": "Making preparation to commit dacoity",
+    "status": "active"
+  },
+  "405": {
+    "new_code": "BNS",
+    "new_section": "316",
+    "confidence": 1.0,
+    "notes": "Criminal breach of trust",
+    "status": "active"
+  },
+  "406": {
+    "new_code": "BNS",
+    "new_section": "316",
+    "confidence": 1.0,
+    "notes": "Punishment for criminal breach of trust",
+    "status": "active"
+  },
+  "407": {
+    "new_code": "BNS",
+    "new_section": "317",
+    "confidence": 1.0,
+    "notes": "Criminal breach of trust by carrier",
+    "status": "active"
+  },
+  "408": {
+    "new_code": "BNS",
+    "new_section": "317",
+    "confidence": 1.0,
+    "notes": "Criminal breach of trust by clerk or servant",
+    "status": "active"
+  },
+  "409": {
+    "new_code": "BNS",
+    "new_section": "316",
+    "confidence": 1.0,
+    "notes": "Criminal breach of trust by public servant or banker",
+    "status": "active"
+  },
+  "411": {
+    "new_code": "BNS",
+    "new_section": "317",
+    "confidence": 1.0,
+    "notes": "Dishonestly receiving stolen property",
+    "status": "active"
+  },
+  "415": {
+    "new_code": "BNS",
+    "new_section": "318",
+    "confidence": 1.0,
+    "notes": "Cheating",
+    "status": "active"
+  },
+  "417": {
+    "new_code": "BNS",
+    "new_section": "318",
+    "confidence": 1.0,
+    "notes": "Punishment for cheating",
+    "status": "active"
+  },
+  "420": {
+    "new_code": "BNS",
+    "new_section": "318",
+    "confidence": 1.0,
+    "notes": "Cheating and dishonestly inducing delivery of property",
+    "status": "active"
+  },
+  "463": {
+    "new_code": "BNS",
+    "new_section": "336",
+    "confidence": 1.0,
+    "notes": "Forgery",
+    "status": "active"
+  },
+  "464": {
+    "new_code": "BNS",
+    "new_section": "336",
+    "confidence": 1.0,
+    "notes": "Making a false document",
+    "status": "active"
+  },
+  "465": {
+    "new_code": "BNS",
+    "new_section": "336",
+    "confidence": 1.0,
+    "notes": "Punishment for forgery",
+    "status": "active"
+  },
+  "468": {
+    "new_code": "BNS",
+    "new_section": "338",
+    "confidence": 1.0,
+    "notes": "Forgery for purpose of cheating",
+    "status": "active"
+  },
+  "471": {
+    "new_code": "BNS",
+    "new_section": "340",
+    "confidence": 1.0,
+    "notes": "Using as genuine a forged document",
+    "status": "active"
+  },
+  "498A": {
+    "new_code": "BNS",
+    "new_section": "85",
+    "confidence": 1.0,
+    "notes": "Cruelty by husband or relatives of husband",
+    "status": "active"
+  },
+  "499": {
+    "new_code": "BNS",
+    "new_section": "356",
+    "confidence": 1.0,
+    "notes": "Defamation",
+    "status": "active"
+  },
+  "500": {
+    "new_code": "BNS",
+    "new_section": "356",
+    "confidence": 1.0,
+    "notes": "Punishment for defamation",
+    "status": "active"
+  },
+  "503": {
+    "new_code": "BNS",
+    "new_section": "351",
+    "confidence": 1.0,
+    "notes": "Criminal intimidation",
+    "status": "active"
+  },
+  "504": {
+    "new_code": "BNS",
+    "new_section": "351",
+    "confidence": 1.0,
+    "notes": "Intentional insult with intent to provoke breach of peace",
+    "status": "active"
+  },
+  "506": {
+    "new_code": "BNS",
+    "new_section": "351",
+    "confidence": 1.0,
+    "notes": "Punishment for criminal intimidation",
+    "status": "active"
+  },
+  "509": {
+    "new_code": "BNS",
+    "new_section": "79",
+    "confidence": 1.0,
+    "notes": "Word, gesture or act intended to insult the modesty of a woman",
+    "status": "active"
+  },
+  "511": {
+    "new_code": "BNS",
+    "new_section": "62",
+    "confidence": 1.0,
+    "notes": "Punishment for attempting to commit offences",
+    "status": "active"
+  }
+}
