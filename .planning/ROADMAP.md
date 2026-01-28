@@ -164,11 +164,11 @@ Plans:
 **Plans:** 5 plans
 
 Plans:
-- [ ] 05-01-PLAN.md — Extended schema with lifecycle and versioning (TemplateStatus, ChangelogEntry)
-- [ ] 05-02-PLAN.md — Upload validation and versioning utilities (upload.py, versioning.py)
-- [ ] 05-03-PLAN.md — Lifecycle status management (change status, transition validation)
-- [ ] 05-04-PLAN.md — Template preview generation (TemplatePreview, FieldPreview)
-- [ ] 05-05-PLAN.md — API endpoints for template management (/upload, /history, /status, /preview)
+- [x] 05-01-PLAN.md — Extended schema with lifecycle and versioning (TemplateStatus, ChangelogEntry)
+- [x] 05-02-PLAN.md — Upload validation and versioning utilities (upload.py, versioning.py)
+- [x] 05-03-PLAN.md — Lifecycle status management (change status, transition validation)
+- [x] 05-04-PLAN.md — Template preview generation (TemplatePreview, FieldPreview)
+- [x] 05-05-PLAN.md — API endpoints for template management (/upload, /history, /status, /preview)
 
 ---
 
@@ -194,7 +194,13 @@ Plans:
 
 **Research Flags:** WeasyPrint Windows compatibility needs testing during implementation.
 
-**Plans:** (created by /gsd:plan-phase)
+**Plans:** 4 plans
+
+Plans:
+- [ ] 06-01-PLAN.md — Export module foundation (PDF + DOCX exporters with court formatting)
+- [ ] 06-02-PLAN.md — Production error handling (ErrorResponse models + exception handlers)
+- [ ] 06-03-PLAN.md — Export API endpoints (/export/pdf and /export/docx)
+- [ ] 06-04-PLAN.md — Unified /draft-pro endpoint (generation + optional export)
 
 ---
 
@@ -206,8 +212,8 @@ Plans:
 | 2 | Template Storage | TMPL-01, TMPL-02 | Complete (2/2 plans) |
 | 3 | Citation Engine | CITE-01, CITE-02, CITE-03, CITE-04, CITE-05, CITE-06 | Complete (5/5 plans) |
 | 4 | Document Generation | DOC-01, DOC-02, DOC-03, DOC-04, DOC-07 | Complete (5/5 plans) |
-| 5 | Template Management | TMPL-03, TMPL-04, TMPL-05, TMPL-06, TMPL-07 | Planned (5 plans) |
-| 6 | Production Integration | DOC-05, DOC-06, PROD-01, PROD-02, PROD-03 | Pending |
+| 5 | Template Management | TMPL-03, TMPL-04, TMPL-05, TMPL-06, TMPL-07 | Complete (5/5 plans) |
+| 6 | Production Integration | DOC-05, DOC-06, PROD-01, PROD-02, PROD-03 | Planned (4 plans) |
 
 ## Coverage Summary
 
@@ -239,4 +245,4 @@ Phase 2 (Template Storage) -----------------------------------------------+-----
 
 ---
 *Roadmap created: 2026-01-22*
-*Updated: 2026-01-27 - Phase 5 planned (5 plans created)*
+*Updated: 2026-01-28 - Phase 6 planned (4 plans created)*
