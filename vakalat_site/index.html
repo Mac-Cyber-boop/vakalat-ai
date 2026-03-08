@@ -461,11 +461,21 @@
             btn.classList.add('opacity-75', 'cursor-not-allowed');
             err.classList.add('hidden');
 
-            // Verify with Backend
-            fetch(API_URL + "/", { headers: { 'x-access-token': code } })
+            // Verify with Backend (60s timeout for Render cold start)
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 60000);
+
+            // After 5s with no response, show cold start warning
+            const coldStartTimer = setTimeout(() => {
+                btn.innerText = "WAKING UP SERVER...";
+                btn.title = "Render free tier spins down after inactivity. First request takes ~30-60s.";
+            }, 5000);
+
+            fetch(API_URL + "/", { headers: { 'x-access-token': code }, signal: controller.signal })
                 .then(res => {
+                    clearTimeout(timeout);
+                    clearTimeout(coldStartTimer);
                     if (res.status === 200) {
-                        // Success
                         localStorage.setItem('vakalat_token', code);
                         revealApp();
                     } else {
@@ -473,9 +483,15 @@
                     }
                 })
                 .catch(e => {
+                    clearTimeout(timeout);
+                    clearTimeout(coldStartTimer);
                     btn.innerText = "UNLOCK SYSTEM";
                     btn.classList.remove('opacity-75', 'cursor-not-allowed');
-                    err.classList.remove('hidden');
+                    const errEl = document.getElementById('login-error');
+                    errEl.classList.remove('hidden');
+                    errEl.innerText = e.name === 'AbortError'
+                        ? '⏱ Server took too long. Try again.'
+                        : '⛔ INVALID ACCESS CODE';
                     input.value = '';
                     input.focus();
                 });
@@ -499,13 +515,14 @@
         window.addEventListener('load', () => {
             const token = localStorage.getItem('vakalat_token');
             if (token) {
-                // Verify token validity silently
-                fetch(API_URL + "/", { headers: { 'x-access-token': token } })
+                const controller = new AbortController();
+                setTimeout(() => controller.abort(), 60000);
+                fetch(API_URL + "/", { headers: { 'x-access-token': token }, signal: controller.signal })
                     .then(res => {
                         if (res.status === 200) revealApp();
                         else localStorage.removeItem('vakalat_token');
                     })
-                    .catch(() => { }); // If offline, stay on login
+                    .catch(() => { }); // If offline or timeout, stay on login screen
             }
         });
 
