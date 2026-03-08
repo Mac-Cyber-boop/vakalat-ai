@@ -592,6 +592,25 @@
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ question: q })
                 });
+
+                // Handle non-200 responses before parsing JSON
+                if (!res.ok) {
+                    const errorMessages = {
+                        401: "Access denied — invalid token. Please log out and re-enter your access code.",
+                        500: "Server error — the AI backend crashed. This usually means OpenAI credits are exhausted or a backend exception occurred.",
+                        503: "Backend is starting up (Render cold start). Wait 30 seconds and try again.",
+                        429: "Rate limit hit — too many requests. Wait a moment and try again.",
+                    };
+                    const msg = errorMessages[res.status] || `Unexpected server error (HTTP ${res.status}).`;
+                    document.getElementById(loadId).innerHTML = `
+                        <div class="ml-16 bg-red-50 border border-red-100 rounded-xl p-4 max-w-lg">
+                            <div class="text-xs font-bold text-red-400 uppercase tracking-widest mb-1">Error ${res.status}</div>
+                            <div class="text-sm text-red-700 font-medium">${msg}</div>
+                        </div>`;
+                    stream.scrollTop = stream.scrollHeight;
+                    return;
+                }
+
                 const data = await res.json();
                 document.getElementById(loadId).remove();
 
@@ -649,7 +668,12 @@
                     </div>
                 </div>`;
             } catch (e) {
-                document.getElementById(loadId).innerHTML = `<div class="ml-16 text-red-500 font-bold text-sm bg-red-50 p-3 rounded-lg border border-red-100 inline-block">Connection Failed. Check Backend.</div>`;
+                document.getElementById(loadId).innerHTML = `
+                    <div class="ml-16 bg-red-50 border border-red-100 rounded-xl p-4 max-w-lg">
+                        <div class="text-xs font-bold text-red-400 uppercase tracking-widest mb-1">Network Error</div>
+                        <div class="text-sm text-red-700 font-medium">Could not reach the backend. Check your internet connection or the backend may be down.</div>
+                        <div class="text-xs text-red-400 mt-2 font-mono">${e.message}</div>
+                    </div>`;
             }
             stream.scrollTop = stream.scrollHeight;
         }
@@ -667,9 +691,16 @@
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ doc_type: document.getElementById('doc-type').value, details: document.getElementById('facts').value })
                 });
+                if (!res.ok) {
+                    const msg = res.status === 500 ? "Server error — OpenAI credits may be exhausted." : `Error ${res.status}`;
+                    out.innerHTML = `<div class="flex items-center justify-center h-64 text-red-500 font-medium text-sm">${msg}</div>`;
+                    return;
+                }
                 const data = await res.json();
                 out.innerHTML = `<div class="prose-legal text-lg leading-loose text-gray-800 fade-in">${data.draft}</div>`;
-            } catch (e) { out.innerHTML = "Error Generating Draft."; }
+            } catch (e) {
+                out.innerHTML = `<div class="flex items-center justify-center h-64 text-red-500 font-medium text-sm">Network error: ${e.message}</div>`;
+            }
         }
 
         async function runReview() {
@@ -685,9 +716,16 @@
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ doc_text: document.getElementById('review-text').value })
                 });
+                if (!res.ok) {
+                    const msg = res.status === 500 ? "Server error — OpenAI credits may be exhausted." : `Error ${res.status}`;
+                    out.innerHTML = `<div class="flex items-center justify-center h-64 text-red-500 font-medium text-sm">${msg}</div>`;
+                    return;
+                }
                 const data = await res.json();
                 out.innerHTML = `<div class="prose-legal text-lg leading-loose text-gray-800 fade-in">${data.analysis}</div>`;
-            } catch (e) { out.innerHTML = "Error Analyzing Document."; }
+            } catch (e) {
+                out.innerHTML = `<div class="flex items-center justify-center h-64 text-red-500 font-medium text-sm">Network error: ${e.message}</div>`;
+            }
         }
     </script>
 </body>
