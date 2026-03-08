@@ -56,6 +56,9 @@ from src.templates import (
 # Citation engine imports
 from src.citations import CitationRecommender, CitationRecommendation
 
+# Context engineering imports
+from src.context_engine import ContextBuilder, HyDERetriever
+
 # Document generation imports
 from src.generation import (
     DocumentGenerator,
@@ -119,6 +122,14 @@ if os.getenv("PINECONE_API_KEY"):
 else:
     vector_db = None # Handle gracefully if offline
 
+# Context engineering infrastructure
+context_builder = ContextBuilder()
+hyde_retriever = None
+if vector_db:
+    # Use a faster/cheaper model for HyDE hypothesis generation
+    hyde_llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+    hyde_retriever = HyDERetriever(vector_db, hyde_llm)
+
 # Initialize verification infrastructure
 code_mapper = LegalCodeMapper()
 outdated_detector = OutdatedCodeDetector(code_mapper)
@@ -167,10 +178,16 @@ BEHAVIORAL_GATES = """
 class SearchPlan(BaseModel):
     queries: list[str] = Field(description="List of 3 distinct search queries")
 
+class AuthorityReference(BaseModel):
+    source: str = Field(description="Source document or case name (e.g., 'Bharatiya Nyaya Sanhita' or 'Arnesh Kumar vs State of Bihar')")
+    section: str = Field(description="Specific section, article, or provision (e.g., 'Section 438', 'Article 21', 'Order XXXIX Rule 1'). Use 'N/A' for general case law holdings.")
+    quote: str = Field(description="Exact key phrase from the source, max 120 characters")
+    authority_type: str = Field(description="One of: 'statute', 'supreme_court', 'high_court', 'procedural'")
+
 class JuristResponse(BaseModel):
     direct_answer: str = Field(description="A short summary sentence.")
     analysis: str = Field(description="Detailed legal reasoning.")
-    authorities: list[str] = Field(description="List of specific filenames/sections cited.")
+    authorities: list[AuthorityReference] = Field(description="List of sources with exact section references and quotes from the retrieved context.")
 
 class VerifierResponse(BaseModel):
     verdict: str = Field(description="'PASS' or 'FAIL'")
@@ -283,7 +300,21 @@ planner_parser = JsonOutputParser(pydantic_object=SearchPlan)
 
 JURIST_PROMPT = ChatPromptTemplate.from_template("""
 ### SYSTEM INSTRUCTION: JURIST AGENT
-TODAY: {current_date} | RULES: {gates} | LIBRARY: {context} | QUERY: {question}
+TODAY: {current_date}
+RULES: {gates}
+
+LEGAL LIBRARY (structured by authority):
+{context}
+
+QUERY: {question}
+
+CRITICAL INSTRUCTION FOR AUTHORITIES:
+For each source you cite, you MUST extract:
+1. The exact section number (e.g. "Section 438", "Article 21", "Order XXXIX Rule 1")
+2. A verbatim short quote from the LIBRARY text above (do not paraphrase)
+3. The authority type: "statute", "supreme_court", "high_court", or "procedural"
+Only cite sources that appear in the LIBRARY above. Never invent section numbers.
+
 OUTPUT JSON: {format_instructions}
 """)
 jurist_parser = JsonOutputParser(pydantic_object=JuristResponse)
@@ -317,40 +348,76 @@ def health(): return {"status": "VakalatOS Secure Cloud Online"}
 @app.post("/research")
 async def research(req: QueryRequest):
     if not vector_db: raise HTTPException(500, "Database Connection Failed")
-    
-    # 1. Plan
+
+    # 1. Plan — generate 3 targeted search queries from the user question
     plan = await (PLANNER_PROMPT | llm | planner_parser).ainvoke({"question": req.question})
-    
-    # 2. Retrieve
-    unique_docs = {}
+
+    # 2. Retrieve — HyDE on the original question + standard search on planner queries
+    #
+    # Why two retrieval paths?
+    #   - HyDE retrieves docs that match a formal legal answer (better for statutes/sections)
+    #   - Planner queries retrieve docs that match different angles of the question
+    #   Combining both gives wider, higher-quality coverage.
+    unique_docs: dict[str, object] = {}
+
+    # Path A: HyDE retrieval on the raw question (fetches ~10 statute/case_law docs)
+    if hyde_retriever:
+        hyde_docs = await hyde_retriever.aretrieve(req.question, k=10)
+        for doc in hyde_docs:
+            unique_docs[doc.page_content[:80]] = doc
+
+    # Path B: Standard retrieval on each planner query (k=5 each → up to 15 more)
     for q in plan['queries']:
         results = vector_db.similarity_search(q, k=5)
         for doc in results:
-            unique_docs[doc.page_content[:50]] = doc
-    ctx = "\n\n".join([f"[Source: {d.metadata.get('source_id', 'Unknown')}] {d.page_content}" for d in unique_docs.values()])
+            unique_docs[doc.page_content[:80]] = doc
 
-    # 3. Reason
+    # 3. Build structured context window
+    #
+    # Instead of dumping raw text, organize docs by legal authority:
+    #   ## Relevant Statutes
+    #   ## Supreme Court Precedents
+    #   ## High Court Precedents
+    #   ## Procedural Rules
+    #
+    # LLMs reason more accurately when context is structured and ordered by authority.
+    structured = context_builder.build(list(unique_docs.values()), query=req.question)
+    ctx = structured.formatted
+
+    # 4. Reason — Jurist agent over structured context
     jurist_out = await (JURIST_PROMPT | llm | jurist_parser).ainvoke({
-        "context": ctx, "gates": BEHAVIORAL_GATES, "question": req.question, "current_date": str(date.today()), "format_instructions": jurist_parser.get_format_instructions()
+        "context": ctx,
+        "gates": BEHAVIORAL_GATES,
+        "question": req.question,
+        "current_date": str(date.today()),
+        "format_instructions": jurist_parser.get_format_instructions(),
     })
 
-    # 4. Audit
+    # 5. Audit — Verifier checks for hallucinations against the same context
     audit = await (VERIFIER_PROMPT | llm | verifier_parser).ainvoke({
-        "draft_answer": str(jurist_out), "context": ctx, "format_instructions": verifier_parser.get_format_instructions()
+        "draft_answer": str(jurist_out),
+        "context": ctx,
+        "format_instructions": verifier_parser.get_format_instructions(),
     })
 
     if audit['verdict'] == "FAIL":
         return {"direct_answer": "Information Not Found", "analysis": audit['sanitized_reply'], "authorities": []}
 
-    # 5. Detect outdated legal code references
+    # 6. Detect outdated legal code references (IPC → BNS, CrPC → BNSS, etc.)
     response = dict(jurist_out)
+    response['context_stats'] = {
+        "total_docs": structured.doc_count,
+        "sections": structured.section_counts,
+        "hyde_used": hyde_retriever is not None,
+    }
+
     if outdated_detector:
         outdated_result = outdated_detector.detect_outdated(jurist_out.get('analysis', ''))
         if outdated_result.has_outdated:
             response['outdated_codes'] = [
                 {
                     'original': ref.original_text,
-                    'suggestion': ref.suggestion
+                    'suggestion': ref.suggestion,
                 }
                 for ref in outdated_result.outdated_references
             ]

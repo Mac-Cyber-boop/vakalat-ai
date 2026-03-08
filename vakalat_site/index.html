@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VakalatOS | Enterprise</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                        serif: ['"Libre Baskerville"', 'serif'],
+                    },
+                    colors: {
+                        os: { bg: '#e8e8e8', surface: '#ffffff', text: '#0f0f0f' },
+                        gold: { 400: '#FACC15', 500: '#EAB308', 600: '#CA8A04' }
+                    },
+                    boxShadow: {
+                        'os-window': '0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 1px rgba(0,0,0,0.1)',
+                        'os-dock': '0 10px 30px -5px rgba(0, 0, 0, 0.1), 0 0 1px rgba(0,0,0,0.1)',
+                        'card': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)'
+                    },
+                    animation: {
+                        'enter': 'enter 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        enter: { '0%': { opacity: '0', transform: 'scale(0.95) translateY(10px)' }, '100%': { opacity: '1', transform: 'scale(1) translateY(0)' } },
+                        float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-5px)' } }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #e8e8e8;
+            background-image: radial-gradient(at 0% 0%, rgba(255, 255, 255, 0.8) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(200, 200, 200, 0.5) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+
+        /* Dock Logic */
+        .dock-item-active {
+            background-color: #000;
+            color: #fff;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .dock-item-inactive {
+            color: #666;
+            background: transparent;
+        }
+
+        .dock-item-inactive:hover {
+            color: #000;
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        /* Glass & Gradients */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .id-card-gradient {
+            background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
+        }
+
+        /* Legal Typography */
+        .prose-legal {
+            font-family: 'Libre Baskerville', serif;
+            color: #334155;
+            line-height: 1.8;
+            font-size: 1rem;
+        }
+
+        .prose-legal strong {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            color: #000;
+        }
+
+        .prose-legal h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: 2em;
+            color: #94a3b8;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 5px;
+            margin-bottom: 1em;
+        }
+
+        .prose-legal ul {
+            list-style-type: disc;
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .prose-legal li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Login Screen Blur */
+        .blur-backdrop {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+
+<body
+    class="h-screen w-screen overflow-hidden flex items-center justify-center p-4 md:p-8 font-sans selection:bg-black selection:text-white">
+
+    <div id="login-layer"
+        class="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 blur-backdrop transition-opacity duration-500">
+        <div
+            class="glass-panel p-12 rounded-[2.5rem] shadow-2xl w-full max-w-md text-center animate-enter relative overflow-hidden">
+            <div class="absolute top-[-50px] left-[-50px] w-32 h-32 bg-blue-400/20 rounded-full blur-3xl"></div>
+
+            <div
+                class="w-20 h-20 bg-black text-white rounded-2xl flex items-center justify-center text-3xl font-display font-bold mx-auto mb-8 shadow-xl relative z-10">
+                V</div>
+
+            <h1 class="text-4xl font-bold mb-2 font-display text-black tracking-tight">VakalatOS</h1>
+            <p class="text-gray-500 mb-10 text-sm tracking-widest font-medium uppercase">Enterprise Access Portal</p>
+
+            <div class="space-y-4 relative z-10">
+                <input type="password" id="passcode"
+                    class="w-full p-5 bg-white/50 border border-white/60 rounded-2xl text-center text-xl outline-none focus:ring-2 focus:ring-black placeholder-gray-400 font-display tracking-[0.5em] transition-all"
+                    placeholder="••••••" onkeypress="if(event.key === 'Enter') attemptLogin()">
+
+                <button onclick="attemptLogin()" id="login-btn"
+                    class="w-full py-5 bg-black text-white rounded-2xl font-bold font-display tracking-widest hover:scale-[0.98] hover:shadow-lg transition-all">
+                    UNLOCK SYSTEM
+                </button>
+            </div>
+
+            <p id="login-error" class="text-red-500 text-xs mt-6 font-bold tracking-widest hidden animate-pulse">⛔
+                INVALID ACCESS CODE</p>
+        </div>
+    </div>
+
+    <div id="app-layer"
+        class="hidden w-full h-full flex items-center justify-center transition-opacity duration-1000 opacity-0">
+
+        <div class="fixed left-8 top-1/2 -translate-y-1/2 flex flex-col gap-4 z-50 animate-enter"
+            style="animation-delay: 0.1s;">
+            <div
+                class="w-14 h-14 bg-black rounded-2xl flex items-center justify-center text-white font-display font-bold text-xl shadow-os-dock mb-4 hover:scale-110 transition-transform cursor-pointer">
+                V</div>
+
+            <div class="glass-panel rounded-3xl p-2 flex flex-col gap-2 shadow-os-dock">
+                <button onclick="setView('research')" id="btn-research"
+                    class="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 dock-item-active group relative">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <span
+                        class="absolute left-14 bg-black text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">Research</span>
+                </button>
+
+                <button onclick="setView('draft')" id="btn-draft"
+                    class="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 dock-item-inactive group relative">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    <span
+                        class="absolute left-14 bg-black text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">Drafting</span>
+                </button>
+
+                <button onclick="setView('review')" id="btn-review"
+                    class="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 dock-item-inactive group relative">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                    </svg>
+                    <span
+                        class="absolute left-14 bg-black text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">Analyzer</span>
+                </button>
+
+                <div class="h-px w-6 bg-gray-200 mx-auto my-1"></div>
+
+                <button onclick="setView('profile')" id="btn-profile"
+                    class="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 dock-item-inactive group relative overflow-hidden p-0.5">
+                    <img src="https://ui-avatars.com/api/?name=Mukul+Sharma&background=000&color=fff"
+                        class="w-full h-full rounded-xl object-cover">
+                    <span
+                        class="absolute left-14 bg-black text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">Profile</span>
+                </button>
+            </div>
+        </div>
+
+        <main
+            class="w-full max-w-[1400px] h-[95vh] bg-white rounded-[2.5rem] shadow-os-window relative overflow-hidden flex flex-col md:ml-24 animate-enter border border-white/50 ring-1 ring-black/5"
+            style="animation-delay: 0.2s;">
+
+            <div
+                class="h-16 flex items-center justify-between px-8 bg-white/80 backdrop-blur-sm z-30 sticky top-0 border-b border-gray-100/50">
+                <div class="flex items-center gap-3">
+                    <span class="font-display font-bold text-lg tracking-tight">Vakalat<span
+                            class="font-normal text-gray-400">OS</span></span>
+                    <span id="module-badge"
+                        class="px-2 py-0.5 rounded-full bg-gray-100 text-[10px] font-bold text-gray-500 uppercase tracking-widest border border-gray-200">Research
+                        Console</span>
+                </div>
+                <div
+                    class="flex items-center gap-2 text-xs font-medium text-green-600 bg-green-50 px-3 py-1 rounded-full border border-green-100 shadow-sm">
+                    <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>Secure Uplink
+                </div>
+            </div>
+
+            <div id="view-research" class="view-section flex-1 flex flex-col relative h-full overflow-hidden">
+                <div id="chat-stream" class="flex-1 overflow-y-auto px-6 md:px-32 py-10 space-y-12 pb-40 scroll-smooth">
+                    <div id="empty-state" class="mt-20 animate-enter" style="animation-delay: 0.3s;">
+                        <h1
+                            class="font-display text-5xl md:text-6xl font-medium text-black mb-6 tracking-tight leading-[1.1]">
+                            Legal Intelligence,<br><span class="text-gray-300">Simplified.</span></h1>
+                        <p class="text-gray-500 text-lg max-w-xl leading-relaxed mb-10">Ask complex legal queries across
+                            verified High Court & Supreme Court precedents. No hallucinations. Pure citations.</p>
+                        <div class="flex flex-wrap gap-3">
+                            <button onclick="fillQuery('Case laws on Cheque Bounce under 138 NI Act')"
+                                class="px-5 py-2.5 rounded-full bg-gray-50 border border-gray-200 text-sm font-medium text-gray-600 hover:bg-black hover:text-white hover:border-black transition-all">Cheque
+                                Bounce 138</button>
+                            <button onclick="fillQuery('DK Basu Guidelines for arrest')"
+                                class="px-5 py-2.5 rounded-full bg-gray-50 border border-gray-200 text-sm font-medium text-gray-600 hover:bg-black hover:text-white hover:border-black transition-all">DK
+                                Basu Arrest</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="absolute bottom-10 left-0 w-full px-6 md:px-32 z-40">
+                    <div
+                        class="bg-white/80 backdrop-blur-xl border border-white/20 shadow-2xl rounded-2xl p-2 flex items-center ring-1 ring-black/5 transition-all focus-within:ring-black/20 focus-within:shadow-os-window focus-within:scale-[1.01]">
+                        <input type="text" id="query-input" placeholder="Ask Vakalat..."
+                            class="w-full bg-transparent px-6 py-4 text-lg font-medium text-black placeholder-gray-400 focus:outline-none font-sans"
+                            onkeypress="if(event.key === 'Enter') runQuery()">
+                        <button onclick="runQuery()"
+                            class="p-4 bg-black text-white rounded-xl hover:scale-95 transition-transform shadow-lg"><svg
+                                class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                            </svg></button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-draft" class="view-section hidden flex-1 flex h-full">
+                <div
+                    class="w-[400px] bg-gray-50 p-10 flex flex-col gap-8 border-r border-gray-100 h-full overflow-y-auto z-20 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
+                    <div>
+                        <h2 class="font-display text-2xl font-bold mb-2">Drafting Engine</h2>
+                        <p class="text-sm text-gray-500">Auto-injects citations & limitation warnings.</p>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="group"><label
+                                class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Type</label><select
+                                id="doc-type"
+                                class="w-full p-4 bg-white rounded-xl border-none shadow-sm text-base font-medium outline-none focus:ring-2 focus:ring-black/5 transition-all">
+                                <option>Legal Notice</option>
+                                <option>Writ Petition</option>
+                                <option>Lease Deed</option>
+                                <option>Plaint for Recovery</option>
+                            </select></div>
+                        <div class="group flex-1"><label
+                                class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Facts</label><textarea
+                                id="facts"
+                                class="w-full p-4 bg-white rounded-xl border-none shadow-sm h-64 resize-none text-base leading-relaxed outline-none focus:ring-2 focus:ring-black/5 transition-all"
+                                placeholder="E.g., Loan of 5L given in 2020..."></textarea></div>
+                        <button onclick="runDraft()"
+                            class="w-full py-5 bg-black text-white font-display font-medium text-lg rounded-xl shadow-lg hover:shadow-xl hover:translate-y-[-2px] transition-all">Generate
+                            Draft</button>
+                    </div>
+                </div>
+                <div
+                    class="flex-1 bg-white p-12 overflow-y-auto relative bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]">
+                    <div
+                        class="max-w-3xl mx-auto bg-white min-h-[1000px] shadow-os-window rounded-sm p-16 relative border border-gray-100">
+                        <div id="draft-output" class="prose-legal text-lg leading-loose text-gray-800">
+                            <div class="flex flex-col items-center justify-center h-96 text-gray-300 gap-4">
+                                <svg class="w-12 h-12 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                <span class="font-display font-medium tracking-widest text-sm">PREVIEW MODE</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-review" class="view-section hidden flex-1 flex h-full">
+                <div
+                    class="w-[400px] bg-gray-50 p-10 flex flex-col gap-8 border-r border-gray-100 h-full overflow-y-auto z-20 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
+                    <div>
+                        <h2 class="font-display text-2xl font-bold mb-2">Risk Analyzer</h2>
+                        <p class="text-sm text-gray-500">Finds loopholes & illegal clauses.</p>
+                    </div>
+                    <div class="space-y-6 flex-1 flex flex-col">
+                        <div class="group flex-1 flex flex-col"><label
+                                class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Opponent's
+                                Document</label><textarea id="review-text"
+                                class="w-full p-4 bg-white rounded-xl border-none shadow-sm flex-1 resize-none text-sm font-mono leading-relaxed outline-none focus:ring-2 focus:ring-amber-500/10 transition-all"
+                                placeholder="Paste clause text here..."></textarea></div>
+                        <button onclick="runReview()"
+                            class="w-full py-5 bg-amber-700 text-white font-display font-medium text-lg rounded-xl shadow-lg hover:shadow-xl hover:bg-amber-800 hover:translate-y-[-2px] transition-all">Audit
+                            Document</button>
+                    </div>
+                </div>
+                <div
+                    class="flex-1 bg-white p-12 overflow-y-auto relative bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]">
+                    <div
+                        class="max-w-3xl mx-auto bg-white min-h-[1000px] shadow-os-window rounded-sm p-16 relative border border-gray-100">
+                        <div id="review-output" class="prose-legal text-lg leading-loose text-gray-800">
+                            <div class="flex flex-col items-center justify-center h-96 text-gray-300 gap-4">
+                                <svg class="w-12 h-12 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                                </svg>
+                                <span class="font-display font-medium tracking-widest text-sm">WAITING FOR INPUT</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-profile"
+                class="view-section hidden flex-1 flex items-center justify-center bg-gray-50 relative overflow-hidden">
+                <div
+                    class="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:24px_24px] opacity-50">
+                </div>
+
+                <div class="relative w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-12 p-8">
+                    <div
+                        class="id-card-gradient rounded-[2.5rem] p-10 text-white shadow-2xl relative overflow-hidden group hover:scale-[1.02] transition-transform duration-500">
+                        <div
+                            class="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl group-hover:bg-white/10 transition-colors duration-500">
+                        </div>
+
+                        <div class="relative z-10 flex flex-col h-full justify-between min-h-[450px]">
+                            <div class="flex justify-between items-start">
+                                <div
+                                    class="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md border border-white/20 font-display font-bold text-2xl">
+                                    V</div>
+                                <div
+                                    class="px-4 py-1.5 bg-gradient-to-r from-gold-400 to-gold-600 rounded-full text-black text-[10px] font-bold uppercase tracking-widest shadow-lg border border-white/20">
+                                    Premium Partner</div>
+                            </div>
+
+                            <div class="space-y-8">
+                                <div
+                                    class="w-28 h-28 rounded-3xl bg-white/10 backdrop-blur-md border border-white/20 overflow-hidden relative shadow-2xl">
+                                    <img src="https://ui-avatars.com/api/?name=Mukul+Sharma&background=random&size=200"
+                                        class="w-full h-full object-cover">
+                                </div>
+                                <div>
+                                    <h2 class="font-display text-4xl font-bold mb-2 tracking-tight">Mukul Sharma</h2>
+                                    <p id="role-title"
+                                        class="text-gray-400 text-sm tracking-widest uppercase font-medium">Senior
+                                        Advocate • Supreme Court</p>
+                                </div>
+                                <div class="flex gap-12 border-t border-white/10 pt-8">
+                                    <div>
+                                        <div class="text-3xl font-display font-bold">92k</div>
+                                        <div class="text-[10px] text-gray-500 uppercase tracking-wider mt-1">Citations
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="text-3xl font-display font-bold">4.9</div>
+                                        <div class="text-[10px] text-gray-500 uppercase tracking-wider mt-1">Reputation
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="text-3xl font-display font-bold text-green-400">Active</div>
+                                        <div class="text-[10px] text-gray-500 uppercase tracking-wider mt-1">License
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col justify-center gap-6">
+                        <h3 class="font-display text-3xl font-bold text-black mb-4">Workspace Identity</h3>
+
+                        <button onclick="setRole('Advocate')"
+                            class="bg-white p-6 rounded-3xl shadow-card hover:shadow-xl transition-all flex items-center gap-6 group border border-transparent hover:border-black/5 relative overflow-hidden">
+                            <div
+                                class="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center group-hover:bg-black group-hover:text-white transition-colors duration-300">
+                                <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+                                </svg>
+                            </div>
+                            <div class="text-left z-10">
+                                <div class="font-bold text-black text-lg">Senior Advocate</div>
+                                <div class="text-sm text-gray-500 group-hover:text-gray-700">Litigation Mode</div>
+                            </div>
+                        </button>
+
+                        <button onclick="setRole('Judge')"
+                            class="bg-white p-6 rounded-3xl shadow-card hover:shadow-xl transition-all flex items-center gap-6 group border border-transparent hover:border-black/5 relative overflow-hidden">
+                            <div
+                                class="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center group-hover:bg-black group-hover:text-white transition-colors duration-300">
+                                <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                </svg>
+                            </div>
+                            <div class="text-left z-10">
+                                <div class="font-bold text-black text-lg">Judicial Officer</div>
+                                <div class="text-sm text-gray-500 group-hover:text-gray-700">Neutral Analysis Mode</div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // ---------------------------------------------------------
+        // ⚡ CONFIGURATION: REPLACE THIS URL FOR CLOUD DEPLOYMENT
+        // ---------------------------------------------------------
+        let API_URL = "https://vakalat-ai-ydde.onrender.com";
+        // Example: let API_URL = "https://vakalat-api.onrender.com";
+        // ---------------------------------------------------------
+
+        // --- AUTHENTICATION LOGIC ---
+        function attemptLogin() {
+            const input = document.getElementById('passcode');
+            const code = input.value.trim();
+            const btn = document.getElementById('login-btn');
+            const err = document.getElementById('login-error');
+
+            if (!code) return;
+
+            btn.innerText = "VERIFYING...";
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+            err.classList.add('hidden');
+
+            // Verify with Backend
+            fetch(API_URL + "/", { headers: { 'x-access-token': code } })
+                .then(res => {
+                    if (res.status === 200) {
+                        // Success
+                        localStorage.setItem('vakalat_token', code);
+                        revealApp();
+                    } else {
+                        throw new Error("Unauthorized");
+                    }
+                })
+                .catch(e => {
+                    btn.innerText = "UNLOCK SYSTEM";
+                    btn.classList.remove('opacity-75', 'cursor-not-allowed');
+                    err.classList.remove('hidden');
+                    input.value = '';
+                    input.focus();
+                });
+        }
+
+        function revealApp() {
+            const loginLayer = document.getElementById('login-layer');
+            const appLayer = document.getElementById('app-layer');
+
+            loginLayer.style.opacity = '0';
+            setTimeout(() => {
+                loginLayer.classList.add('hidden');
+                appLayer.classList.remove('hidden');
+                // Trigger reflow
+                void appLayer.offsetWidth;
+                appLayer.style.opacity = '1';
+            }, 500);
+        }
+
+        // Auto-Login Check
+        window.addEventListener('load', () => {
+            const token = localStorage.getItem('vakalat_token');
+            if (token) {
+                // Verify token validity silently
+                fetch(API_URL + "/", { headers: { 'x-access-token': token } })
+                    .then(res => {
+                        if (res.status === 200) revealApp();
+                        else localStorage.removeItem('vakalat_token');
+                    })
+                    .catch(() => { }); // If offline, stay on login
+            }
+        });
+
+        // Global Fetch Interceptor (Injects Token)
+        const originalFetch = window.fetch;
+        window.fetch = function () {
+            let [resource, config] = arguments;
+            if (!config) config = {};
+            if (!config.headers) config.headers = {};
+            config.headers['x-access-token'] = localStorage.getItem('vakalat_token');
+            return originalFetch(resource, config);
+        };
+
+        // --- VIEW LOGIC ---
+        function setView(v) {
+            // Hide all views
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            // Reset Dock Icons
+            document.querySelectorAll('#app-layer button[id^="btn-"]').forEach(btn => {
+                btn.classList.remove('dock-item-active');
+                btn.classList.add('dock-item-inactive');
+            });
+
+            // Show selected view
+            document.getElementById('view-' + v).classList.remove('hidden');
+            // Activate Icon
+            const activeBtn = document.getElementById('btn-' + v);
+            if (activeBtn) {
+                activeBtn.classList.remove('dock-item-inactive');
+                activeBtn.classList.add('dock-item-active');
+            }
+
+            // Update Header Title
+            const titles = { 'research': 'Research Console', 'draft': 'Drafting Engine', 'review': 'Analyzer', 'profile': 'Partner Identity' };
+            document.getElementById('module-badge').innerText = titles[v];
+        }
+
+        function fillQuery(text) {
+            document.getElementById('query-input').value = text;
+        }
+
+        function setRole(role) {
+            const roles = {
+                'Advocate': 'Senior Advocate • Supreme Court',
+                'Judge': 'Hon\'ble Justice • High Court'
+            };
+            document.getElementById('role-title').innerText = roles[role];
+        }
+
+        // --- API FUNCTIONS ---
+        async function runQuery() {
+            const q = document.getElementById('query-input').value;
+            if (!q) return;
+            const stream = document.getElementById('chat-stream');
+            document.getElementById('empty-state').classList.add('hidden');
+            document.getElementById('query-input').value = '';
+
+            // User Bubble
+            stream.innerHTML += `
+                <div class="flex justify-end animate-enter mb-6">
+                    <div class="bg-black text-white px-8 py-5 rounded-[2rem] rounded-tr-sm max-w-2xl text-lg font-medium shadow-lg leading-relaxed">
+                        ${q}
+                    </div>
+                </div>`;
+            stream.scrollTop = stream.scrollHeight;
+
+            // Loading State
+            const loadId = 'load-' + Date.now();
+            stream.innerHTML += `
+                <div id="${loadId}" class="flex gap-6 animate-enter mb-8">
+                    <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+                        <div class="w-5 h-5 border-2 border-gray-300 border-t-black rounded-full animate-spin"></div>
+                    </div>
+                    <div>
+                        <div class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Jurist Analysis</div>
+                        <div class="h-4 bg-gray-100 rounded w-64 animate-pulse mb-2"></div>
+                        <div class="h-4 bg-gray-100 rounded w-48 animate-pulse"></div>
+                    </div>
+                </div>`;
+            stream.scrollTop = stream.scrollHeight;
+
+            try {
+                const res = await fetch(API_URL + "/research", {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question: q })
+                });
+                const data = await res.json();
+                document.getElementById(loadId).remove();
+
+                const isFail = data.direct_answer === "Information Not Found";
+                const badge = isFail
+                    ? `<span class="text-red-600 bg-red-50 px-2 py-0.5 rounded text-[10px] font-bold border border-red-100 uppercase tracking-wider">No Data</span>`
+                    : `<span class="text-green-600 bg-green-50 px-2 py-0.5 rounded text-[10px] font-bold border border-green-100 uppercase tracking-wider">Verified Citation</span>`;
+
+                let authoritiesHTML = '';
+                if (data.authorities && data.authorities.length) {
+                    const authorityCards = data.authorities.map(a => {
+                        // Handle both old format (string) and new format (object)
+                        if (typeof a === 'string') {
+                            return `<div class="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-xs text-gray-600">${a}</div>`;
+                        }
+                        const typeColors = {
+                            'supreme_court': 'bg-blue-50 border-blue-100 text-blue-700',
+                            'statute': 'bg-amber-50 border-amber-100 text-amber-700',
+                            'high_court': 'bg-purple-50 border-purple-100 text-purple-700',
+                            'procedural': 'bg-gray-50 border-gray-200 text-gray-600',
+                        };
+                        const colorClass = typeColors[a.authority_type] || typeColors['procedural'];
+                        return `
+                        <div class="p-4 bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                            <div class="flex items-start justify-between gap-3 mb-2">
+                                <span class="font-bold text-black text-sm leading-tight">${a.source}</span>
+                                <span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border flex-shrink-0 ${colorClass}">${(a.authority_type || '').replace('_', ' ')}</span>
+                            </div>
+                            ${a.section && a.section !== 'N/A' ? `<div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">${a.section}</div>` : ''}
+                            ${a.quote ? `<div class="text-xs text-gray-500 italic leading-relaxed border-l-2 border-gray-200 pl-3">"${a.quote}"</div>` : ''}
+                        </div>`;
+                    }).join('');
+
+                    authoritiesHTML = `
+                    <div class="mt-8 pt-6 border-t border-gray-100">
+                        <div class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Sources & Authorities</div>
+                        <div class="grid grid-cols-1 gap-3">
+                            ${authorityCards}
+                        </div>
+                    </div>`;
+                }
+
+                stream.innerHTML += `
+                <div class="flex gap-6 max-w-4xl animate-enter mb-12 group">
+                    <div class="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center flex-shrink-0 font-display font-bold shadow-lg mt-1">V</div>
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-4">
+                            ${badge}
+                        </div>
+                        <h2 class="font-display text-2xl font-bold text-black mb-4 leading-tight">${data.direct_answer}</h2>
+                        <div class="prose-legal text-gray-600 text-lg leading-loose">
+                            ${data.analysis}
+                        </div>
+                        ${authoritiesHTML}
+                    </div>
+                </div>`;
+            } catch (e) {
+                document.getElementById(loadId).innerHTML = `<div class="ml-16 text-red-500 font-bold text-sm bg-red-50 p-3 rounded-lg border border-red-100 inline-block">Connection Failed. Check Backend.</div>`;
+            }
+            stream.scrollTop = stream.scrollHeight;
+        }
+
+        async function runDraft() {
+            const out = document.getElementById('draft-output');
+            out.innerHTML = `
+                <div class="h-full flex flex-col items-center justify-center animate-pulse gap-4">
+                    <div class="w-8 h-8 border-2 border-gray-200 border-t-black rounded-full animate-spin"></div>
+                    <span class="text-sm font-bold text-gray-400 uppercase tracking-widest">Drafting Document...</span>
+                </div>`;
+
+            try {
+                const res = await fetch(API_URL + "/draft", {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ doc_type: document.getElementById('doc-type').value, details: document.getElementById('facts').value })
+                });
+                const data = await res.json();
+                out.innerHTML = `<div class="prose-legal text-lg leading-loose text-gray-800 fade-in">${data.draft}</div>`;
+            } catch (e) { out.innerHTML = "Error Generating Draft."; }
+        }
+
+        async function runReview() {
+            const out = document.getElementById('review-output');
+            out.innerHTML = `
+                <div class="h-full flex flex-col items-center justify-center animate-pulse gap-4">
+                    <div class="w-8 h-8 border-2 border-gray-200 border-t-amber-600 rounded-full animate-spin"></div>
+                    <span class="text-sm font-bold text-gray-400 uppercase tracking-widest">Auditing Risks...</span>
+                </div>`;
+
+            try {
+                const res = await fetch(API_URL + "/analyze", {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ doc_text: document.getElementById('review-text').value })
+                });
+                const data = await res.json();
+                out.innerHTML = `<div class="prose-legal text-lg leading-loose text-gray-800 fade-in">${data.analysis}</div>`;
+            } catch (e) { out.innerHTML = "Error Analyzing Document."; }
+        }
+    </script>
+</body>
+
+</html>

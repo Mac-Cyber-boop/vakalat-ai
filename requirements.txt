@@ -17,3 +17,5 @@ fpdf2
 python-multipart
 semver
 python-docx
+datasets
+tqdm
