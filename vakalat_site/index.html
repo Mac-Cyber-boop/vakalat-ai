@@ -614,7 +614,8 @@
                 if (!res.ok) {
                     const errorMessages = {
                         401: "Access denied — invalid token. Please log out and re-enter your access code.",
-                        500: "Server error — the AI backend crashed. This usually means OpenAI credits are exhausted or a backend exception occurred.",
+                        402: "OpenAI credits exhausted. Top up at platform.openai.com/settings/billing.",
+                        500: "Server error — backend exception. Check Render logs.",
                         503: "Backend is starting up (Render cold start). Wait 30 seconds and try again.",
                         429: "Rate limit hit — too many requests. Wait a moment and try again.",
                     };

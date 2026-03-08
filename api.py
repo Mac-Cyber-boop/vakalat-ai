@@ -349,80 +349,79 @@ def health(): return {"status": "VakalatOS Secure Cloud Online"}
 async def research(req: QueryRequest):
     if not vector_db: raise HTTPException(500, "Database Connection Failed")
 
-    # 1. Plan — generate 3 targeted search queries from the user question
-    plan = await (PLANNER_PROMPT | llm | planner_parser).ainvoke({"question": req.question})
+    try:
+        # 1. Plan — generate 3 targeted search queries from the user question
+        plan = await (PLANNER_PROMPT | llm | planner_parser).ainvoke({"question": req.question})
 
-    # 2. Retrieve — HyDE on the original question + standard search on planner queries
-    #
-    # Why two retrieval paths?
-    #   - HyDE retrieves docs that match a formal legal answer (better for statutes/sections)
-    #   - Planner queries retrieve docs that match different angles of the question
-    #   Combining both gives wider, higher-quality coverage.
-    unique_docs: dict[str, object] = {}
+        # 2. Retrieve — HyDE on the original question + standard search on planner queries
+        unique_docs: dict[str, object] = {}
 
-    # Path A: HyDE retrieval on the raw question (fetches ~10 statute/case_law docs)
-    if hyde_retriever:
-        hyde_docs = await hyde_retriever.aretrieve(req.question, k=10)
-        for doc in hyde_docs:
-            unique_docs[doc.page_content[:80]] = doc
+        # Path A: HyDE retrieval (gpt-4o-mini generates hypothetical answer → embed → search)
+        if hyde_retriever:
+            try:
+                hyde_docs = await hyde_retriever.aretrieve(req.question, k=10)
+                for doc in hyde_docs:
+                    unique_docs[doc.page_content[:80]] = doc
+            except Exception:
+                # HyDE failed (e.g. gpt-4o-mini unavailable) — fall through to planner only
+                pass
 
-    # Path B: Standard retrieval on each planner query (k=5 each → up to 15 more)
-    for q in plan['queries']:
-        results = vector_db.similarity_search(q, k=5)
-        for doc in results:
-            unique_docs[doc.page_content[:80]] = doc
+        # Path B: Standard retrieval on each planner query
+        for q in plan['queries']:
+            results = vector_db.similarity_search(q, k=5)
+            for doc in results:
+                unique_docs[doc.page_content[:80]] = doc
 
-    # 3. Build structured context window
-    #
-    # Instead of dumping raw text, organize docs by legal authority:
-    #   ## Relevant Statutes
-    #   ## Supreme Court Precedents
-    #   ## High Court Precedents
-    #   ## Procedural Rules
-    #
-    # LLMs reason more accurately when context is structured and ordered by authority.
-    structured = context_builder.build(list(unique_docs.values()), query=req.question)
-    ctx = structured.formatted
+        # 3. Build structured context window (Statutes → SC → HC → Procedural)
+        structured = context_builder.build(list(unique_docs.values()), query=req.question)
+        ctx = structured.formatted
 
-    # 4. Reason — Jurist agent over structured context
-    jurist_out = await (JURIST_PROMPT | llm | jurist_parser).ainvoke({
-        "context": ctx,
-        "gates": BEHAVIORAL_GATES,
-        "question": req.question,
-        "current_date": str(date.today()),
-        "format_instructions": jurist_parser.get_format_instructions(),
-    })
+        # 4. Reason — Jurist agent over structured context
+        jurist_out = await (JURIST_PROMPT | llm | jurist_parser).ainvoke({
+            "context": ctx,
+            "gates": BEHAVIORAL_GATES,
+            "question": req.question,
+            "current_date": str(date.today()),
+            "format_instructions": jurist_parser.get_format_instructions(),
+        })
 
-    # 5. Audit — Verifier checks for hallucinations against the same context
-    audit = await (VERIFIER_PROMPT | llm | verifier_parser).ainvoke({
-        "draft_answer": str(jurist_out),
-        "context": ctx,
-        "format_instructions": verifier_parser.get_format_instructions(),
-    })
+        # 5. Audit — Verifier checks for hallucinations
+        audit = await (VERIFIER_PROMPT | llm | verifier_parser).ainvoke({
+            "draft_answer": str(jurist_out),
+            "context": ctx,
+            "format_instructions": verifier_parser.get_format_instructions(),
+        })
 
-    if audit['verdict'] == "FAIL":
-        return {"direct_answer": "Information Not Found", "analysis": audit['sanitized_reply'], "authorities": []}
+        if audit['verdict'] == "FAIL":
+            return {"direct_answer": "Information Not Found", "analysis": audit['sanitized_reply'], "authorities": []}
 
-    # 6. Detect outdated legal code references (IPC → BNS, CrPC → BNSS, etc.)
-    response = dict(jurist_out)
-    response['context_stats'] = {
-        "total_docs": structured.doc_count,
-        "sections": structured.section_counts,
-        "hyde_used": hyde_retriever is not None,
-    }
+        # 6. Detect outdated legal code references (IPC → BNS, CrPC → BNSS, etc.)
+        response = dict(jurist_out)
+        response['context_stats'] = {
+            "total_docs": structured.doc_count,
+            "sections": structured.section_counts,
+            "hyde_used": hyde_retriever is not None,
+        }
 
-    if outdated_detector:
-        outdated_result = outdated_detector.detect_outdated(jurist_out.get('analysis', ''))
-        if outdated_result.has_outdated:
-            response['outdated_codes'] = [
-                {
-                    'original': ref.original_text,
-                    'suggestion': ref.suggestion,
-                }
-                for ref in outdated_result.outdated_references
-            ]
+        if outdated_detector:
+            outdated_result = outdated_detector.detect_outdated(jurist_out.get('analysis', ''))
+            if outdated_result.has_outdated:
+                response['outdated_codes'] = [
+                    {'original': ref.original_text, 'suggestion': ref.suggestion}
+                    for ref in outdated_result.outdated_references
+                ]
 
-    return response
+        return response
+
+    except Exception as e:
+        # Catch all unhandled errors — always return JSON, never drop the connection.
+        # Common causes: OpenAI quota exhausted, Pinecone timeout, JSON parse failure.
+        error_msg = str(e)
+        if "quota" in error_msg.lower() or "rate" in error_msg.lower() or "billing" in error_msg.lower():
+            raise HTTPException(402, "OpenAI quota exhausted. Please top up credits at platform.openai.com.")
+        if "authentication" in error_msg.lower() or "api key" in error_msg.lower():
+            raise HTTPException(500, "OpenAI API key invalid or missing.")
+        raise HTTPException(500, f"Research pipeline failed: {error_msg}")
 
 @app.post("/draft")
 async def draft(req: DraftRequest):
